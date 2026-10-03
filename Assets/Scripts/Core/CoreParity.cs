@@ -59,7 +59,7 @@ namespace SealGugu
             {
                 Track track = Array.Find(charts.tracks, t => t.id == scenario.trackId);
                 if (track == null) throw new ArgumentException("Golden track missing " + scenario.trackId);
-                var run = new GuguRun(track, scenario.level, scenario.practice, new RunSettings { delay = scenario.delay, window = scenario.window, oxygenDrainMultiplier = 1 });
+                var run = new GuguRun(track, scenario.level, scenario.practice, new RunSettings { delay = scenario.delay, window = scenario.window, oxygenDrainMultiplier = 1, legacyBalance = true });
                 for (int index = 0; index < scenario.steps.Length; index++)
                 {
                     GoldenStep step = scenario.steps[index]; int before = run.events.Count;

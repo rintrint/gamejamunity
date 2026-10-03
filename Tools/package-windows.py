@@ -22,7 +22,7 @@ if not (build / 'MonoBleedingEdge').is_dir():
 if not any((build/'SealGugu_Data'/name).is_file() for name in ['data.unity3d', 'globalgamemanagers']):
     raise SystemExit('Missing Unity scene/player data (compressed or uncompressed)')
 assembly = (build / 'SealGugu_Data/Managed/Assembly-CSharp.dll').read_bytes()
-for diagnostic in [b'GuguCapture', b'NativeSoak', b'NativeAudioParity', b'NativeInputParity', b'NativeUiParity', b'NativeDesktopParity', b'GuguUiObservation', b'PreviewScene']:
+for diagnostic in [b'GuguCapture', b'NativeSoak', b'NativeAudioParity', b'NativeInputParity', b'NativeUiParity', b'NativeDesktopParity', b'GuguUiObservation', b'PresentationAudit', b'PreviewScene']:
     if diagnostic in assembly:
         raise SystemExit('Development-only code found in release assembly: ' + diagnostic.decode())
 files = sorted(f for f in build.rglob('*') if f.is_file())

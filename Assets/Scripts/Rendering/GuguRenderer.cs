@@ -12,6 +12,8 @@ namespace SealGugu
     public sealed class GuguRenderer : IDisposable
     {
         public float speedMultiplier = .7f;
+        public float menuHungerProgress=-1;
+        public int MenuHungerFrame { get; private set; }
         public bool hideNotes, reducedMotion;
         public Font font;
         public int VisibleFish { get; private set; }
@@ -64,6 +66,7 @@ namespace SealGugu
         readonly Vector2[] biteAnchors = {new Vector2(.84f,.57f),new Vector2(.84f,.57f),new Vector2(.81f,.57f),new Vector2(.83f,.49f),new Vector2(.84f,.49f),new Vector2(.84f,.49f)};
 
         GuguRun current;
+        Rect viewport;
         float width, height, laneY = 1, growth = 1, targetGrowth = 1, endingTime, transition = 1;
         double motionTime, biteStart = -100, inputAt = -100;
         string lastScene = "menu";
@@ -100,7 +103,7 @@ namespace SealGugu
         /// <summary>Prepare source images and face masks before the song clock starts.</summary>
         public void Preload()
         {
-            foreach(string key in new[]{"tide/ocean","tide/props","tide/seal","floe/menu-ocean","duet/effects-atlas","duet/seal-eating","drift/inhale-atlas","gugu/breath-crisis","gugu/breathless-expressions","scenes/hunger-strip"})Image(key);
+            foreach(string key in new[]{"tide/ocean","tide/props","tide/seal","floe/menu-ocean","duet/effects-atlas","duet/seal-eating","drift/inhale-atlas","gugu/breath-crisis","gugu/breathless-expressions","scenes/hunger-strip","v14-2/menu-hunger"})Image(key);
             foreach(var illustration in illustrations.Values)Image(illustration.key);
             for(int i=0;i<swimmers.Length;i++)Tinted(Image(swimmers[i].key),swimmers[i].rect,0,swimHeads[i],"swim"+i);
             var portrait=Image("tide/seal");if(portrait!=null)Tinted(portrait,new Rect(0,0,portrait.width,portrait.height),0,portraitHead,"portrait");
@@ -236,24 +239,52 @@ namespace SealGugu
 
         void Flat(Color color)
         {
-            var old=GUI.color;GUI.color=color;GUI.DrawTexture(new Rect(0,0,width,height),Texture2D.whiteTexture);GUI.color=old;
+            var old=GUI.color;GUI.color=color;GUI.DrawTexture(viewport,Texture2D.whiteTexture);GUI.color=old;
         }
 
-        void Scenery(bool dive,float time,GuguRun run)
-        {
-            var image=Image("tide/ocean");if(image==null)return;
-            float cy=dive?image.height*.39f:0,ch=image.height*(dive?.61f:.49f),zoom=Math.Max(width/image.width,height/ch);
-            float cw=width/zoom,cropH=height/zoom;
-            Slice(image,new Rect((image.width-cw)/2,cy+(ch-cropH)/2,cw,cropH),new Rect(0,0,width,height));
-            if(dive)
-            {
-                if(shade==null)
-                {
+        public static float InhaleScale(float expansion) { return 1+.075f*Mathf.Clamp01(expansion); }
+
+        // First compose in 16:9; crop uniformly to cover any actual fullscreen aspect.
+        public static Rect CoverSource(Rect source,float aspect) {
+            if(source.width/source.height>aspect){float w=source.height*aspect;source.x+=(source.width-w)*.5f;source.width=w;}
+            else {float h=source.width/aspect;source.y+=(source.height-h)*.5f;source.height=h;}
+            return source;
+        }
+        public void DrawBackdrop(GuguRun run,string scene,float w,float h) {
+            bool menu=run==null||run.status=="ready"||scene=="menu";
+            bool ending=run!=null&&(run.status=="won"||run.status=="lost"||scene=="end");
+            bool dive=!menu&&run!=null&&(run.phase=="underwater"&&!ending||ending&&run.outcome=="hungryGhost");
+            var image=Image(menu?"floe/menu-ocean":"tide/ocean");if(image==null)return;
+            Rect source=menu?new Rect(0,0,image.width,image.height):new Rect(0,dive?image.height*.39f:0,image.width,image.height*(dive?.61f:.49f));
+            source=CoverSource(CoverSource(source,16f/9),w/h);
+            Slice(image,source,new Rect(0,0,w,h));
+            if(dive){
+                if(shade==null){
                     shade=Texture(1,128,"Underwater wash");var colors=new Color[128];
                     for(int y=0;y<128;y++)colors[y]=Color.Lerp(new Color(21/255f,74/255f,105/255f,179/255f),new Color(61/255f,140/255f,165/255f,56/255f),y/127f);
                     shade.SetPixels(colors);shade.Apply(false,false);
                 }
-                Full(shade,new Rect(0,0,width,height));
+                Full(shade,new Rect(0,0,w,h));
+            }
+        }
+        public static int HungerFrame(float progress) {
+            if(progress<0||progress>=1)return 0;
+            int[] sequence={0,1,2,3,2,3,4,5};
+            return sequence[Mathf.Min(sequence.Length-1,Mathf.FloorToInt(progress*sequence.Length))];
+        }
+        void MenuSeal(float x,float y,float w) {
+            var image=Image("v14-2/menu-hunger");if(image==null)return;
+            int frame=HungerFrame(menuHungerProgress);MenuHungerFrame=frame;
+            // Register both atlas rows to the same tail/belly baseline.
+            float cw=image.width/3f, sx=frame%3*cw,sy=frame<3?100:580;
+            Rect crop=new Rect(sx,sy,cw,395);
+            Seal(image,crop,x,y,w);
+        }
+
+        void Scenery(bool dive,float time,GuguRun run)
+        {
+            if(dive)
+            {
                 for(int i=0;i<3;i++)Asset(7,width*(.15f+i*.42f)+Mathf.Sin(time*.12f+i)*35,height*.4f,width*.7f,height*.9f,.17f);
                 for(int i=0;i<8;i++)Asset(6,Mod(i*179-time*(12+i%3)+width*30,width+100)-50,Mod(i*119-time*8+height*30,height+100)-50,24+i%3*13,35+i%3*15,.15f);
                 for(int i=0;i<6;i++)Prop("plant",i*width/5-time*5%80,height,110+i%3*30,165,.35f);
@@ -292,10 +323,10 @@ namespace SealGugu
             return new Gate{mode="none"};
         }
 
-        public void Draw(GuguRun run,string scene,float time,float dt,float w,float h)
+        public void Draw(GuguRun run,string scene,float time,float dt,float w,float h,Rect viewportBounds)
         {
             if(Event.current!=null&&Event.current.type!=EventType.Repaint)return;
-            width=w;height=h;
+            width=w;height=h;viewport=viewportBounds;
             if(current!=run)Reset(run);
             bool menu=run==null||run.status=="ready"||scene=="menu";
             bool playing=run!=null&&(run.status=="playing"||run.status=="paused"&&run.beforePause=="playing");
@@ -317,14 +348,18 @@ namespace SealGugu
             }
             if(menu)
             {
-                Full(Image("floe/menu-ocean"),new Rect(0,0,w,h));bool small=w<760;
-                Portrait(w*(small?.24f:.255f),h*(small?.59f:.64f)+(reducedMotion?0:Mathf.Sin(time*1.3f)*3),small?Math.Min(205,w*.52f):Math.Min(350,w*.28f),time);
+                bool small=w<760;
+                MenuSeal(w*(small?.24f:.255f),h*(small?.59f:.64f)+(reducedMotion?0:Mathf.Sin(time*1.3f)*3),small?Math.Min(205,w*.52f):Math.Min(350,w*.28f));
                 return;
             }
             Scenery(dive,time,run);
             var health=Oxygen(run.air,time,playing&&run.phase!="shore",reducedMotion);HeadTint=health.tint;
             Gate gate=Cue(run);float urgency=Math.Max(gate.strength*.66f,health.severity*.32f);
-            if(urgency>0)Full(Image("gugu/breath-crisis"),new Rect(0,0,w,h),urgency*(reducedMotion?1:.86f+.14f*Mathf.Pow(Mathf.Sin(time*5),2)));
+            if(urgency>0) {
+                var crisis=Image("gugu/breath-crisis");
+                if(crisis!=null)Slice(crisis,CoverSource(new Rect(0,0,crisis.width,crisis.height),viewport.width/viewport.height),viewport,
+                    urgency*(reducedMotion?1:.86f+.14f*Mathf.Pow(Mathf.Sin(time*5),2)));
+            }
             VisibleFish=VisibleMissedFish=0;
             if(playing&&!run.breathingActive)Play(run,time,dive,health,gate);
             else
@@ -332,7 +367,7 @@ namespace SealGugu
                 float bob=reducedMotion?0:Mathf.Sin(endingTime*2)*5;
                 bool breathing=run.breathingActive;float sw=breathing?Math.Min(430,w*.7f):Math.Min(340,w*.47f);
                 float sx=breathing?w*.4f:w*.52f,sy=h*(breathing?.50f:ending?(w<760?.49f:.46f):w<760?.64f:.61f);
-                if(breathing) {InhalePortrait(sx,sy,sw,run.breathVisual(),health);Inhalation(sx,sy,sw,time,run);}
+                if(breathing) {InhalePortrait(sx,sy,sw,run.breathVisual(),health);Inhalation(sx,sy,sw*InhaleScale(F(run.breathVisual().expansion)),time,run);}
                 else if(run.outcome=="angel")Illustration("angel",sx,sy-15+bob,sw*1.16f);
                 else if(run.outcome=="hungryGhost")Hungry(sx,sy+bob,sw*1.12f,endingTime);
                 else if(run.outcome=="friends")Friends(time,bob);
@@ -413,10 +448,11 @@ namespace SealGugu
         {
             var image=Image("tide/seal");if(image==null)return;
             if(health.tint>0)image=Tinted(image,new Rect(0,0,image.width,image.height),health.tint,portraitHead,"portrait");
+            w*=InhaleScale(F(state.expansion));
             float h=w*image.height/image.width,hinge=.57f,sourceH=image.height*hinge,top=x-w/2,leftY=y-h/2;
             Slice(image,new Rect(0,0,image.width,sourceH),new Rect(top,leftY,w,h*hinge));
-            // The fixed upper body is one intact draw. Narrow abdomen columns expand only
-            // downwards below the spine; nothing scales the head, back, flippers or tail.
+            // After a uniform whole-body enlargement, the abdomen alone expands below
+            // the spine. Head/flippers retain their proportions; the back does not bulge.
             int columns=Mathf.CeilToInt(w);float column=w/columns;
             for(int i=0;i<columns;i++)
             {
@@ -474,7 +510,7 @@ namespace SealGugu
                 }
                 vignette.SetPixels32(data);vignette.Apply(false,false);
             }
-            float radius=Math.Max(width,height)*.8f;Full(vignette,new Rect(x-radius,y-radius,radius*2,radius*2),amount*.8f);
+            float radius=Math.Max(viewport.width,viewport.height)*.8f;Full(vignette,new Rect(x-radius,y-radius,radius*2,radius*2),amount*.8f);
         }
 
         Texture2D Tinted(Texture2D source,Rect crop,float amount,Head head,string key)

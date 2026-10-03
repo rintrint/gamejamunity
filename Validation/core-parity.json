@@ -1,8 +1,8 @@
 {
-    "version": "V14.1.1",
+    "version": "V14.2.0",
     "unityVersion": "6000.6.4f1",
     "sourceCommit": "1665a124f2a60c380989dd53af80a943386e2d7e",
-    "verifiedUtc": "2026-10-03T21:15:32.6275391Z",
+    "verifiedUtc": "2026-10-03T21:40:37.3337411Z",
     "summary": "PASS: 64 JavaScript golden scenarios, 6014 checkpoints, 589032 assertions. Source 1665a124f2a60c380989dd53af80a943386e2d7e",
     "success": true,
     "scenarios": 64,

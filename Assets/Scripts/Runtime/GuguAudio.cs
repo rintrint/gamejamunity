@@ -13,6 +13,9 @@ namespace SealGugu
         readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
         readonly Dictionary<string, double> cooldowns = new Dictionary<string, double>();
         AudioClip click, heart;
+        public const float MusicVolume=.93f*.75f, MenuHungerVolume=.6f*.75f;
+        double hungerAt=-100,hungerDuration;
+        public float MenuHungerProgress => muted||hungerDuration<=0||AudioSettings.dspTime<hungerAt||AudioSettings.dspTime>=hungerAt+hungerDuration ? -1 : (float)((AudioSettings.dspTime-hungerAt)/hungerDuration);
         double anchor, position, pausedAt, duration, lastHeart = -100, lastMistake = -100;
         bool running;
         public bool muted { get; private set; }
@@ -56,20 +59,20 @@ namespace SealGugu
             if(!clips.TryGetValue(path,out AudioClip clip)){clip=Resources.Load<AudioClip>(path);if(!clip)throw new InvalidOperationException("缺少音樂："+path);clips[path]=clip;}
             return clip;
         }
-        public void Menu(Track track){if(running||muted)return;var clip=TrackClip(track);if(menu.isPlaying&&menu.clip==clip)return;menu.clip=clip;menu.volume=.18f*.75f*.8f*(.85f/.9965f);menu.Play();}
+        public void Menu(Track track){if(running||muted)return;var clip=TrackClip(track);if(menu.isPlaying&&menu.clip==clip)return;menu.clip=clip;menu.volume=MusicVolume;menu.Play();}
         public void StopMenu(){menu.Stop();}
         public void Play(Track track,double from=0,bool countIn=true)
         {
             StopMenu();music.Stop();music.clip=TrackClip(track);duration=track.duration;position=Math.Max(0,from);pausedAt=position;
             music.timeSamples=Math.Min(music.clip.samples-1,(int)(position*music.clip.frequency));
-            anchor=AudioSettings.dspTime+.10-position;running=true;music.volume=muted?0:.93f*.75f;lowpass.cutoffFrequency=18000;if(from==0){lastHeart=lastMistake=-100;}
+            anchor=AudioSettings.dspTime+.10-position;running=true;music.volume=muted?0:MusicVolume;lowpass.cutoffFrequency=18000;if(from==0){lastHeart=lastMistake=-100;}
             music.PlayScheduled(anchor+position);
             if(countIn&&from==0&&track.beats.Length>1){double step=track.beats[1]-track.beats[0];for(int i=4;i>0;i--)ClickAt(track.beats[0]-step*i);}
         }
         public void Pause(){if(running)pausedAt=time;running=false;music.Stop();StopEffects();}
         public void Resume(Track track){Play(track,pausedAt,false);}
         public void Silence(){Pause();StopMenu();StopEffects();}
-        public void Mute(bool value){muted=value;music.volume=value?0:.93f*.75f;menu.volume=value?0:.18f*.75f*.8f;foreach(var v in voices) v.source.mute=value;}
+        public void Mute(bool value){muted=value;music.volume=value?0:MusicVolume;menu.volume=value?0:MusicVolume;foreach(var v in voices) v.source.mute=value;}
         public void Won(){music.volume=muted?0:.32f*.75f;}
         Voice Available(){foreach(var v in voices)if(v.end<AudioSettings.dspTime)return v;var extra=new Voice{source=Source("SFX "+voices.Count),end=-1};voices.Add(extra);return extra;}
         void Schedule(AudioClip clip,float volume,double at,float offset=0,float length=-1)
@@ -88,9 +91,16 @@ namespace SealGugu
         }
         // Input feedback belongs to each physical edge, including empty beats.
         // Keep the recognizable chew transient and do not gate rapid alternation.
+        public void MenuHunger()
+        {
+            if(muted)return;
+            hungerAt=AudioSettings.dspTime;
+            hungerDuration=clips["hungry"].length-metadata["hungry"].lead;
+            Sample("hungry",MenuHungerVolume);
+        }
         public void Bite(){Sample("eat",.28f,0,.30f,true);}
         public void ClickAt(double songTime){double at=anchor+songTime;if(at>=AudioSettings.dspTime)Schedule(click,.075f,at);}
-        public void StopEffects(){foreach(var v in voices){v.source.Stop();v.end=-1;}cooldowns.Clear();}
+        public void StopEffects(){hungerDuration=0;foreach(var v in voices){v.source.Stop();v.end=-1;}cooldowns.Clear();}
         public void Danger(double amount,double songTime)
         {
             lowpass.cutoffFrequency=Mathf.Lerp(lowpass.cutoffFrequency,18000-(float)amount*5000,Time.unscaledDeltaTime*5);

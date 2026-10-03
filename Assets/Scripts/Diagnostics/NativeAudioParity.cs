@@ -181,6 +181,20 @@ namespace SealGugu.Diagnostics
                     "DSP output latency estimate must be finite and nonnegative"); assertions++;
                 details.AppendLine("New-song heartbeat/mistake history resets. DSP queued-output estimate: " +
                     (sound.outputEstimate * 1000).ToString("F3", CultureInfo.InvariantCulture) + " ms (device calibration may still be needed).");
+                sound.Silence();sound.Mute(false);sound.Menu(tracks[0]);
+                float menuGain=((AudioSource)Field(sound,"menu")).volume;
+                sound.Play(tracks[0]);float playGain=((AudioSource)Field(sound,"music")).volume;
+                Require(Math.Abs(menuGain-playGain)<1e-7,"menu BGM equals gameplay gain");assertions++;
+                sound.Mute(true);sound.Mute(false);
+                Require(Math.Abs(((AudioSource)Field(sound,"menu")).volume-playGain)<1e-7,"unmute retains matching BGM gain");assertions++;
+                sound.Silence();sound.Sample("hungry",.6f);
+                float oldHunger=((IEnumerable)Field(sound,"voices")).Cast<object>().Where(v=>(double)Field(v,"end")>=AudioSettings.dspTime).Sum(v=>(float)Field(v,"volume"));
+                sound.StopEffects();sound.MenuHunger();
+                float newHunger=((IEnumerable)Field(sound,"voices")).Cast<object>().Where(v=>(double)Field(v,"end")>=AudioSettings.dspTime).Sum(v=>(float)Field(v,"volume"));
+                Require(Math.Abs(newHunger-oldHunger*.75f)<1e-6,"menu hunger gain is exactly 75 percent");assertions++;
+                Require(sound.MenuHungerProgress>=0&&sound.MenuHungerProgress<.1f,"animation starts on the sound DSP clock");assertions++;
+                sound.StopEffects();Require(sound.MenuHungerProgress<0,"cancelling sound cancels hunger animation");assertions++;
+                details.AppendLine("Menu BGM equals gameplay gain; menu hunger gain 75%; animation shares sample DSP duration and cancellation.");
                 assertions+=CheckEffectRoutes(sound,new GuguRun(tracks[0],"expert"),details);
                 return "PASS: native audio integration, " + assertions + " assertions.\n" + details;
             }

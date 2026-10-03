@@ -1,5 +1,5 @@
 {
-  "version": "V14.1.1",
+  "version": "V14.2.0",
   "source": "HTML edition 13: scenes.css -> pulse.css -> duet.css -> drift.css -> floe.css -> gugu.css",
   "verifiedWith": "Browser getComputedStyle on the original local gugu.html?dev=1 underwater preview; source CSS for hover selectors",
   "underwater": {
@@ -26,5 +26,30 @@
     "primaryButton": "#fffdf0",
     "tuningButton": "#fff7df",
     "note": "Unity uses original artwork with cached brightness variants and a Gaussian alpha silhouette, no yellow tint. Reduced-motion skips the transition. Text RGB values match the browser; font antialiasing and shadow rasterization are native Unity."
+  },
+  "meters": {
+    "rim": "1px solid #eafaff",
+    "padding": "2px",
+    "track": "#416c876b",
+    "air": [
+      "#b1e8ef",
+      "#c9f0ee"
+    ],
+    "airLow": [
+      "#dfc79c",
+      "#e8ac9d"
+    ],
+    "stability": [
+      "#d8f0da",
+      "#fff0b2"
+    ],
+    "stabilityLow": "#eea49c",
+    "food": [
+      "#bbdbbc",
+      "#f0dda5"
+    ],
+    "widthTransitionSeconds": 0.1,
+    "lowThreshold": 0.35,
+    "note": "Native rounded border, translucent track, inset, gradient and food dividers match the final HTML cascade; fonts intentionally changed to Windows Microsoft JhengHei."
   }
 }

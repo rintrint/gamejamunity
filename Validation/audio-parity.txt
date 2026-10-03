@@ -1,10 +1,11 @@
-PASS: native audio integration, 185 assertions.
+PASS: native audio integration, 190 assertions.
 floe-second: native 207.613500 s; chart 207.613500 s; difference 0.000 ms; 48000 Hz; 2 channels.
 floe-third: native 189.248000 s; chart 189.248000 s; difference 0.000 ms; 48000 Hz; 2 channels.
 drift-tide: native 190.500000 s; chart 190.500000 s; difference 0.000 ms; 48000 Hz; 2 channels.
 All 16 team sound effects loaded.
 drift-tide: 45 distinct calibration click voices retain exact chart timestamps, including after button feedback.
 New-song heartbeat/mistake history resets. DSP queued-output estimate: 16.000 ms (device calibration may still be needed).
+Menu BGM equals gameplay gain; menu hunger gain 75%; animation shares sample DSP duration and cancellation.
 Route opening >=90%: breathGood.
 Route opening <90%: breathBad.
 Route surface inhale: inhale.

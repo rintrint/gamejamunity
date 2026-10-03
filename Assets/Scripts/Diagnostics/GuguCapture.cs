@@ -155,6 +155,8 @@ namespace SealGugu.Diagnostics
                 File.WriteAllBytes(Path.Combine(outputDirectory,"hover-"+asset+".png"),hover.EncodeToPNG());Destroy(hover);
             }
             game.previewIceHover="";
+            var presentation=PresentationAudit.Run(game,outputDirectory);
+            while(presentation.MoveNext())yield return presentation.Current;
             if (Array.IndexOf(Environment.GetCommandLineArgs(), "-guguSoak") >= 0)
             {
                 var soak = NativeSoak.Run(game, Path.Combine(outputDirectory, "realtime-soak.json"));

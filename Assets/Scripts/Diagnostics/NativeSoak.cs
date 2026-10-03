@@ -39,6 +39,7 @@ namespace SealGugu.Diagnostics
             public bool isolatedGameplayKeyboard;
             public int ignoredExternalTestInputs;
             public int backgroundFrames, disabledTestKeyboardFrames;
+            public int oxygenMeterSamples; public double maximumOxygenMeterLag;
         }
         static object Field(object target, string name)
         {
@@ -197,6 +198,13 @@ namespace SealGugu.Diagnostics
                     }
                     if (audible >= nextLog)
                     {
+                        if(run.status=="playing"&&run.phase=="underwater"&&!run.breathingActive) {
+                            var motions=(IDictionary)Field(Field(game,"meters"),"motions");
+                            Require(motions.Contains("air"),"oxygen HUD must have painted",report);
+                            double lag=Math.Abs((float)Field(motions["air"],"value")-run.air/100);
+                            report.oxygenMeterSamples++;report.maximumOxygenMeterLag=Math.Max(report.maximumOxygenMeterLag,lag);
+                            Require(lag<.08,"moving oxygen bar must follow live oxygen instead of freezing",report);
+                        }
                         Debug.Log("GUGU_SOAK_PROGRESS " + audible.ToString("F1") + "s; fish=" + run.food + "; air=" + run.air.ToString("F1") + "; misses=" + run.misses);
                         nextLog += 20;
                     }
@@ -210,6 +218,7 @@ namespace SealGugu.Diagnostics
                 Require(report.maxClockDifferenceMs < 200, "DSP audible clock diverged more than 200 ms from the native audio decoder", report);
                 Require(run.status == "won" && run.outcome == "friends" && run.food == run.totalFish && run.misses == 0,
                     "final real-time result is not a complete perfect-fish route", report);
+                Require(report.oxygenMeterSamples>=3,"real-time oxygen bar samples missing",report);
                 report.success = true;
             }
             finally

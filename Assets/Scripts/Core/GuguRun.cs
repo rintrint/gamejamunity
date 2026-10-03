@@ -32,7 +32,7 @@ namespace SealGugu
         public bool accent;
         public Note Copy() { return (Note)MemberwiseClone(); }
     }
-    [Serializable] public sealed class RunSettings { public double delay = 0, window = 150, oxygenDrainMultiplier = GuguRun.OXYGEN_DRAIN_MULTIPLIER; }
+    [Serializable] public sealed class RunSettings { public bool legacyBalance; public double delay = 0, window = 150, oxygenDrainMultiplier = GuguRun.OXYGEN_DRAIN_MULTIPLIER; }
     [Serializable] public sealed class Profile
     {
         public string label;
@@ -65,6 +65,7 @@ namespace SealGugu
     {
         public const double OXYGEN_DRAIN_MULTIPLIER = .5;
         public readonly double oxygenDrainMultiplier;
+        public readonly DifficultyBalance balance;
         public const double DEFAULT_WINDOW = 150, REFILL_FRACTION = .12, REFILL_LIMIT = 100 - 1e-9;
         static readonly string[] Phrase = { "lower", "lower", "upper", "upper", "upper", "upper", "lower", "lower", "lower", "upper", "upper", "lower", "upper", "lower", "lower", "upper" };
         public Track track;
@@ -88,7 +89,9 @@ namespace SealGugu
             if (track == null || track.charts == null) throw new ArgumentNullException("track");
             this.track = track; difficulty = level; this.practice = practice;
             profile = Profile.For(level);
-            settings = settings ?? new RunSettings(); oxygenDrainMultiplier = settings.oxygenDrainMultiplier; setTiming(settings.delay, settings.window);
+            settings = settings ?? new RunSettings();
+            balance = DifficultyBalance.For(settings.legacyBalance ? "expert" : level);
+            oxygenDrainMultiplier = settings.oxygenDrainMultiplier; setTiming(settings.delay, settings.window);
             Note[] source = track.charts.Get(level);
             if (source == null) throw new ArgumentException("Missing difficulty chart: " + level);
             var chart = new List<Note>();
@@ -126,7 +129,7 @@ namespace SealGugu
                 if (n.kind == "dive" || n.kind == "leap") departures.Add(n);
                 else { notes.Add(n); totalFish += n.fish; stageTotals[n.stage] += n.fish; }
             }
-            targets = foodTargets(totalFish);
+            targets = foodTargets(totalFish, balance.fullRatio);
         }
 
         static int gateGroup(List<Note> gates, Note n) { int result = 0; foreach (var gate in gates) if (gate.time < n.time) result++; return result; }
@@ -138,13 +141,13 @@ namespace SealGugu
         public static double delayValue(double v) { return bounded(v, -200, 200, 0); }
         public static double windowValue(double v) { return bounded(v, 40, 200, 85); }
         public static double refillAir(double value) { return Math.Min(REFILL_LIMIT, value + (100 - value) * REFILL_FRACTION); }
-        public static string airDisplay(double value) { return value >= 100 ? "100" : (Math.Floor(Math.Max(0, value) * 10) / 10).ToString("0.#", CultureInfo.InvariantCulture); }
-        public static FoodTargets foodTargets(int total)
+        public static string airDisplay(double value) { return Math.Floor(clamp(value, 0, 100)).ToString("0", CultureInfo.InvariantCulture); }
+        public static FoodTargets foodTargets(int total, double fullRatio = 360.0 / 438)
         {
             int tenFloor = (int)Math.Floor(total / 10.0) * 10;
             int maximum = Math.Max(1, tenFloor != 0 ? tenFloor : total);
             Func<double, int> target = ratio => Math.Min(maximum, Math.Max(Math.Min(10, maximum), (int)jsRound(total * ratio / 10) * 10));
-            return new FoodTargets { grow = target(120.0 / 438), fat = target(240.0 / 438), full = target(360.0 / 438) };
+            return new FoodTargets { grow = target(fullRatio / 3), fat = target(fullRatio * 2 / 3), full = target(fullRatio) };
         }
         public static string laneFor(Note note)
         {
@@ -232,7 +235,7 @@ namespace SealGugu
             double dt = Math.Max(0, to - time);
             if (phase == "underwater")
             {
-                air = Math.Max(0, air - dt * (4.15 + depth * .012) * oxygenDrainMultiplier);
+                air = Math.Max(0, air - dt * (4.15 + depth * .012) * oxygenDrainMultiplier * balance.oxygen);
                 if (air <= 0 && !practice) { time = to; lose("oxygen"); return; }
                 if (practice) air = Math.Max(1, air);
             }
@@ -322,8 +325,8 @@ namespace SealGugu
                 status = "won"; outcome = food >= targets.full ? "friends" : "rest";
                 events.Add(new GameEvent { type = "won", at = time });
             }
-            if (note.result == "hit") stability = Math.Min(100, stability + (Math.Abs(error) <= profile.perfect ? 1.5 : .5));
-            else { stability = Math.Max(0, stability - 11); if (stability == 0 && status == "playing" && !practice) lose("rhythm"); }
+            if (note.result == "hit") stability = Math.Min(100, stability + (Math.Abs(error) <= profile.perfect ? balance.perfectRecovery : balance.goodRecovery));
+            else { stability = Math.Max(0, stability - balance.missPenalty); if (stability == 0 && status == "playing" && !practice) lose("rhythm"); }
             if (note.kind == "surface" && phase == "surface")
             {
                 if (note.result == "miss") air = airBefore;

@@ -1,5 +1,5 @@
 {
-  "version": "V14.1.1",
+  "version": "V14.2.0",
   "codeReviewPassed": true,
   "renderReviewPassed": true,
   "actualPointerTest": "passed",
@@ -7,7 +7,7 @@
   "verifiedWithComputerUse": [
     "Start, Credits and Exit retain original ice artwork, subtly brighten and cast a soft blue silhouette shadow on hover. No yellow recoloring.",
     "Native Windows IDC_HAND observed on all three main menu controls; IDC_ARROW when hovering blocked background Exit.",
-    "Start opens setup; beginner then expert selected without clicking background Credits.",
+    "Start opens setup; beginner, intermediate and expert update food / oxygen / Miss values correctly without clicking background Credits.",
     "Clicking blocked background Exit leaves setup open and player running.",
     "Begin breathing primary button uses pale ivory hover and soft shadow.",
     "Credits opens and Back returns to menu; Exit closes the tested QA player."
@@ -15,5 +15,11 @@
   "htmlReference": "Actual local gugu.html computed CSS palette plus final cascade hover selectors; see html-ui-reference.json.",
   "keyboardValidation": "Native Input System integration: 17 desktop assertions, fullscreen/windowed round trip, F1 isolation and native system cursors. See desktop-parity.txt.",
   "limitation": "No claim of physical keyboard testing. UI interaction used computer-use actual mouse; cursor handles independently recorded. Font antialiasing and shadow rasterization differ between Unity and browser.",
-  "sourceObservationCount": 23
+  "sourceObservationCount": 20,
+  "presentationReview": [
+    "Menu, underwater, full inhale and friends ending at 16:9, 16:10 and 21:9; no black bars or central crisis-overlay seams.",
+    "Happy menu idle returns after the belly-rumble animation; one version label beside the music control.",
+    "Microsoft JhengHei headings/body, integer oxygen/stability and HTML-styled inset rounded gradient meters.",
+    "Oxygen bar tracks the live game during 9 full-song samples; maximum fraction lag 0.00253."
+  ]
 }

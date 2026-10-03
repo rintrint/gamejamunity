@@ -13,7 +13,7 @@ namespace SealGugu.Editor
             public bool success;
             public double runtimeMultiplier=GuguRun.OXYGEN_DRAIN_MULTIPLIER;
             public int assertions, rateCases, perfectRoutes;
-            public string note="Original V13 golden uses 1x for historical parity; release default is 0.5x. Only time/depth consumption changes; refill, grace, pause, judgement and stability do not.";
+            public string note="Original V13 golden uses 1x for historical parity; release default is 0.5x. Difficulty oxygen multipliers are applied on top of the 0.5 base; refill, grace and pause retain original rules.";
         }
         static Report report;
         static void Require(bool value,string message){report.assertions++;if(!value)throw new InvalidOperationException("Oxygen balance: "+message);}
@@ -32,10 +32,10 @@ namespace SealGugu.Editor
                     old.time=current.time=track.introEnd;old.depth=current.depth=depth;
                     for(int frame=1;frame<=fps*2;frame++){double t=track.introEnd+(double)frame/fps;old.consume(t);current.consume(t);}
                     Require(Math.Abs((100-current.air)*2-(100-old.air))<1e-8,"exact half drain at every depth/frame rate");
-                    Require(Math.Abs(100-current.air-(4.15+depth*.012))<1e-8,"two-second independent rate check");report.rateCases++;
+                    Require(Math.Abs(100-current.air-(4.15+depth*.012)*current.balance.oxygen)<1e-8,"two-second independent rate check");report.rateCases++;
                 }
                 normal=Ready(track,level,.5);normal.consume(track.introEnd*.5);Require(normal.air==100,"intro remains free");
-                normal.consume(track.introEnd+1);Require(Math.Abs(normal.air-(100-(4.15+18*.012)*.5))<1e-8,"intro boundary charges only underwater elapsed time");
+                normal.consume(track.introEnd+1);Require(Math.Abs(normal.air-(100-(4.15+18*.012)*.5*normal.balance.oxygen))<1e-8,"intro boundary charges only underwater elapsed time");
                 normal.phase="surface";normal.surfaceAt=normal.time;normal.air=40;double at=normal.time;
                 normal.consume(at+.1);Require(normal.air==40,"no shore drain");normal.tapBreath();Require(Math.Abs(normal.air-47.2)<1e-9,"refill remains 12 percent of missing air");
                 normal.pause();at=normal.time;double air=normal.air;normal.update(at+20);Require(normal.time==at&&normal.air==air,"pause freezes clock and oxygen");
