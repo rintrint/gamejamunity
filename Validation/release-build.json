@@ -1,11 +1,10 @@
 {
-  "version": "V14.0.1",
+  "version": "V14.1.0",
   "success": true,
   "unityVersion": "6000.6.4f1",
   "development": false,
-  "buildBytes": 276566078,
-  "startupMode": "batchmode/nographics",
-  "responding": true,
+  "buildBytes": 276569408,
+  "startupMode": "native rendered Windows player",
   "managedExceptions": false,
-  "note": "Release startup only; rendered QA screenshots and full-song test passed. Physical mouse tests blocked by Windows permission dialog."
+  "note": "Final release player launched and menu/start dialog inspected with computer-use. Full-song run preceded a cosmetic FPS panel height fix; final desktop checks and all 19 scene captures repeated after that fix. Release assembly independently verified to exclude QA entry points."
 }

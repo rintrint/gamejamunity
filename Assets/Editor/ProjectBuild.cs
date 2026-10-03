@@ -11,13 +11,13 @@ namespace SealGugu.Editor
 {
     public static class ProjectBuild
     {
-        public const string Version = "14.0.1";
+        public const string Version = "14.1.0";
         public const string ScenePath = "Assets/Scenes/Main.unity";
 
         [Serializable]
         private sealed class ParityReport
         {
-            public string version = "V14.0.1", unityVersion, sourceCommit, verifiedUtc, summary;
+            public string version = "V14.1.0", unityVersion, sourceCommit, verifiedUtc, summary;
             public bool success;
             public int scenarios, checkpoints, assertions;
         }
@@ -70,6 +70,7 @@ namespace SealGugu.Editor
             PlayerSettings.defaultScreenHeight = 900;
             PlayerSettings.fullScreenMode = FullScreenMode.FullScreenWindow;
             PlayerSettings.resizableWindow = true;
+            PlayerSettings.allowFullscreenSwitch = false; // GuguDesktop owns Alt+Enter; avoid a second native toggle.
             PlayerSettings.runInBackground = false;
             PlayerSettings.colorSpace = ColorSpace.Gamma;
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
@@ -100,7 +101,7 @@ namespace SealGugu.Editor
                 camera.orthographic = true;
                 camera.transform.position = new Vector3(0, 0, -10);
                 camera.gameObject.AddComponent<AudioListener>();
-                new GameObject("海豹咕咕 · V14.0.1").AddComponent<GuguGame>();
+                new GameObject("海豹咕咕 · V14.1.0").AddComponent<GuguGame>();
                 EditorSceneManager.SaveScene(scene, ScenePath);
             }
             else EditorSceneManager.OpenScene(ScenePath);
@@ -119,10 +120,10 @@ namespace SealGugu.Editor
             }
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
-            Debug.Log("GUGU_PROJECT_READY V14.0.1; editable credits: Assets/Resources/GameCredits.asset");
+            Debug.Log("GUGU_PROJECT_READY V14.1.0; editable credits: Assets/Resources/GameCredits.asset");
         }
 
-        [MenuItem("Tools/海豹咕咕/打包 Windows V14.0.1")]
+        [MenuItem("Tools/海豹咕咕/打包 Windows V14.1.0")]
         public static void BuildWindows()
         {
             Initialize();
@@ -144,8 +145,8 @@ namespace SealGugu.Editor
             if (report.summary.result != BuildResult.Succeeded)
                 throw new Exception("Windows build failed: " + report.summary.result + "; errors=" + report.summary.totalErrors);
             File.WriteAllText(Path.Combine(directory, "README.txt"),
-                "海豹咕咕 V14.0.1\r\n\r\n開啟 SealGugu.exe。請保留同資料夾的 SealGugu_Data、UnityPlayer.dll 與其他檔案。\r\n" +
-                "上排 D / F / ↑；下排 J / K / ↓；開場吸氣 Space；途中岸上換氣連打 Space 或上下排按鍵；Esc 暫停。\r\n" +
+                "海豹咕咕 V14.1.0\r\n\r\n開啟 SealGugu.exe。請保留同資料夾的 SealGugu_Data、UnityPlayer.dll 與其他檔案。\r\n" +
+                "上排 D / F / ↑；下排 J / K / ↓；開場吸氣 Space；途中岸上換氣連打 Space 或上下排按鍵；Esc 暫停；Alt + Enter 切換視窗／全螢幕；F1 顯示／隱藏 FPS。\r\n" +
                 "預設判定 ±150ms，可在選曲及暫停設定調整魚速、延遲與判定。\r\n");
             var notices = Path.Combine(directory, "ThirdPartyNotices");
             Directory.CreateDirectory(notices);

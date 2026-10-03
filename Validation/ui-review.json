@@ -1,16 +1,18 @@
 {
-  "version": "V14.0.1",
+  "version": "V14.1.0",
   "codeReviewPassed": true,
   "renderReviewPassed": true,
-  "actualPointerTest": "blocked_by_windows_firewall_prompt",
-  "hoverPointerTest": "blocked_by_windows_firewall_prompt",
-  "verifiedInCode": [
-    "All background Header/Menu/Breathing/Hud/Ending controls disabled while a modal is open",
-    "Manual lane and breath mouse-down handlers obey GUI.enabled",
-    "Remaining modal mouse and wheel events are consumed",
-    "Main menu song/difficulty footer and duplicate setup shortcut removed",
-    "All image buttons share the same warm hover tint as action buttons",
-    "Hover and pressed art states are suppressed for disabled background buttons"
+  "actualPointerTest": "passed",
+  "hoverPointerTest": "passed",
+  "verifiedWithComputerUse": [
+    "Start hover applies warm tint and Windows IDC_HAND; click opens setup",
+    "Select beginner then expert at its lower edge; expert selected while setup stays open, no background Credits click",
+    "Click background Exit outside setup: dialog remains and application stays running; Windows IDC_ARROW",
+    "Scroll through tuning to calibration; disabled Apply is not actionable",
+    "Close setup, hover Credits (warm tint + IDC_HAND), open credits, close it",
+    "Hover Exit (warm tint + IDC_HAND); click exits owned QA player"
   ],
-  "note": "The system network-permission dialog blocks Windows pointer interaction. No security settings were changed. Automated input/audio/gameplay and screenshots ran within the application; this report does not claim successful physical-pointer testing."
+  "keyboardValidation": "Native Input System integration: 17 assertions, actual fullscreen/windowed round trip, left Alt+Enter and right Alt+numpad Enter, held-key suppression, saved dimensions, F1 on menu/setup/calibration/opening/pause, no gameplay side effects.",
+  "limitation": "Computer-use external keyboard injection was not received by Input System (existing Escape also unaffected). No claim of successful physical keyboard testing. Real mouse interaction and native Windows cursor handles were independently observed.",
+  "sourceObservationCount": 14
 }

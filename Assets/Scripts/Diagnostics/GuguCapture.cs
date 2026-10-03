@@ -107,6 +107,8 @@ namespace SealGugu.Diagnostics
             string audioResult = NativeAudioParity.Run(game);
             File.WriteAllText(Path.Combine(outputDirectory, "audio-parity.txt"), audioResult);
             Debug.Log("GUGU_AUDIO_PARITY " + audioResult);
+            var desktopChecks = NativeDesktopParity.Run(game, outputDirectory);
+            while (desktopChecks.MoveNext()) yield return desktopChecks.Current;
             game.hidePreviewBadge = true;
 
             foreach (string mode in Modes)

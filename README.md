@@ -1,4 +1,4 @@
-# 海豹咕咕 V14.0.1
+# 海豹咕咕 V14.1.0
 
 Unity **6.6 / 6000.6.4f1** 原生 Windows 版。以 HTML 第 13 版 `1665a124f2a60c380989dd53af80a943386e2d7e` 為移植基準，保留原始歌曲、譜面、手繪素材和遊戲規則。這個專案只有海豹咕咕，沒有舊版切換選單。
 
@@ -13,12 +13,16 @@ Unity **6.6 / 6000.6.4f1** 原生 Windows 版。以 HTML 第 13 版 `1665a124f2a
 | 開場吸氣 | 看腹部與氣流收攏，按一次 Space 或任一上下排鍵收氣 |
 | 途中上岸換氣 | 連打 Space 或上下排按鍵；倒數後自動下海 |
 | 暫停／繼續 | Esc |
+| 視窗／全螢幕 | Alt + Enter（左右 Alt、數字鍵盤 Enter 皆可） |
+| 顯示／隱藏 FPS | F1 |
 
 三首歌曲各有新手、中階、高手。預設判定 ±150 ms；可調魚速 0.1–2.0×、延遲 ±200 ms、判定範圍 ±40–200 ms。魚速只影響視覺距離，不會改動音樂或拍點。設定儲存在本機。
 
 空拍可以自由移動；有魚靠近時，太早、太晚或按錯排會 Miss，不能連按補中。漏接的魚會繼續離開畫面。肺活量、飽食度、節奏穩定度與各歌曲的成長門檻沿用第 13 版；途中補氣採剩餘容量的 12%，永遠不會直接補到 100%。
 
 V14.0.1 修正了選曲視窗的滑鼠穿透，主畫面統一由 Start 進入選曲及設定。Start／Credits／Exit 有暖色 Hover 提示。遊玩時每次上下按鍵都會播放吃魚音效，包含空拍；同一次命中不會重複疊加。完整修正內容見 `Documentation/RELEASE_V14.0.1.md`。
+
+V14.1.0 新增視窗／全螢幕切換、左上角 FPS 及 Windows 系統手形游標。FPS 每半秒更新，預設隱藏；切回視窗會恢復切換前的尺寸。手形提示只作用於目前可操作且可見的控制項。詳見 `Documentation/RELEASE_V14.1.0.md`。
 
 ## 用 Unity 編輯
 
@@ -40,7 +44,7 @@ V14.0.1 修正了選曲視窗的滑鼠穿透，主畫面統一由 Start 進入�
 
 ## 打包與驗證
 
-Unity 選单 **Tools → 海豹咕咕 → 打包 Windows V14.0.1**。輸出 `Builds/Windows/SealGugu.exe`。命令列也可使用：
+Unity 選单 **Tools → 海豹咕咕 → 打包 Windows V14.1.0**。輸出 `Builds/Windows/SealGugu.exe`。命令列也可使用：
 
 ```powershell
 & 'C:\Program Files\Unity\Hub\Editor\6000.6.4f1\Editor\Unity.exe' -batchmode -nographics -quit -projectPath "$PWD" -executeMethod SealGugu.Editor.ProjectBuild.BuildWindows -logFile "$PWD\build.log"
