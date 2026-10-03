@@ -1,2 +1,11 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Keep Unity text assets stable across Windows and other editors.
+* text=auto eol=lf
+*.png binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+# Unity's serializer writes spaces after empty YAML values.
+*.meta whitespace=-blank-at-eol
+*.asset whitespace=-blank-at-eol
+*.unity whitespace=-blank-at-eol

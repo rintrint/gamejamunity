@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "unityVersion": "6000.6.4f1",
+  "development": false,
+  "buildBytes": 276565564,
+  "launched": true,
+  "responding": true,
+  "managedExceptions": false,
+  "note": "Native executable startup checked; 19-scene/input/audio/soak validation used the matching development build."
+}

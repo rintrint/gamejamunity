@@ -1,0 +1,6 @@
+{
+  "tool": "built-in image_gen",
+  "source": "botton.position.webp",
+  "output": "menu-ocean.png",
+  "prompt": "Use case: precise-object-edit. Edit target: the supplied hand-painted icy game menu layout. Make a clean background plate for the same game menu. Remove ONLY the three labeled START / CREDITS / EXIT ice button islands on the right, the small home-icon ice button at top left, and all letters/icons on those four islands. Fill their former locations with the same calm cyan watercolor ocean and pale water reflections. KEEP the large foreground ice platform at bottom left, the small unlabeled floating ice pieces, the exact pastel ice-blue color palette, simple painterly shading and broad original composition. Do not add buttons, text, seal, characters, UI, dark colors, or new objects. Preserve the large empty right half so the original separate transparent ice buttons can be overlaid. Landscape 1749:1047 composition. Opaque background."
+}

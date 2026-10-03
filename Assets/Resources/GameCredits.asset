@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68f112cc733daef4c97820fc007f7c83, type: 3}
+  m_Name: GameCredits
+  m_EditorClassIdentifier: Assembly-CSharp::SealGugu.GameCredits
+  group: "\u7B2C\u4E8C\u7D44"
+  entries:
+  - "\u5167\u5BB9\u5F85\u88DC"

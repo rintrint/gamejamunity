@@ -1,0 +1,53 @@
+[
+  {
+    "id": "thin",
+    "minimumFish": 0,
+    "src": "assets/floe/swim-thin.png",
+    "rect": [
+      185,
+      670,
+      552,
+      158
+    ],
+    "anchor": [
+      0.99,
+      0.58
+    ],
+    "source": "fat/1.png",
+    "sha256": "82a681a8ea2280273bae2b36fc3ac40bc2022db9b1a0899c25cbc7a7f68bc00c"
+  },
+  {
+    "id": "medium",
+    "minimumFish": 120,
+    "src": "assets/floe/swim-medium.webp",
+    "rect": [
+      165,
+      579,
+      501,
+      175
+    ],
+    "anchor": [
+      0.99,
+      0.61
+    ],
+    "source": "fat/2.webp",
+    "sha256": "64eaf98c57c627f66b4e93678f908f1f19a3687edc617d258f1d5617a7a1d3a6"
+  },
+  {
+    "id": "fat",
+    "minimumFish": 240,
+    "src": "assets/floe/swim-fat.webp",
+    "rect": [
+      164,
+      541,
+      497,
+      214
+    ],
+    "anchor": [
+      0.99,
+      0.72
+    ],
+    "source": "fat/3.webp",
+    "sha256": "7ac54f5e63c76f0522e534e22c885108d9a52cbcd716a1f8b1c107440b3fe609"
+  }
+]

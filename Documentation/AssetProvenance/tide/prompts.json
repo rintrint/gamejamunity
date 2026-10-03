@@ -1,0 +1,30 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "User-provided ice-blue seal color reference, 2026-10-03",
+  "prompts": {
+    "seal": {
+      "prompt": "Edit target image 1 seal game sprite. Image 2 is color reference only (the seal drawing within a chat screenshot). Keep EXACT single seal pose, right facing head, silhouette, expression, scale and placement of image 1. Change only lavender/purple body shadows to very pale icy cyan blue as in reference. Fur snowy creamy white with tiny pale butter highlights; dark eyes and fine outlines muted indigo blue like reference, pink tongue unchanged. Preserve pencil texture. No added glow, no outer haze, no ground shadow. Truly transparent background and clean alpha edges. Do not copy the chat UI or the second frontal seal. Output same landscape 3:2 framing.",
+      "referenced_image_paths": [
+        "C:/Users/user/Documents/GitHub/rintrint.github.io/gamejam/assets/sketch/seal.png",
+        "C:/Users/user/Desktop/螢幕擷取畫面 2026-10-03 134107.png"
+      ],
+      "transparent_background": true
+    },
+    "ocean": {
+      "prompt": "Edit target image 1 arctic game background. Image 2 palette reference only. Strictly preserve image 1 landscape composition, waterline height, all mountains, underwater rocks plants, sun and colored-pencil texture. Recolor lavender/purple shadows, outlines, mountains, rocks, seaweed to icy sky blue and muted blue-gray. Main palette reference pale cyan sky #b6e5fa, milky white snow, pale blue shaded ice, subtle seafoam accents and cream sunshine. Remove all purple/lilac color casts. No characters, text, UI. Keep 16:9 wide composition.",
+      "referenced_image_paths": [
+        "C:/Users/user/Documents/GitHub/rintrint.github.io/gamejam/assets/sketch/ocean.png",
+        "C:/Users/user/Desktop/螢幕擷取畫面 2026-10-03 134107.png"
+      ],
+      "transparent_background": false
+    },
+    "props": {
+      "prompt": "Edit target image 1 game sprite atlas. Image 2 color reference only. COLOR CHANGE ONLY: preserve exact relative positions, sizes, shapes, orientations and whitespace of ALL FOUR sprites in image 1: ice upper-left, mint fish upper-right, gold fish lower-left, seaweed lower-right. No shifting/rescaling/rearranging, atlas is programmatically sliced. Replace purple/lavender ice/plant/body shading with very pale icy blue and muted blue-gray contours, creamy white highlights. Preserve gold fish warm yellow and pink cheeks. Pencil texture, true transparent background, no haze or glow. Keep square framing and all sprites fully within original bounding boxes. Do not include chat UI or seals.",
+      "referenced_image_paths": [
+        "C:/Users/user/Documents/GitHub/rintrint.github.io/gamejam/assets/sketch/props.png",
+        "C:/Users/user/Desktop/螢幕擷取畫面 2026-10-03 134107.png"
+      ],
+      "transparent_background": true
+    }
+  }
+}

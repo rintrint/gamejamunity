@@ -1,0 +1,32 @@
+{
+  "generator": "built-in image_gen",
+  "asset": "assets/drift/inhale-atlas.png",
+  "styleReference": "assets/tide/seal.png",
+  "prompt": "Use case: stylized-concept. Asset type: production transparent VFX sprite atlas for a gentle hand-drawn seal breathing rhythm game. Input image is STYLE REFERENCE only: its soft ice blue and cream watercolor with delicate navy pencil outlines. Do not draw a character. Create one 2 by 2 atlas of FOUR SEPARATE gas / air inhalation effects, one per equal cell, centered with at least 12 percent transparent gutters. All effects are thin airy translucent wisps, NOT dense opaque smoke. TOP LEFT: a large hollow circular inhalation vortex of several soft curling wisps of pale cyan and pearl-white air, drawn as irregular flowing brush strokes in a near circle, empty transparent center taking 65 percent of ring diameter, recognizable shrinking air ring, no leaves, no stars, no objects. TOP RIGHT: a long slender horizontal inhaled airstream, flowing LEFT to RIGHT, broad wispy feathered tail at left, tapered pointed tip at right, delicate S curve, layered translucent white and cyan ribbons. BOTTOM LEFT: another slender inhaled airstream, LEFT to RIGHT, a gentle curved arc with a small spiral curl near the left and tapered right tip, anime inhalation effect with painterly pencil texture. BOTTOM RIGHT: a tiny soft gathered breath puff and wisps converging toward the right, transparent fringes, like the last little sip of air. Cream highlights, ice-blue shading, a few soft desaturated blue pencil accents for visibility on pale ice. Airy and soothing. True transparent background, transparent between sprites and inside the ring. No black backdrop, no checkerboard, no text, no panel borders, no arrows, no hard geometric outlines, no filled circles, no flowers, no seals.",
+  "rects": [
+    [
+      30,
+      35,
+      700,
+      585
+    ],
+    [
+      753,
+      155,
+      766,
+      374
+    ],
+    [
+      20,
+      634,
+      842,
+      342
+    ],
+    [
+      975,
+      628,
+      457,
+      339
+    ]
+  ]
+}

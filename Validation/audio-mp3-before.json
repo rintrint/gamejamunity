@@ -1,0 +1,39 @@
+{
+  "success": false,
+  "tracks": [
+    {
+      "track": "floe-second",
+      "sampleRate": 48000,
+      "importedFrames": 9968256,
+      "referenceFrames": 9965448,
+      "lengthDifferenceSamples": 2808,
+      "lagSamples": 2257,
+      "lagMs": 47.02083333333333,
+      "waveformCorrelation": 0.9999999641316998,
+      "aligned": false
+    },
+    {
+      "track": "floe-third",
+      "sampleRate": 48000,
+      "importedFrames": 9086976,
+      "referenceFrames": 9083904,
+      "lengthDifferenceSamples": 3072,
+      "lagSamples": 2257,
+      "lagMs": 47.02083333333333,
+      "waveformCorrelation": 0.99999779186556,
+      "aligned": false
+    },
+    {
+      "track": "drift-tide",
+      "sampleRate": 48000,
+      "importedFrames": 9146880,
+      "referenceFrames": 9144000,
+      "lengthDifferenceSamples": 2880,
+      "lagSamples": 2257,
+      "lagMs": 47.02083333333333,
+      "waveformCorrelation": 0.9999208597628595,
+      "aligned": false
+    }
+  ],
+  "method": "Unity AudioClip.GetData vs source SoundFile float32; positive lag means Unity waveform is late"
+}

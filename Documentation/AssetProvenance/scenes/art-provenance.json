@@ -1,0 +1,17 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: style-transfer. Asset type: a transparent 2D game sprite strip for Breath, hungry seal animation. Image 1 is STYLE and character identity reference: ivory white seal with delicate blue colored-pencil outlines, ice-blue shadows and warm pale cream highlights. Image 2 is POSE and expression reference from the artist's hunger animation draft: thin slumped seal, head at LEFT, tail pointing RIGHT, both flippers anxiously cupping its cheeks, pleading watery eyes, subtly trembling from hunger. Produce ONE horizontal sprite sheet, exactly THREE equally sized animation cells side by side, each containing the SAME complete seal at identical scale and foot baseline, tiny pose differences only. Frame 1: hungry resting pose, flippers cupping cheeks. Frame 2: shoulders/cheeks drawn inward subtly, stomach contracts, sad eyes. Frame 3: release pose, tiny head wobble, flippers still by cheeks. Retain skinny hungry silhouette, do NOT make it plump. Polish the sketch into the exact delicate ice-blue pencil style of image 1, retain the sketch's sad tender face. Full body in each cell with 12% margins, no overlap, consistent silhouette/position for smooth looping. Genuinely transparent background, no painted checkerboard, no floor, no glow, no shadow, no labels, no text, no dividers, no scenery. Wide 3:1 image.",
+  "references": [
+    "../tide/seal.png",
+    "hunger-reference.gif"
+  ],
+  "output": "hunger-strip.png",
+  "layout": {
+    "columns": 3,
+    "rows": 1,
+    "frameDurationMs": 80,
+    "activeSeconds": 2.4,
+    "cycleSeconds": 7
+  },
+  "note": "Hunger gesture and three-pose trembling adapted from the team GIF; new ice-blue pencil artwork. Source GIF retained unchanged."
+}

@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "1665a124f2a60c380989dd53af80a943386e2d7e",
+  "command": "node --test",
+  "source": "rintrint.github.io/gamejam",
+  "verifiedUtc": "2026-10-03T14:42:48.8169773Z",
+  "exitCode": 0,
+  "tests": 249,
+  "passed": 249,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "durationMs": 2856.7819,
+  "scope": "Original HTML repository tests including legacy editions; independent from native Unity runtime verification."
+}

@@ -1,0 +1,239 @@
+{
+  "success": true,
+  "decoder": "SoundFile 0.14.0; libsndfile 1.2.2",
+  "files": [
+    {
+      "source": "assets/floe/new-music-2.mp3",
+      "frames": 9965448,
+      "channels": 2,
+      "sampleRate": 48000,
+      "duration": 207.6135,
+      "pcmSha256": "e040dd5921b2b045517786c9c18cba33ab552401f83ea59ddd23744c9ccb48f4",
+      "wavFloat32Exact": true,
+      "trackId": "floe-second",
+      "chartDuration": 207.6135,
+      "chartDifferenceSamples": 0.0
+    },
+    {
+      "source": "assets/floe/new-music-3.mp3",
+      "frames": 9083904,
+      "channels": 2,
+      "sampleRate": 48000,
+      "duration": 189.248,
+      "pcmSha256": "dc8967bf7b0b2625421f8cf1b8c8cb954a59c9b6a492b9575d8408f5a6cd4f14",
+      "wavFloat32Exact": true,
+      "trackId": "floe-third",
+      "chartDuration": 189.248,
+      "chartDifferenceSamples": 0.0
+    },
+    {
+      "source": "assets/drift/new-music-trimmed.mp3",
+      "frames": 9144000,
+      "channels": 2,
+      "sampleRate": 48000,
+      "duration": 190.5,
+      "pcmSha256": "4d3ade1a511be2b5f09dd0241eb32cf9c08f7e331ac6ca6a051a06631684543d",
+      "wavFloat32Exact": true,
+      "trackId": "drift-tide",
+      "chartDuration": 190.5,
+      "chartDifferenceSamples": 0.0
+    },
+    {
+      "source": "assets/scenes/audio/dive.mp3",
+      "frames": 216576,
+      "channels": 2,
+      "sampleRate": 48000,
+      "duration": 4.512,
+      "pcmSha256": "615c1bcee84142c5debb1a836b7678bb792226e93c4e15f5d1d33646370b8612",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/breathBad.mp3",
+      "frames": 44928,
+      "channels": 2,
+      "sampleRate": 44100,
+      "duration": 1.0187755102040816,
+      "pcmSha256": "67b75eafe3cbf62a3f8eefacbd1c8c7c458759274b7d457b0da0c183116ba2c2",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/surface.mp3",
+      "frames": 70272,
+      "channels": 2,
+      "sampleRate": 24000,
+      "duration": 2.928,
+      "pcmSha256": "2188340799527454acef50cca2936cd97dd5b1278a2ccfda53aa16524f7314b5",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/eat.mp3",
+      "frames": 22464,
+      "channels": 2,
+      "sampleRate": 24000,
+      "duration": 0.936,
+      "pcmSha256": "9ed372756efed82f316f894194593095bb4ccfb10d64042fce081eb2d6d343a4",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/inhale.mp3",
+      "frames": 222336,
+      "channels": 1,
+      "sampleRate": 44100,
+      "duration": 5.0416326530612245,
+      "pcmSha256": "c0f58862c4489ed1a9f0e9fb12b0535da979687e8ac3072ea9c2bde403521dc3",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/hungry.mp3",
+      "frames": 122112,
+      "channels": 2,
+      "sampleRate": 44100,
+      "duration": 2.7689795918367346,
+      "pcmSha256": "e7cf9db67afe2dd287bc6e0441231e75c42fe880fda63deb2368d750a916a5fe",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/button.mp3",
+      "frames": 21888,
+      "channels": 2,
+      "sampleRate": 44100,
+      "duration": 0.4963265306122449,
+      "pcmSha256": "74c201678e85e2846dc5f4ce49c647477e9acaa9ab07c64c1549d8f48dcf1dbc",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/happy.mp3",
+      "frames": 213120,
+      "channels": 1,
+      "sampleRate": 48000,
+      "duration": 4.44,
+      "pcmSha256": "e565e1f39db5ab95c514e9bf8261a2172039fa1ccd840b410a1da5f1dabf38d6",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/sad.mp3",
+      "frames": 135360,
+      "channels": 1,
+      "sampleRate": 22050,
+      "duration": 6.1387755102040815,
+      "pcmSha256": "934882b45e17f3e370d18452492a86f8e2c5ed68d60d2c95bd2cc5c352ec87e9",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/belly.mp3",
+      "frames": 67968,
+      "channels": 1,
+      "sampleRate": 44100,
+      "duration": 1.5412244897959184,
+      "pcmSha256": "83bd927a9e04a2e49cbbe62b0a7b8ad8245e00677ea9dded50f122534aa4d04f",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/start.mp3",
+      "frames": 69120,
+      "channels": 2,
+      "sampleRate": 24000,
+      "duration": 2.88,
+      "pcmSha256": "b3eab98f9218abef65d73d11197768a94af0d2aaa2a2c564d0a46444cae76386",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/breathGood.mp3",
+      "frames": 93312,
+      "channels": 2,
+      "sampleRate": 44100,
+      "duration": 2.115918367346939,
+      "pcmSha256": "fb23b4cdc2f2163ee4121bcf93985d2d5aa53fa19d4badb6cd4ca815959db360",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/ice.mp3",
+      "frames": 24192,
+      "channels": 1,
+      "sampleRate": 44100,
+      "duration": 0.5485714285714286,
+      "pcmSha256": "8f8770abbfdf48cda3144c2af678663c756da7e477759bcb6b909431c4046869",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/fisher.mp3",
+      "frames": 30528,
+      "channels": 2,
+      "sampleRate": 24000,
+      "duration": 1.272,
+      "pcmSha256": "81db08b4af86b2d2eedb8c168db1816e8e67dd74be614cdbf7ba483945cb8f10",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/angel.mp3",
+      "frames": 878976,
+      "channels": 2,
+      "sampleRate": 48000,
+      "duration": 18.312,
+      "pcmSha256": "da6b707bdf880972fb51576954816c50fb81edf86217224c3f8baf4a3af0d30b",
+      "wavFloat32Exact": true
+    },
+    {
+      "source": "assets/scenes/audio/ghost.mp3",
+      "frames": 266112,
+      "channels": 2,
+      "sampleRate": 44100,
+      "duration": 6.034285714285715,
+      "pcmSha256": "99b054e0f884adb737f16a8895ee9d76d23f58d207002aea7a292d3ce53ca6ac",
+      "wavFloat32Exact": true
+    }
+  ],
+  "archivedOnly": [
+    {
+      "source": "assets/scenes/audio/menu.mp3",
+      "sourceSha256": "8e2b131fa95e83d1aa87621402a72f31fe3b7fceaad3d3b8b496d5515cfec19b",
+      "sourceBackup": "SourceAudio/scenes/audio/menu.mp3",
+      "archivedOnly": true,
+      "reason": "V13 menu plays the selected song; legacy menu recording is unused"
+    }
+  ],
+  "obsoleteUnityImports": [
+    "Assets/Resources/Audio/floe/new-music-2.mp3",
+    "Assets/Resources/Audio/floe/new-music-2.mp3.meta",
+    "Assets/Resources/Audio/floe/new-music-3.mp3",
+    "Assets/Resources/Audio/floe/new-music-3.mp3.meta",
+    "Assets/Resources/Audio/drift/new-music-trimmed.mp3",
+    "Assets/Resources/Audio/drift/new-music-trimmed.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/dive.mp3",
+    "Assets/Resources/Audio/scenes/audio/dive.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/breathBad.mp3",
+    "Assets/Resources/Audio/scenes/audio/breathBad.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/surface.mp3",
+    "Assets/Resources/Audio/scenes/audio/surface.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/eat.mp3",
+    "Assets/Resources/Audio/scenes/audio/eat.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/inhale.mp3",
+    "Assets/Resources/Audio/scenes/audio/inhale.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/hungry.mp3",
+    "Assets/Resources/Audio/scenes/audio/hungry.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/button.mp3",
+    "Assets/Resources/Audio/scenes/audio/button.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/happy.mp3",
+    "Assets/Resources/Audio/scenes/audio/happy.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/sad.mp3",
+    "Assets/Resources/Audio/scenes/audio/sad.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/belly.mp3",
+    "Assets/Resources/Audio/scenes/audio/belly.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/start.mp3",
+    "Assets/Resources/Audio/scenes/audio/start.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/breathGood.mp3",
+    "Assets/Resources/Audio/scenes/audio/breathGood.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/ice.mp3",
+    "Assets/Resources/Audio/scenes/audio/ice.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/fisher.mp3",
+    "Assets/Resources/Audio/scenes/audio/fisher.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/angel.mp3",
+    "Assets/Resources/Audio/scenes/audio/angel.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/ghost.mp3",
+    "Assets/Resources/Audio/scenes/audio/ghost.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/menu.mp3",
+    "Assets/Resources/Audio/scenes/audio/menu.mp3.meta",
+    "Assets/Resources/Audio/scenes/audio/menu.wav",
+    "Assets/Resources/Audio/scenes/audio/menu.wav.meta"
+  ]
+}

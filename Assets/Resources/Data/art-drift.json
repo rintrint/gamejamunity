@@ -1,0 +1,57 @@
+{
+  "swim": {
+    "src": "assets/drift/swim.webp",
+    "rect": [
+      147,
+      517,
+      446,
+      158
+    ],
+    "source": "遊泳素材圖.webp",
+    "sha256": "e0a0bbbb4a8ba75a9907412f943037ad20954bb32fb2d2cc2806055191a7338f"
+  },
+  "fisher": {
+    "src": "assets/drift/fisher.webp",
+    "rect": [
+      13,
+      60,
+      762,
+      565
+    ],
+    "source": "釣魚.webp",
+    "sha256": "0c75e715f55a9f43701523c2225603518c9866ef66e5cf8a6193e61ef0c80264"
+  },
+  "friend": {
+    "src": "assets/drift/friend.webp",
+    "rect": [
+      32,
+      30,
+      714,
+      475
+    ],
+    "source": "吃棒棒糖.webp",
+    "sha256": "8a36bccd83506448082a40ec4fedc51275e2a87cc2875bb40da595c22a472f3c"
+  },
+  "splash": {
+    "src": "assets/drift/splash.webp",
+    "rect": [
+      28,
+      24,
+      1245,
+      846
+    ],
+    "source": "水花.webp",
+    "sha256": "df7c363758bccf2284816d2fc1adae540340b2a408eeff49282fda687632601c"
+  },
+  "angel": {
+    "src": "assets/drift/angel.webp",
+    "rect": [
+      50,
+      25,
+      710,
+      568
+    ],
+    "source": "變天使.webp",
+    "sha256": "861dd1682471f03e787bf579f9fa7dc5c2389f0fa912a608ff96c351c455cfb2"
+  }
+}

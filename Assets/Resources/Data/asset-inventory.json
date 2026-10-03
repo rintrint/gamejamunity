@@ -1,0 +1,502 @@
+{
+  "sourceEdition": 13,
+  "assets": [
+    {
+      "source": "assets/tide/ocean.png",
+      "resource": "Art/tide/ocean",
+      "sourceSha256": "c917fba34790b367c307a01dda671efeb6cf3919f5c202334b916008fe42d39a",
+      "unitySha256": "c917fba34790b367c307a01dda671efeb6cf3919f5c202334b916008fe42d39a",
+      "dimensions": [
+        1672,
+        941
+      ]
+    },
+    {
+      "source": "assets/tide/seal.png",
+      "resource": "Art/tide/seal",
+      "sourceSha256": "f4565e6838eadb0a4efe4a66637b978b6fe1e10cea425d75d9e16db687fdbafa",
+      "unitySha256": "f4565e6838eadb0a4efe4a66637b978b6fe1e10cea425d75d9e16db687fdbafa",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "source": "assets/tide/props.png",
+      "resource": "Art/tide/props",
+      "sourceSha256": "f9a3315f8b042e696365df9f99494a79cdf4f3e4edf91369abdcfca544d347c2",
+      "unitySha256": "f9a3315f8b042e696365df9f99494a79cdf4f3e4edf91369abdcfca544d347c2",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "source": "assets/scenes/hunger-strip.png",
+      "resource": "Art/scenes/hunger-strip",
+      "sourceSha256": "59cf739e7d3d989b8d2779e738f4b6dc85bf15bd0eff8bce44941b050533856c",
+      "unitySha256": "59cf739e7d3d989b8d2779e738f4b6dc85bf15bd0eff8bce44941b050533856c",
+      "dimensions": [
+        2172,
+        724
+      ]
+    },
+    {
+      "source": "assets/duet/effects-atlas.png",
+      "resource": "Art/duet/effects-atlas",
+      "sourceSha256": "a24d39e3727de4a98c57f124d2fb89f7cf2d79e905aac29e3cabf1e568675574",
+      "unitySha256": "a24d39e3727de4a98c57f124d2fb89f7cf2d79e905aac29e3cabf1e568675574",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "source": "assets/duet/seal-eating.png",
+      "resource": "Art/duet/seal-eating",
+      "sourceSha256": "76d8828efecbf0047100b54a02cba4a74e7446416395e5390bbd21c64d66051f",
+      "unitySha256": "76d8828efecbf0047100b54a02cba4a74e7446416395e5390bbd21c64d66051f",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "source": "assets/drift/swim.webp",
+      "resource": "Art/drift/swim",
+      "sourceSha256": "e0a0bbbb4a8ba75a9907412f943037ad20954bb32fb2d2cc2806055191a7338f",
+      "unitySha256": "db9970ab2fe5470de68223db446e027e04be73d7924cd81b7ae1e82e09dfe3a4",
+      "dimensions": [
+        1547,
+        870
+      ]
+    },
+    {
+      "source": "assets/drift/fisher.webp",
+      "resource": "Art/drift/fisher",
+      "sourceSha256": "0c75e715f55a9f43701523c2225603518c9866ef66e5cf8a6193e61ef0c80264",
+      "unitySha256": "648d540a241cf764fc751fcbd0a29d068c426ce8b2f440790fffe2f2d093239d",
+      "dimensions": [
+        788,
+        625
+      ]
+    },
+    {
+      "source": "assets/drift/splash.webp",
+      "resource": "Art/drift/splash",
+      "sourceSha256": "df7c363758bccf2284816d2fc1adae540340b2a408eeff49282fda687632601c",
+      "unitySha256": "3560d7ecbab099ef70432e45308cb83d847c95652076940c02e01a6e232e95cc",
+      "dimensions": [
+        1305,
+        870
+      ]
+    },
+    {
+      "source": "assets/drift/angel.webp",
+      "resource": "Art/drift/angel",
+      "sourceSha256": "861dd1682471f03e787bf579f9fa7dc5c2389f0fa912a608ff96c351c455cfb2",
+      "unitySha256": "3fdc7ee89c49b7a15d3277a3ce739391167e26a3ce6bc9f5c9f391cbd4e2d582",
+      "dimensions": [
+        775,
+        636
+      ]
+    },
+    {
+      "source": "assets/drift/inhale-atlas.png",
+      "resource": "Art/drift/inhale-atlas",
+      "sourceSha256": "e1314f74884cdc21308db0d87126af79ab901c2391a3ba238a09a3819ebfd517",
+      "unitySha256": "e1314f74884cdc21308db0d87126af79ab901c2391a3ba238a09a3819ebfd517",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "source": "assets/floe/menu-ocean.png",
+      "resource": "Art/floe/menu-ocean",
+      "sourceSha256": "68219c018cbe76b0270dd19d95c4cc4ccc9ed11f40252fe59f28f7c978e66466",
+      "unitySha256": "68219c018cbe76b0270dd19d95c4cc4ccc9ed11f40252fe59f28f7c978e66466",
+      "dimensions": [
+        1620,
+        971
+      ]
+    },
+    {
+      "source": "assets/floe/swim-thin.png",
+      "resource": "Art/floe/swim-thin",
+      "sourceSha256": "82a681a8ea2280273bae2b36fc3ac40bc2022db9b1a0899c25cbc7a7f68bc00c",
+      "unitySha256": "82a681a8ea2280273bae2b36fc3ac40bc2022db9b1a0899c25cbc7a7f68bc00c",
+      "dimensions": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "source": "assets/floe/swim-medium.webp",
+      "resource": "Art/floe/swim-medium",
+      "sourceSha256": "64eaf98c57c627f66b4e93678f908f1f19a3687edc617d258f1d5617a7a1d3a6",
+      "unitySha256": "e975e3bac49f1d57edb9d800cacaced483a3b19e0f4b60f96127f99e59f2fc5a",
+      "dimensions": [
+        1733,
+        975
+      ]
+    },
+    {
+      "source": "assets/floe/swim-fat.webp",
+      "resource": "Art/floe/swim-fat",
+      "sourceSha256": "7ac54f5e63c76f0522e534e22c885108d9a52cbcd716a1f8b1c107440b3fe609",
+      "unitySha256": "96e055f0ae2dc44c7bc1758fdad9d8871fdd0fd97766f8434fde57b126ac18df",
+      "dimensions": [
+        1733,
+        975
+      ]
+    },
+    {
+      "source": "assets/floe/Start-Botton.webp",
+      "resource": "Art/floe/Start-Botton",
+      "sourceSha256": "728a39b4ee9ac6cb4903dddb067e2b382bdb54a3a6679e9efe9f5bf079b30060",
+      "unitySha256": "c9081ae9cb3e0362a8df65afeae3df80156f44b42925d089a925e36f83d5c852",
+      "dimensions": [
+        709,
+        295
+      ]
+    },
+    {
+      "source": "assets/floe/Start-Botton-Click.webp",
+      "resource": "Art/floe/Start-Botton-Click",
+      "sourceSha256": "e8138db4c6ae26e1c63441564813c6c833e076981b4884568cdf7a2fa0abb5e3",
+      "unitySha256": "9ad6353b60ea574189e236a3c0f9c2194b8172d88a816085e829bea5eaea57b1",
+      "dimensions": [
+        709,
+        295
+      ]
+    },
+    {
+      "source": "assets/floe/Credits-Botton.webp",
+      "resource": "Art/floe/Credits-Botton",
+      "sourceSha256": "3fbea50a23f15332f0bbecc51c0a5de0549713812fbb37af4aa8096534cb672c",
+      "unitySha256": "a47d67b27b4629af2239c5ee5846f28176495f9bdb8b7437b643df36d9ed3615",
+      "dimensions": [
+        709,
+        295
+      ]
+    },
+    {
+      "source": "assets/floe/Credits-Botton-Click.webp",
+      "resource": "Art/floe/Credits-Botton-Click",
+      "sourceSha256": "b7b245607b180d1028bc9778a06de497ae9d98e96e1b771ef25aae479a0b662b",
+      "unitySha256": "e62ff5568aa7c5e7297bdcfb198426a180abe8756d4868a4bc09b94a3f947a14",
+      "dimensions": [
+        709,
+        295
+      ]
+    },
+    {
+      "source": "assets/floe/Exit-Botton.webp",
+      "resource": "Art/floe/Exit-Botton",
+      "sourceSha256": "3e96e6bddd506ffe3073ed3ee0cc5662de5445b9d095846ee8b7e5f36d346320",
+      "unitySha256": "6b0801013c7e9bf6a1fb562620db179aaad6f8f35589b51294d97f0669a34c11",
+      "dimensions": [
+        709,
+        295
+      ]
+    },
+    {
+      "source": "assets/floe/Exit-Botton-Click.webp",
+      "resource": "Art/floe/Exit-Botton-Click",
+      "sourceSha256": "ef55c8a18db7b3050bac4a109ecec34071e7fc472b042e94fab8dbd74a00c7d3",
+      "unitySha256": "c0ddb4843ca5ab13215b7d278625eab2f81f22bbc8413d22270282ccc61e50ac",
+      "dimensions": [
+        709,
+        295
+      ]
+    },
+    {
+      "source": "assets/floe/Home-Botton.webp",
+      "resource": "Art/floe/Home-Botton",
+      "sourceSha256": "f2c3845067f1a1dbb13bed92d71c475b1e057211597d0c6d7d2d797074bfee7a",
+      "unitySha256": "4b919fc616a8b7cb9ba3c1e97716ea3215f00f83cd03ac61436e79759607c388",
+      "dimensions": [
+        354,
+        354
+      ]
+    },
+    {
+      "source": "assets/floe/Back-Botton.webp",
+      "resource": "Art/floe/Back-Botton",
+      "sourceSha256": "17d8f094ba6e87f261bf81ae4827226bcd40e9c7a95f3c57837f759fa5ff56d0",
+      "unitySha256": "7d871c9fcd851da8f03beab7273f8246eea83084fcc78023621aed3857d4dc2e",
+      "dimensions": [
+        354,
+        354
+      ]
+    },
+    {
+      "source": "assets/gugu/friend-outlined.png",
+      "resource": "Art/gugu/friend-outlined",
+      "sourceSha256": "d1560cb176d1d322a3cbc03c5ba0d237472edc0969a51a28fc7e2f3206e444d5",
+      "unitySha256": "d1560cb176d1d322a3cbc03c5ba0d237472edc0969a51a28fc7e2f3206e444d5",
+      "dimensions": [
+        1490,
+        1055
+      ]
+    },
+    {
+      "source": "assets/gugu/breath-crisis.png",
+      "resource": "Art/gugu/breath-crisis",
+      "sourceSha256": "313e79a3bcfaded62f32147c0303aa51c9eca509fb7732844a80fa84dd95138e",
+      "unitySha256": "313e79a3bcfaded62f32147c0303aa51c9eca509fb7732844a80fa84dd95138e",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "source": "assets/gugu/breathless-expressions.png",
+      "resource": "Art/gugu/breathless-expressions",
+      "sourceSha256": "e20d69273720ee570cc5d16e591d9c45bb64d719f0e5880a4dcc43eab8ced2fc",
+      "unitySha256": "e20d69273720ee570cc5d16e591d9c45bb64d719f0e5880a4dcc43eab8ced2fc",
+      "dimensions": [
+        2172,
+        724
+      ]
+    },
+    {
+      "source": "assets/floe/new-music-2.mp3",
+      "resource": "Audio/floe/new-music-2",
+      "sourceSha256": "5b2844ad191e5ea94a4b41ea3ea368db4e76def0cce5dc9b7158b30a14418ef2",
+      "sourceBackup": "SourceAudio/floe/new-music-2.mp3",
+      "unitySha256": "c540a409e05f3ed6e7227878ca61deeaa2456ebe10c14c26d70deb596389f447",
+      "frames": 9965448,
+      "channels": 2,
+      "sampleRate": 48000,
+      "pcmSha256": "e040dd5921b2b045517786c9c18cba33ab552401f83ea59ddd23744c9ccb48f4",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/floe/new-music-3.mp3",
+      "resource": "Audio/floe/new-music-3",
+      "sourceSha256": "3d54d9ab9487c7204740c355ce4c9529f0a4676bcb9fa68c27d8a71dad9e669b",
+      "sourceBackup": "SourceAudio/floe/new-music-3.mp3",
+      "unitySha256": "4648dcc83e00b37a17b27e2d0c985cef2615b13b0543f6befd7ee76c2f61fbd2",
+      "frames": 9083904,
+      "channels": 2,
+      "sampleRate": 48000,
+      "pcmSha256": "dc8967bf7b0b2625421f8cf1b8c8cb954a59c9b6a492b9575d8408f5a6cd4f14",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/drift/new-music-trimmed.mp3",
+      "resource": "Audio/drift/new-music-trimmed",
+      "sourceSha256": "10128c08381bf2f1775ef46f6d3e7c497a04f6a7067451248c01e57b7f20b191",
+      "sourceBackup": "SourceAudio/drift/new-music-trimmed.mp3",
+      "unitySha256": "2bebe5b63a9188a3acaf613934f8fe50e95387823b2e61985c8a0153447f95e9",
+      "frames": 9144000,
+      "channels": 2,
+      "sampleRate": 48000,
+      "pcmSha256": "4d3ade1a511be2b5f09dd0241eb32cf9c08f7e331ac6ca6a051a06631684543d",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/dive.mp3",
+      "resource": "Audio/scenes/audio/dive",
+      "sourceSha256": "ab3e3d531eda3c00a5353a21e1e83fea1a3542c5c690ac17cf21325481e15430",
+      "sourceBackup": "SourceAudio/scenes/audio/dive.mp3",
+      "unitySha256": "5b15b22a7e3d61abe1f03454cb77a336a4609d70642b46b4fedbe4b2760c009e",
+      "frames": 216576,
+      "channels": 2,
+      "sampleRate": 48000,
+      "pcmSha256": "615c1bcee84142c5debb1a836b7678bb792226e93c4e15f5d1d33646370b8612",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/breathBad.mp3",
+      "resource": "Audio/scenes/audio/breathBad",
+      "sourceSha256": "3ec21ad945f8496b48d287eb8a4b5291e9f76f08061f3096c178f932eca37195",
+      "sourceBackup": "SourceAudio/scenes/audio/breathBad.mp3",
+      "unitySha256": "fea9fb4035cbf8480f119f4b86f316fb8a06d898da28cbe26d6e4579f11683e1",
+      "frames": 44928,
+      "channels": 2,
+      "sampleRate": 44100,
+      "pcmSha256": "67b75eafe3cbf62a3f8eefacbd1c8c7c458759274b7d457b0da0c183116ba2c2",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/surface.mp3",
+      "resource": "Audio/scenes/audio/surface",
+      "sourceSha256": "5d190dd90452a2358229a34d2ae583bf7fa673d7a30d8666efcb313aecfd3af0",
+      "sourceBackup": "SourceAudio/scenes/audio/surface.mp3",
+      "unitySha256": "6f9618735d37f7e0b2f75e22f2d2242b003007d60e11a39da8517b34d5593dea",
+      "frames": 70272,
+      "channels": 2,
+      "sampleRate": 24000,
+      "pcmSha256": "2188340799527454acef50cca2936cd97dd5b1278a2ccfda53aa16524f7314b5",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/eat.mp3",
+      "resource": "Audio/scenes/audio/eat",
+      "sourceSha256": "5565b8524b286f6e4dac7147934301027936570f896ca904992195be7f633a61",
+      "sourceBackup": "SourceAudio/scenes/audio/eat.mp3",
+      "unitySha256": "38812252df9792188415c73be06c4882ee803476d15a8814330b11f2f056d1ee",
+      "frames": 22464,
+      "channels": 2,
+      "sampleRate": 24000,
+      "pcmSha256": "9ed372756efed82f316f894194593095bb4ccfb10d64042fce081eb2d6d343a4",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/inhale.mp3",
+      "resource": "Audio/scenes/audio/inhale",
+      "sourceSha256": "fbe41074e826faad769f7998244f3e7049685002bd1338be5c0cce8ec190c8ce",
+      "sourceBackup": "SourceAudio/scenes/audio/inhale.mp3",
+      "unitySha256": "ce4c4399a4489280ef897cab1bd46ab583b9091d888ec739376024280295c8c0",
+      "frames": 222336,
+      "channels": 1,
+      "sampleRate": 44100,
+      "pcmSha256": "c0f58862c4489ed1a9f0e9fb12b0535da979687e8ac3072ea9c2bde403521dc3",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/hungry.mp3",
+      "resource": "Audio/scenes/audio/hungry",
+      "sourceSha256": "625d3cd92aead5afeabcba25f027a472a7d1e94f340e668f56b3861054da0f9d",
+      "sourceBackup": "SourceAudio/scenes/audio/hungry.mp3",
+      "unitySha256": "83647975663f64491d2e654cf112b29dc911d9bb5aa710cd58c330af67c329b4",
+      "frames": 122112,
+      "channels": 2,
+      "sampleRate": 44100,
+      "pcmSha256": "e7cf9db67afe2dd287bc6e0441231e75c42fe880fda63deb2368d750a916a5fe",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/button.mp3",
+      "resource": "Audio/scenes/audio/button",
+      "sourceSha256": "9bf112783258dd7fa7fb4b10613edc991defc9f820f36a6fb2dc05e61a14af14",
+      "sourceBackup": "SourceAudio/scenes/audio/button.mp3",
+      "unitySha256": "fa89f4ae160e8437777b3ce079d23cf4aa515c226a4de1784302391e2e227a12",
+      "frames": 21888,
+      "channels": 2,
+      "sampleRate": 44100,
+      "pcmSha256": "74c201678e85e2846dc5f4ce49c647477e9acaa9ab07c64c1549d8f48dcf1dbc",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/happy.mp3",
+      "resource": "Audio/scenes/audio/happy",
+      "sourceSha256": "695fe06c1ca7d37eb7cc925d9fdcf5e5df912ee83af75a9e144b2f5460fabf2b",
+      "sourceBackup": "SourceAudio/scenes/audio/happy.mp3",
+      "unitySha256": "c26d1cda2b43d02d51f44a1b13bd3739d9ea185371fcc1179d169467c1d75cdd",
+      "frames": 213120,
+      "channels": 1,
+      "sampleRate": 48000,
+      "pcmSha256": "e565e1f39db5ab95c514e9bf8261a2172039fa1ccd840b410a1da5f1dabf38d6",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/sad.mp3",
+      "resource": "Audio/scenes/audio/sad",
+      "sourceSha256": "4d6f3aad32557110824c1a027241da5d9892310992eab7e44cbd489104c38fac",
+      "sourceBackup": "SourceAudio/scenes/audio/sad.mp3",
+      "unitySha256": "e61f7c6af500634f176721a34922311f0da9f4b1d6ab2e051f4e5f93ce91cf7c",
+      "frames": 135360,
+      "channels": 1,
+      "sampleRate": 22050,
+      "pcmSha256": "934882b45e17f3e370d18452492a86f8e2c5ed68d60d2c95bd2cc5c352ec87e9",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/belly.mp3",
+      "resource": "Audio/scenes/audio/belly",
+      "sourceSha256": "a4b9fc3c9b63f21d76d5835740861b5a63c477454d1e1f8d5664e36ec9b87875",
+      "sourceBackup": "SourceAudio/scenes/audio/belly.mp3",
+      "unitySha256": "cb206394fe53b9b221b9680ece547478f7acbb9f32834f4fcffdf1d10db2f838",
+      "frames": 67968,
+      "channels": 1,
+      "sampleRate": 44100,
+      "pcmSha256": "83bd927a9e04a2e49cbbe62b0a7b8ad8245e00677ea9dded50f122534aa4d04f",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/start.mp3",
+      "resource": "Audio/scenes/audio/start",
+      "sourceSha256": "1e95917a5fa832bd31ea725144cbcea1e8098e6afe83b1aed8ecf1f9bdf0fcd3",
+      "sourceBackup": "SourceAudio/scenes/audio/start.mp3",
+      "unitySha256": "a6eec364f88be03b9ef53a1aa2e7acd94dcc373be43cd9c3523f7c30916dcb5e",
+      "frames": 69120,
+      "channels": 2,
+      "sampleRate": 24000,
+      "pcmSha256": "b3eab98f9218abef65d73d11197768a94af0d2aaa2a2c564d0a46444cae76386",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/breathGood.mp3",
+      "resource": "Audio/scenes/audio/breathGood",
+      "sourceSha256": "8555faceae1afa8d6b70587face3b5dba93f9fe794662841d9b42b79029370a4",
+      "sourceBackup": "SourceAudio/scenes/audio/breathGood.mp3",
+      "unitySha256": "718c5647948697edebf177684c6f6217b76caf6f61120fa1c3acd693bd670115",
+      "frames": 93312,
+      "channels": 2,
+      "sampleRate": 44100,
+      "pcmSha256": "fb23b4cdc2f2163ee4121bcf93985d2d5aa53fa19d4badb6cd4ca815959db360",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/ice.mp3",
+      "resource": "Audio/scenes/audio/ice",
+      "sourceSha256": "5bd9e62969fcecb5dd91af0a326069c9bb1abaccc95d21008532cb511d27a990",
+      "sourceBackup": "SourceAudio/scenes/audio/ice.mp3",
+      "unitySha256": "4ada77ef3ec080c36c273af23fcfc0db215062771c961b5f25cbc7c61cf03d8e",
+      "frames": 24192,
+      "channels": 1,
+      "sampleRate": 44100,
+      "pcmSha256": "8f8770abbfdf48cda3144c2af678663c756da7e477759bcb6b909431c4046869",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/fisher.mp3",
+      "resource": "Audio/scenes/audio/fisher",
+      "sourceSha256": "0d0ace5feb3a4627fc5ec333f419eeaa49733ac621652874a49b63ccfa9ad172",
+      "sourceBackup": "SourceAudio/scenes/audio/fisher.mp3",
+      "unitySha256": "4ff2399e8f074221709e88bfc813c03baedb55f2de15dc72505d02d5ed1fd046",
+      "frames": 30528,
+      "channels": 2,
+      "sampleRate": 24000,
+      "pcmSha256": "81db08b4af86b2d2eedb8c168db1816e8e67dd74be614cdbf7ba483945cb8f10",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/angel.mp3",
+      "resource": "Audio/scenes/audio/angel",
+      "sourceSha256": "9bc3885180523a84ede9fd6454a03002f57f93025aa75bcfde69cd07dbd92c74",
+      "sourceBackup": "SourceAudio/scenes/audio/angel.mp3",
+      "unitySha256": "7d4e919317174fa0405b3233475772e03bde3e86b158a1a78d6b9ab52d09717d",
+      "frames": 878976,
+      "channels": 2,
+      "sampleRate": 48000,
+      "pcmSha256": "da6b707bdf880972fb51576954816c50fb81edf86217224c3f8baf4a3af0d30b",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    },
+    {
+      "source": "assets/scenes/audio/ghost.mp3",
+      "resource": "Audio/scenes/audio/ghost",
+      "sourceSha256": "edf5a72616ef9080f92ed329d75b4fa3da313baea09ca016e84f74b8c016e602",
+      "sourceBackup": "SourceAudio/scenes/audio/ghost.mp3",
+      "unitySha256": "4dd88b9d61562a5e788cd16d28904d91647acf3bfd87a0b5db157b9fce8e4273",
+      "frames": 266112,
+      "channels": 2,
+      "sampleRate": 44100,
+      "pcmSha256": "99b054e0f884adb737f16a8895ee9d76d23f58d207002aea7a292d3ce53ca6ac",
+      "conversion": "gapless float32 PCM; sample-for-sample equality verified"
+    }
+  ],
+  "archivedOnly": [
+    {
+      "source": "assets/scenes/audio/menu.mp3",
+      "sourceSha256": "8e2b131fa95e83d1aa87621402a72f31fe3b7fceaad3d3b8b496d5515cfec19b",
+      "sourceBackup": "SourceAudio/scenes/audio/menu.mp3",
+      "archivedOnly": true,
+      "reason": "V13 menu plays the selected song; legacy menu recording is unused"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "originalDuration": 194.73066666666668,
+  "trimmedDuration": 190.5,
+  "removedSeconds": 4.230666666666667,
+  "cutReason": "Silent gap after the natural decay and before the repeated intro near 190.75 s.",
+  "sampleRate": 48000,
+  "decodedAlignmentSamples": 0,
+  "originalSha256": "eeb25f7b84b296cd8b2b61eb6e2e11df6ac0ffc98baa5a0ec42f022417b42f75",
+  "trimmedSha256": "10128c08381bf2f1775ef46f6d3e7c497a04f6a7067451248c01e57b7f20b191"
+}
