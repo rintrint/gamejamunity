@@ -57,6 +57,57 @@ namespace SealGugu.Diagnostics
             }
             times.Sort(); distinctSources = sources.Count; return times;
         }
+        static List<string> EffectKeys(GuguAudio sound)
+        {
+            return ((IEnumerable)Field(sound,"voices")).Cast<object>()
+                .Where(v=>(double)Field(v,"end")>=AudioSettings.dspTime)
+                .Select(v=>((AudioSource)Field(v,"source")).clip.name).OrderBy(n=>n).ToList();
+        }
+        static int CheckEffectRoutes(GuguAudio sound,GuguRun run,StringBuilder details)
+        {
+            int count=0;AudioListener.volume=0;
+            // Expected routes come from V13 scenes-media.js + PulseAudio/DuetAudio,
+            // including the extra breathTap/inhale wiring in gugu.js.
+            Action<string,GameEvent,string[]> check=(name,e,expected)=>{
+                sound.StopEffects();Set(sound,"lastMistake",-100.0);sound.Event(e,run);
+                var actual=EffectKeys(sound);Require(actual.SequenceEqual(expected.OrderBy(n=>n)),name+": expected "+string.Join(",",expected)+"; got "+string.Join(",",actual));count++;
+                foreach(object v in (IEnumerable)Field(sound,"voices")){
+                    if((double)Field(v,"end")<AudioSettings.dspTime)continue;
+                    var source=(AudioSource)Field(v,"source");Require((float)Field(v,"volume")>0&&!source.mute,name+" must schedule audible non-muted audio");count++;
+                }
+                details.AppendLine("Route "+name+": "+string.Join(", ",actual)+".");
+            };
+            run.initialAir=100;check("opening >=90%",new GameEvent{type="breath",big=true},new[]{"breathGood"});
+            run.initialAir=70;check("opening <90%",new GameEvent{type="breath",big=true},new[]{"breathBad"});
+            check("surface inhale",new GameEvent{type="breath"},new[]{"inhale"});
+            check("surface roll",new GameEvent{type="breathTap"},new[]{"button"});
+            check("big inhale and dive",new GameEvent{type="bigBreath"},new[]{"inhale","dive"});
+            check("water splash",new GameEvent{type="splash"},new[]{"dive"});
+            check("call friends",new GameEvent{type="call"},new[]{"happy"});
+            check("perfect ice hole",new GameEvent{type="hit",note=new Note{kind="surface"},result="perfect"},new[]{"surface","fisher","breathGood"});
+            check("good ice hole",new GameEvent{type="hit",note=new Note{kind="surface"},result="good"},new[]{"surface","fisher","breathBad"});
+            check("final shore",new GameEvent{type="hit",note=new Note{kind="exit"},result="perfect"},new[]{"surface","fisher"});
+            check("miss",new GameEvent{type="miss",note=new Note{kind="fish"}},new[]{"ice"});
+            run.reason="oxygen";run.outcome="hungryGhost";check("hungry ghost",new GameEvent{type="lost"},new[]{"ghost"});
+            run.outcome="angel";check("angel",new GameEvent{type="lost"},new[]{"angel"});
+            run.reason="leap";check("missed leap",new GameEvent{type="lost"},new[]{"ice","angel"});
+            run.outcome="friends";check("friends ending",new GameEvent{type="won"},new[]{"happy","belly"});
+            run.outcome="rest";check("rest ending",new GameEvent{type="won"},new[]{"sad","hungry"});
+            check("fish hit does not double input bite",new GameEvent{type="hit",note=new Note{kind="fish"},result="perfect"},Array.Empty<string>());
+            foreach(string key in new[]{"start","hungry","button"}){
+                sound.StopEffects();sound.Sample(key);
+                Require(EffectKeys(sound).SequenceEqual(new[]{key}),key+" direct UI cue schedules its sample");count++;
+            }
+            sound.StopEffects();sound.Bite();sound.Bite();
+            Require(EffectKeys(sound).SequenceEqual(new[]{"eat","eat"}),"two immediate inputs schedule two bite voices without a cooldown");count++;
+            foreach(object v in (IEnumerable)Field(sound,"voices")){
+                if((double)Field(v,"end")<AudioSettings.dspTime)continue;
+                Require(Math.Abs((double)Field(v,"end")-(double)Field(v,"start")-.3)<.0001,"bite retains the complete 300 ms attack");count++;
+                Require((float)Field(v,"volume")>.11f,"bite level is clearly above the former .045 linear level");count++;
+            }
+            details.AppendLine("Bite uses 300 ms and audible input gain; rapid edges are not cooled down; a fish hit adds no duplicate.");
+            return count;
+        }
         public static string Run(GuguGame game)
         {
             if (game == null || game.run == null || game.run.status != "ready")
@@ -66,6 +117,7 @@ namespace SealGugu.Diagnostics
             int previousSong = (int)Field(game, "song");
             string previousLevel = (string)Field(game, "level");
             bool previousMute = sound.muted;
+            float previousListenerVolume=AudioListener.volume;
             var details = new StringBuilder(); int assertions = 0;
             try
             {
@@ -92,6 +144,8 @@ namespace SealGugu.Diagnostics
                     AudioClip clip = Resources.Load<AudioClip>("Audio/scenes/audio/" + key);
                     Require(clip && clip.loadState == AudioDataLoadState.Loaded && clip.samples > 0 && clip.frequency > 0,
                         "missing or unloaded team sound effect " + key); assertions++;
+                    var samples=new float[Math.Min(clip.samples,clip.frequency)*clip.channels];
+                    Require(clip.GetData(samples,0)&&samples.Any(s=>Math.Abs(s)>.005f),key+" contains audible PCM, not a silent placeholder");assertions++;
                 }
                 details.AppendLine("All 16 team sound effects loaded.");
                 Require(largest > 32, "calibration fixture must exceed the original 32-voice pool"); assertions++;
@@ -127,6 +181,7 @@ namespace SealGugu.Diagnostics
                     "DSP output latency estimate must be finite and nonnegative"); assertions++;
                 details.AppendLine("New-song heartbeat/mistake history resets. DSP queued-output estimate: " +
                     (sound.outputEstimate * 1000).ToString("F3", CultureInfo.InvariantCulture) + " ms (device calibration may still be needed).");
+                assertions+=CheckEffectRoutes(sound,new GuguRun(tracks[0],"expert"),details);
                 return "PASS: native audio integration, " + assertions + " assertions.\n" + details;
             }
             finally
@@ -134,6 +189,7 @@ namespace SealGugu.Diagnostics
                 Invoke(game, "StopCalibration"); sound.Silence();
                 Set(game, "song", previousSong); Set(game, "level", previousLevel);
                 sound.Mute(previousMute); Invoke(game, "Back");
+                AudioListener.volume=previousListenerVolume;
             }
         }
     }

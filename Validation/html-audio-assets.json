@@ -1,0 +1,135 @@
+{
+  "success": true,
+  "effects": [
+    {
+      "key": "dive",
+      "source": "下水聲(大水花.mp3",
+      "sourceSha256": "ab3e3d531eda3c00a5353a21e1e83fea1a3542c5c690ac17cf21325481e15430",
+      "lead": 0.118,
+      "peak": 0.7324,
+      "present": true
+    },
+    {
+      "key": "breathBad",
+      "source": "不精準呼吸.mp3",
+      "sourceSha256": "3ec21ad945f8496b48d287eb8a4b5291e9f76f08061f3096c178f932eca37195",
+      "lead": 0.062,
+      "peak": 0.6566,
+      "present": true
+    },
+    {
+      "key": "surface",
+      "source": "出水.mp3",
+      "sourceSha256": "5d190dd90452a2358229a34d2ae583bf7fa673d7a30d8666efcb313aecfd3af0",
+      "lead": 0.12,
+      "peak": 1.24,
+      "present": true
+    },
+    {
+      "key": "eat",
+      "source": "吃.mp3",
+      "sourceSha256": "5565b8524b286f6e4dac7147934301027936570f896ca904992195be7f633a61",
+      "lead": 0.068,
+      "peak": 1.1977,
+      "present": true
+    },
+    {
+      "key": "inhale",
+      "source": "吸氣聲(前段).mp3",
+      "sourceSha256": "fbe41074e826faad769f7998244f3e7049685002bd1338be5c0cce8ec190c8ce",
+      "lead": 0.082,
+      "peak": 0.2495,
+      "present": true
+    },
+    {
+      "key": "hungry",
+      "source": "肚子餓.mp3",
+      "sourceSha256": "625d3cd92aead5afeabcba25f027a472a7d1e94f340e668f56b3861054da0f9d",
+      "lead": 0.033,
+      "peak": 0.374,
+      "present": true
+    },
+    {
+      "key": "button",
+      "source": "按鍵聲.mp3",
+      "sourceSha256": "9bf112783258dd7fa7fb4b10613edc991defc9f820f36a6fb2dc05e61a14af14",
+      "lead": 0.013,
+      "peak": 1.109,
+      "present": true
+    },
+    {
+      "key": "happy",
+      "source": "海豹(開心.mp3",
+      "sourceSha256": "695fe06c1ca7d37eb7cc925d9fdcf5e5df912ee83af75a9e144b2f5460fabf2b",
+      "lead": 0.013,
+      "peak": 0.986,
+      "present": true
+    },
+    {
+      "key": "sad",
+      "source": "海豹(難過.mp3",
+      "sourceSha256": "4d6f3aad32557110824c1a027241da5d9892310992eab7e44cbd489104c38fac",
+      "lead": 0.049,
+      "peak": 0.9634,
+      "present": true
+    },
+    {
+      "key": "belly",
+      "source": "海豹拍肚子.mp3",
+      "sourceSha256": "a4b9fc3c9b63f21d76d5835740861b5a63c477454d1e1f8d5664e36ec9b87875",
+      "lead": 0.016,
+      "peak": 0.9762,
+      "present": true
+    },
+    {
+      "key": "start",
+      "source": "遊戲開始.mp3",
+      "sourceSha256": "1e95917a5fa832bd31ea725144cbcea1e8098e6afe83b1aed8ecf1f9bdf0fcd3",
+      "lead": 0.034,
+      "peak": 0.294,
+      "present": true
+    },
+    {
+      "key": "breathGood",
+      "source": "精準呼吸.mp3",
+      "sourceSha256": "8555faceae1afa8d6b70587face3b5dba93f9fe794662841d9b42b79029370a4",
+      "lead": 0.04,
+      "peak": 1.0968,
+      "present": true
+    },
+    {
+      "key": "ice",
+      "source": "撞到冰.mp3",
+      "sourceSha256": "5bd9e62969fcecb5dd91af0a326069c9bb1abaccc95d21008532cb511d27a990",
+      "lead": 0.079,
+      "peak": 0.9491,
+      "present": true
+    },
+    {
+      "key": "fisher",
+      "source": "撞倒垂釣者.mp3",
+      "sourceSha256": "0d0ace5feb3a4627fc5ec333f419eeaa49733ac621652874a49b63ccfa9ad172",
+      "lead": 0.09,
+      "peak": 1.2861,
+      "present": true
+    },
+    {
+      "key": "angel",
+      "source": "變成天使.mp3",
+      "sourceSha256": "9bc3885180523a84ede9fd6454a03002f57f93025aa75bcfde69cd07dbd92c74",
+      "lead": 0.011,
+      "peak": 1.4094,
+      "present": true
+    },
+    {
+      "key": "ghost",
+      "source": "變成餓死鬼.mp3",
+      "sourceSha256": "edf5a72616ef9080f92ed329d75b4fa3da313baea09ca016e84f74b8c016e602",
+      "lead": 0.125,
+      "peak": 1.0526,
+      "present": true
+    }
+  ],
+  "menu": "Selected song in both V13 and Unity",
+  "intentionalChange": "Eat feedback moves from successful fish hit to every active lane press; 300ms, volume .28, no input cooldown, no duplicate on hit."
+}

@@ -1,6 +1,9 @@
 #if UNITY_EDITOR || GUGU_QA
 using System;
 using System.Reflection;
+using System.Collections;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 
@@ -28,6 +31,12 @@ namespace SealGugu
                 throw new ArgumentException("NativeInputParity requires a freshly loaded ready game.");
             var renderer = (GuguRenderer)typeof(GuguGame).GetField("view", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(game);
             var back = typeof(GuguGame).GetMethod("Back", BindingFlags.Instance | BindingFlags.NonPublic);
+            var sound=(GuguAudio)typeof(GuguGame).GetField("sound",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(game);
+            bool wasMuted=sound.muted;float listenerVolume=AudioListener.volume;AudioListener.volume=0;sound.Mute(false);sound.StopEffects();
+            Func<int> bites=()=>((IEnumerable)typeof(GuguAudio).GetField("voices",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(sound)).Cast<object>().Count(v=>{
+                var type=v.GetType();var source=(AudioSource)type.GetField("source").GetValue(v);
+                return source.clip!=null&&source.clip.name=="eat"&&(double)type.GetField("end").GetValue(v)>=AudioSettings.dspTime;
+            });
             Keyboard previous = Keyboard.current, keyboard = InputSystem.AddDevice<Keyboard>("Gugu validation keyboard");
             int assertions = 0;
             try
@@ -37,12 +46,14 @@ namespace SealGugu
                 int input = renderer.InputCount;
                 State(keyboard, Key.D);
                 Require(renderer.InputCount == ++input && run.inputLane == "upper", "D must move immediately"); assertions++;
+                Require(bites()==1,"an upper empty-beat input plays a bite immediately");assertions++;
                 State(keyboard, Key.D, Key.F);
                 Require(renderer.InputCount == ++input && run.inputLane == "upper", "F must trigger even while D remains held"); assertions++;
                 State(keyboard, Key.D, Key.F, Key.J);
                 Require(renderer.InputCount == ++input && run.inputLane == "lower", "J must move immediately across lanes"); assertions++;
                 State(keyboard, Key.D, Key.F, Key.J, Key.K);
                 Require(renderer.InputCount == ++input && run.inputLane == "lower", "K must trigger even while J remains held"); assertions++;
+                Require(bites()==4,"all four lane-key edges make a bite even with no fish");assertions++;
                 State(keyboard, Key.D, Key.F, Key.J, Key.K);
                 Require(renderer.InputCount == input, "an unchanged held state must not auto-repeat"); assertions++;
                 State(keyboard);
@@ -50,6 +61,7 @@ namespace SealGugu
 
                 // Many separate physical edges within one InputSystem update must all
                 // arrive; aggregating keys or imposing an animation cooldown loses them.
+                sound.StopEffects();
                 for (int i = 0; i < 50; i++)
                 {
                     InputSystem.QueueStateEvent(keyboard, new KeyboardState(i % 2 == 0 ? Key.UpArrow : Key.DownArrow));
@@ -57,6 +69,7 @@ namespace SealGugu
                 }
                 InputSystem.Update(); input += 50;
                 Require(renderer.InputCount == input && run.inputLane == "lower", "all 50 same-frame press edges must arrive without a cooldown"); assertions++;
+                Require(bites()==50,"all 50 rapid inputs schedule feedback without an eat cooldown");assertions++;
                 Require(run.misses == 0 && run.overpresses == 0 && run.stability == 100, "empty beats must allow movement without penalties"); assertions++;
                 State(keyboard, Key.Space); State(keyboard);
                 Require(renderer.InputCount == input && run.misses == 0, "Space must be ignored underwater"); assertions++;
@@ -84,7 +97,7 @@ namespace SealGugu
             {
                 InputSystem.RemoveDevice(keyboard);
                 if (previous != null && previous.added) previous.MakeCurrent();
-                back.Invoke(game, null);
+                sound.Mute(wasMuted);back.Invoke(game, null);AudioListener.volume=listenerVolume;
             }
         }
     }

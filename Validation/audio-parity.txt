@@ -1,0 +1,25 @@
+PASS: native audio integration, 185 assertions.
+floe-second: native 207.613500 s; chart 207.613500 s; difference 0.000 ms; 48000 Hz; 2 channels.
+floe-third: native 189.248000 s; chart 189.248000 s; difference 0.000 ms; 48000 Hz; 2 channels.
+drift-tide: native 190.500000 s; chart 190.500000 s; difference 0.000 ms; 48000 Hz; 2 channels.
+All 16 team sound effects loaded.
+drift-tide: 45 distinct calibration click voices retain exact chart timestamps, including after button feedback.
+New-song heartbeat/mistake history resets. DSP queued-output estimate: 16.000 ms (device calibration may still be needed).
+Route opening >=90%: breathGood.
+Route opening <90%: breathBad.
+Route surface inhale: inhale.
+Route surface roll: button.
+Route big inhale and dive: dive, inhale.
+Route water splash: dive.
+Route call friends: happy.
+Route perfect ice hole: breathGood, fisher, surface.
+Route good ice hole: breathBad, fisher, surface.
+Route final shore: fisher, surface.
+Route miss: ice.
+Route hungry ghost: ghost.
+Route angel: angel.
+Route missed leap: angel, ice.
+Route friends ending: belly, happy.
+Route rest ending: hungry, sad.
+Route fish hit does not double input bite: .
+Bite uses 300 ms and audible input gain; rapid edges are not cooled down; a fish hit adds no duplicate.

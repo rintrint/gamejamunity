@@ -79,13 +79,16 @@ namespace SealGugu
             // Audio already has its attack envelope. Do not defer a scheduled onset to Update.
             v.source.volume=volume;v.source.mute=false;v.source.PlayScheduled(v.start);v.source.SetScheduledEndTime(v.end);
         }
-        public void Sample(string key,float volume=.45f,double delay=0,float length=-1)
+        public void Sample(string key,float volume=.45f,double delay=0,float length=-1,bool immediateInput=false)
         {
             if(!metadata.TryGetValue(key,out SampleInfo m)||!clips.TryGetValue(key,out AudioClip clip))return;
             double at=AudioSettings.dspTime+delay;double cooldown=key=="eat"?.085:key=="button"?.06:0;
-            if(cooldowns.TryGetValue(key,out double last)&&at-last<cooldown)return;cooldowns[key]=at;
+            if(!immediateInput&&cooldowns.TryGetValue(key,out double last)&&at-last<cooldown)return;cooldowns[key]=at;
             Schedule(clip,volume*Mathf.Min(2.5f,.85f/Mathf.Max(.1f,m.peak))*.75f*.8f,at,m.lead,length);
         }
+        // Input feedback belongs to each physical edge, including empty beats.
+        // Keep the recognizable chew transient and do not gate rapid alternation.
+        public void Bite(){Sample("eat",.28f,0,.30f,true);}
         public void ClickAt(double songTime){double at=anchor+songTime;if(at>=AudioSettings.dspTime)Schedule(click,.075f,at);}
         public void StopEffects(){foreach(var v in voices){v.source.Stop();v.end=-1;}cooldowns.Clear();}
         public void Danger(double amount,double songTime)
@@ -103,7 +106,7 @@ namespace SealGugu
                 case "bigBreath":Sample("inhale",.85f,0,1.7f);Sample("dive",.55f,.7);break;
                 case "splash":Sample("dive",.5f);break;
                 case "call":Sample("happy",.4f);break;
-                case "hit":if(e.note.kind=="fish")Sample("eat",.105f,0,.14f);else if(e.note.kind=="surface"||e.note.kind=="exit"){Sample("surface",.42f);Sample("fisher",.4f,.05);if(e.note.kind=="surface")Sample(e.result=="perfect"?"breathGood":"breathBad",.35f,.3);}break;
+                case "hit":if(e.note.kind=="surface"||e.note.kind=="exit"){Sample("surface",.42f);Sample("fisher",.4f,.05);if(e.note.kind=="surface")Sample(e.result=="perfect"?"breathGood":"breathBad",.35f,.3);}break;
                 case "miss":if(AudioSettings.dspTime-lastMistake>.16){Sample("ice",.12f,0,.16f);lastMistake=AudioSettings.dspTime;}break;
                 case "lost":if(g.reason=="entry"||g.reason=="leap")Sample("ice",.4f);Sample(g.outcome=="angel"?"angel":"ghost",.5f,.12);break;
                 case "won":if(g.outcome=="friends"){Sample("happy",.4f);Sample("belly",.45f,1.4);}else{Sample("sad",.3f);Sample("hungry",.5f,1.8);}break;

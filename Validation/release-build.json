@@ -1,10 +1,11 @@
 {
+  "version": "V14.0.1",
   "success": true,
   "unityVersion": "6000.6.4f1",
   "development": false,
-  "buildBytes": 276565564,
-  "launched": true,
+  "buildBytes": 276566078,
+  "startupMode": "batchmode/nographics",
   "responding": true,
   "managedExceptions": false,
-  "note": "Native executable startup checked; 19-scene/input/audio/soak validation used the matching development build."
+  "note": "Release startup only; rendered QA screenshots and full-song test passed. Physical mouse tests blocked by Windows permission dialog."
 }

@@ -11,13 +11,13 @@ namespace SealGugu.Editor
 {
     public static class ProjectBuild
     {
-        public const string Version = "14.0.0";
+        public const string Version = "14.0.1";
         public const string ScenePath = "Assets/Scenes/Main.unity";
 
         [Serializable]
         private sealed class ParityReport
         {
-            public string version = "V14.0.0", unityVersion, sourceCommit, verifiedUtc, summary;
+            public string version = "V14.0.1", unityVersion, sourceCommit, verifiedUtc, summary;
             public bool success;
             public int scenarios, checkpoints, assertions;
         }
@@ -100,11 +100,16 @@ namespace SealGugu.Editor
                 camera.orthographic = true;
                 camera.transform.position = new Vector3(0, 0, -10);
                 camera.gameObject.AddComponent<AudioListener>();
-                new GameObject("海豹咕咕 · V14.0.0").AddComponent<GuguGame>();
+                new GameObject("海豹咕咕 · V14.0.1").AddComponent<GuguGame>();
                 EditorSceneManager.SaveScene(scene, ScenePath);
             }
             else EditorSceneManager.OpenScene(ScenePath);
             var game = UnityEngine.Object.FindAnyObjectByType<GuguGame>();
+            if(game&&game.gameObject.name!="海豹咕咕 · "+GuguGame.Version){
+                game.gameObject.name="海豹咕咕 · "+GuguGame.Version;
+                EditorSceneManager.MarkSceneDirty(game.gameObject.scene);
+                EditorSceneManager.SaveScene(game.gameObject.scene);
+            }
             if (game && !game.credits)
             {
                 game.credits = AssetDatabase.LoadAssetAtPath<GameCredits>("Assets/Resources/GameCredits.asset");
@@ -114,15 +119,16 @@ namespace SealGugu.Editor
             }
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
-            Debug.Log("GUGU_PROJECT_READY V14.0.0; editable credits: Assets/Resources/GameCredits.asset");
+            Debug.Log("GUGU_PROJECT_READY V14.0.1; editable credits: Assets/Resources/GameCredits.asset");
         }
 
-        [MenuItem("Tools/海豹咕咕/打包 Windows V14.0.0")]
+        [MenuItem("Tools/海豹咕咕/打包 Windows V14.0.1")]
         public static void BuildWindows()
         {
             Initialize();
             RunParity();
-            var directory = Path.GetFullPath("Builds/Windows");
+            string[] args=Environment.GetCommandLineArgs();int outputFlag=Array.IndexOf(args,"-guguOutput");
+            var directory = Path.GetFullPath(outputFlag>=0&&outputFlag+1<args.Length?args[outputFlag+1]:"Builds/Windows");
             Directory.CreateDirectory(directory);
             var buildOptions = BuildOptions.CompressWithLz4HC;
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-guguDevelopment"))
@@ -132,13 +138,13 @@ namespace SealGugu.Editor
                 scenes = new[] { ScenePath },
                 locationPathName = Path.Combine(directory, "SealGugu.exe"),
                 target = BuildTarget.StandaloneWindows64,
-                extraScriptingDefines = (buildOptions & BuildOptions.Development) != 0 ? new[] { "GUGU_QA" } : Array.Empty<string>(),
+                extraScriptingDefines = (buildOptions & BuildOptions.Development) != 0 || Array.IndexOf(args,"-guguQA")>=0 ? new[] { "GUGU_QA" } : Array.Empty<string>(),
                 options = buildOptions
             });
             if (report.summary.result != BuildResult.Succeeded)
                 throw new Exception("Windows build failed: " + report.summary.result + "; errors=" + report.summary.totalErrors);
             File.WriteAllText(Path.Combine(directory, "README.txt"),
-                "海豹咕咕 V14.0.0\r\n\r\n開啟 SealGugu.exe。請保留同資料夾的 SealGugu_Data、UnityPlayer.dll 與其他檔案。\r\n" +
+                "海豹咕咕 V14.0.1\r\n\r\n開啟 SealGugu.exe。請保留同資料夾的 SealGugu_Data、UnityPlayer.dll 與其他檔案。\r\n" +
                 "上排 D / F / ↑；下排 J / K / ↓；開場吸氣 Space；途中岸上換氣連打 Space 或上下排按鍵；Esc 暫停。\r\n" +
                 "預設判定 ±150ms，可在選曲及暫停設定調整魚速、延遲與判定。\r\n");
             var notices = Path.Combine(directory, "ThirdPartyNotices");

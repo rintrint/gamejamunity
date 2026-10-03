@@ -1,0 +1,16 @@
+{
+  "version": "V14.0.1",
+  "codeReviewPassed": true,
+  "renderReviewPassed": true,
+  "actualPointerTest": "blocked_by_windows_firewall_prompt",
+  "hoverPointerTest": "blocked_by_windows_firewall_prompt",
+  "verifiedInCode": [
+    "All background Header/Menu/Breathing/Hud/Ending controls disabled while a modal is open",
+    "Manual lane and breath mouse-down handlers obey GUI.enabled",
+    "Remaining modal mouse and wheel events are consumed",
+    "Main menu song/difficulty footer and duplicate setup shortcut removed",
+    "All image buttons share the same warm hover tint as action buttons",
+    "Hover and pressed art states are suppressed for disabled background buttons"
+  ],
+  "note": "The system network-permission dialog blocks Windows pointer interaction. No security settings were changed. Automated input/audio/gameplay and screenshots ran within the application; this report does not claim successful physical-pointer testing."
+}

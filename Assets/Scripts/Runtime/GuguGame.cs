@@ -9,7 +9,7 @@ namespace SealGugu
     /// <summary>The native game shell. The deterministic run never depends on GUI animation.</summary>
     public sealed class GuguGame : MonoBehaviour
     {
-        public const string Version="V14.0.0";
+        public const string Version="V14.0.1";
         [Tooltip("小組成員可在此資產的 entries 直接輸入名字。")]
         public GameCredits credits;
         public GuguRun run { get; private set; }
@@ -32,6 +32,7 @@ namespace SealGugu
         GUISkin theme;
         readonly Dictionary<string,Texture2D> art=new Dictionary<string,Texture2D>();
         static readonly Color Ink=new Color(.157f,.318f,.427f),Muted=new Color(.306f,.451f,.533f);
+        static readonly Color HoverTint=new Color(1f,.969f,.84f,1f);
         const float W=1280,H=720;
         public bool IsPreview { get; private set; }
         public bool hidePreviewBadge;
@@ -80,21 +81,22 @@ namespace SealGugu
             if(calibration){CalTap(stamp);return;}
             if(modal!=""||IsPreview)return;
             if(key=="space"&&!run.breathingActive)return;
-            Press(key=="d"||key=="f"||key=="upArrow"?"upper":"lower",stamp);
+            Press(key=="d"||key=="f"||key=="upArrow"?"upper":"lower",stamp,key!="space");
         }
-        public void Press(string lane,double stamp)
+        public void Press(string lane,double stamp,bool bite=true)
         {
             if(run==null||IsPreview||modal!="")return;
             if(run.status=="breathing"){
                 run.inhale();sound.StopEffects();sound.Play(run.track);Events();
             }else if(run.status=="playing"){
+                if(bite)sound.Bite();
                 double time=Math.Max(0,sound.TimeAt(stamp));if(!run.breathingActive)view.Input(lane,time);
                 run.press(lane,time);Events();
             }
         }
         void NewPreview(){run=new GuguRun(tracks[song],level,practice||blind,new RunSettings{delay=delay,window=window});view.Reset(run);view.hideNotes=blind;view.speedMultiplier=speed*.7f;view.reducedMotion=reduced;judgeAge=10;comboScale=judgeScale=1;comboVelocity=judgeVelocity=0;}
         void StartRun(){IsPreview=false;modal="";StopCalibration();sound.Silence();NewPreview();run.startBreath();lastBreathCycle=-1;lastHungerCycle=-1;sound.Sample("start",.3f);}
-        void Back(){IsPreview=false;sound.Silence();calibration=false;modal="";NewPreview();sound.Menu(tracks[song]);visual=0;}
+        void Back(){IsPreview=false;sound.Silence();calibration=false;modal="";NewPreview();sound.Menu(tracks[song]);visual=0;lastHungerCycle=-1;}
         void Pause(){if(run==null||IsPreview||run.status!="playing"&&run.status!="breathing")return;if(run.status=="playing")sound.Pause();sound.StopEffects();run.pause();modal="pause";}
         void Resume(){modal="";if(run.status!="paused")return;run.resume();if(run.status=="playing")sound.Resume(run.track);else lastBreathCycle=-1;}
         void CloseModal(){if(modal=="pause"){Resume();return;}StopCalibration();modal="";if(run?.status=="ready")sound.Menu(tracks[song]);}
@@ -136,7 +138,7 @@ namespace SealGugu
         void Styles()
         {
             if(label!=null)return;
-            panel=Round(new Color(.93f,.98f,.965f,.96f),24);button=Round(new Color(.965f,.991f,.972f,.97f),22);selected=Round(new Color(1,.969f,.84f,.98f),18);
+            panel=Round(new Color(.93f,.98f,.965f,.96f),24);button=Round(new Color(.965f,.991f,.972f,.97f),22);selected=Round(HoverTint,18);
             sliderTrack=Round(new Color(.55f,.72f,.80f,.8f),4);sliderThumb=Round(new Color(.24f,.48f,.59f),10);
             label=new GUIStyle(GUI.skin.label){font=sans,fontSize=18,wordWrap=true,normal={textColor=Ink},alignment=TextAnchor.UpperLeft,padding=new RectOffset(0,0,0,0)};
             heading=new GUIStyle(label){font=serif?serif:sans,fontSize=32,fontStyle=FontStyle.Bold};
@@ -166,14 +168,17 @@ namespace SealGugu
         bool Button(Rect r,string text){if(GUI.Button(r,text,action)){sound?.Sample("button",.25f);return true;}return false;}
         bool Ice(Rect r,string asset)
         {
-            bool active=r.Contains(Event.current.mousePosition)&&Event.current.type==EventType.Repaint&&Mouse.current!=null&&Mouse.current.leftButton.isPressed;
+            bool hover=GUI.enabled&&r.Contains(Event.current.mousePosition);
+            bool active=hover&&Event.current.type==EventType.Repaint&&Mouse.current!=null&&Mouse.current.leftButton.isPressed;
             var im=Art("floe/"+asset+(active?"-Click":""));if(!im)im=Art("floe/"+asset);
+            Color previous=GUI.color;if(hover)GUI.color=previous*HoverTint;
             if(im)GUI.DrawTexture(r,im,ScaleMode.ScaleToFit,true);
+            GUI.color=previous;
             if(GUI.Button(r,GUIContent.none,GUIStyle.none)){sound.Sample("button",.25f);return true;}return false;
         }
-        bool Tap(Rect r,string text,string lane)
+        bool Tap(Rect r,string text,string lane,bool bite=true)
         {
-            if(Event.current.type==EventType.MouseDown&&Event.current.button==0&&r.Contains(Event.current.mousePosition)){Press(lane,Time.realtimeSinceStartupAsDouble);Event.current.Use();}
+            if(GUI.enabled&&Event.current.type==EventType.MouseDown&&Event.current.button==0&&r.Contains(Event.current.mousePosition)){Press(lane,Time.realtimeSinceStartupAsDouble,bite);Event.current.Use();}
             GUI.Button(r,text,action);return false;
         }
         void OnGUI()
@@ -184,10 +189,18 @@ namespace SealGugu
             if(run!=null){
                 float t=(float)(run.openingBreath?run.breathElapsed:run.status=="ready"?visual:run.time);
                 if(Event.current.type==EventType.Repaint)view.Draw(run,Scene,t,run.status=="paused"||IsPreview?0:lastDt,W,H);
-                Header();
-                if(Scene=="menu")Menu();else if(Scene=="breath")Breathing();else if(Scene=="play")Hud();else Ending();
-                if(Scene!="menu")Footer();
-                if(modal!="")Modal();
+                // The dimmer is only paint. Disable every underlying control before
+                // processing the foreground window, including manual mouse-down taps.
+                bool backgroundEnabled=GUI.enabled;GUI.enabled=backgroundEnabled&&modal=="";
+                try {
+                    Header();
+                    if(Scene=="menu")Menu();else if(Scene=="breath")Breathing();else if(Scene=="play")Hud();else Ending();
+                    if(Scene!="menu")Footer();
+                } finally { GUI.enabled=backgroundEnabled; }
+                if(modal!=""){
+                    Modal();
+                    if(Event.current.isMouse||Event.current.type==EventType.ScrollWheel)Event.current.Use();
+                }
                 if(IsPreview&&!hidePreviewBadge){Box(new Rect(440,671,400,39));Text(new Rect(450,679,230,24),"美術預覽 · 非實際成績",16);if(Button(new Rect(690,674,130,33),"返回"))Back();}
             }else{Box(new Rect(180,180,920,300));Text(new Rect(210,220,850,200),error,24);}
             GUI.matrix=Matrix4x4.identity;
@@ -209,9 +222,6 @@ namespace SealGugu
             if(Ice(new Rect(717,158,461,192),"Start-Botton")){modal="setup";setupScroll=Vector2.zero;}
             if(Ice(new Rect(806,331,448,186),"Credits-Botton"))modal="credits";
             if(Ice(new Rect(781,518,422,176),"Exit-Botton")){sound.Silence();Application.Quit();}
-            Text(new Rect(102,615,538,30),tracks[song].title+" · "+Math.Round(tracks[song].bpm)+" BPM",21,TextAnchor.MiddleCenter);
-            Text(new Rect(95,650,550,25),run.profile.label+" · "+run.notes.Count+" 拍 · "+Fmt(run.track.duration),16,TextAnchor.MiddleCenter,Muted);
-            if(Button(new Rect(248,679,260,34),"選曲・難度與設定")){modal="setup";setupScroll=Vector2.zero;}
         }
         string Cue(out double remaining)
         {
@@ -243,7 +253,7 @@ namespace SealGugu
             Text(new Rect(228,562,824,48),opening?"看肚子鼓起、氣流收攏，達到 90% 以上時按一下 SPACE 或上下排按鍵收氣。":"持續連打 SPACE 或上下排按鍵！越接近滿氣，每下補得越少，倒數結束自動下海。",17,TextAnchor.UpperCenter);
             Meter(new Rect(294,612,610,50),"肺活量",GuguRun.airDisplay(run.air)+"%",(float)run.air/100,new Color(.39f,.71f,.79f));
             if(opening)GUI.DrawTexture(new Rect(294+610*.9f,643,2,25),Texture2D.whiteTexture,ScaleMode.StretchToFill,false,0,new Color(.55f,.44f,.24f),0,0);
-            if(!IsPreview)Tap(new Rect(950,602,182,67),opening?"收氣\nSPACE":"連打補氣\nSPACE","lower");
+            if(!IsPreview)Tap(new Rect(950,602,182,67),opening?"收氣\nSPACE":"連打補氣\nSPACE","lower",false);
         }
         void Hud()
         {
@@ -306,11 +316,11 @@ namespace SealGugu
             Text(new Rect(0,0,690,26),"選擇音樂",18);
             for(int i=0;i<tracks.Length;i++){
                 Rect r=new Rect(i*237,37,225,92);choice.normal.background=song==i?selected:button;
-                if(GUI.Button(r,tracks[i].title+"\n"+Math.Round(tracks[i].bpm)+" BPM · "+Fmt(tracks[i].duration),choice)&&song!=i){song=i;StopCalibration();sound.Silence();NewPreview();sound.Menu(tracks[song]);}
+                if(GUI.Button(r,tracks[i].title+"\n"+Math.Round(tracks[i].bpm)+" BPM · "+Fmt(tracks[i].duration),choice)){if(song!=i){song=i;StopCalibration();sound.Silence();NewPreview();sound.Menu(tracks[song]);}sound.Sample("button",.25f);}
             }
             Text(new Rect(0,146,690,26),"選擇難度",18);
             string[] levels={"beginner","intermediate","expert"},names={"新手\n每 4 拍一次","中階\n每 2 拍一次","高手\n全拍＋八分連打"};
-            for(int i=0;i<3;i++){Rect r=new Rect(i*237,182,225,83);choice.normal.background=level==levels[i]?selected:button;if(GUI.Button(r,names[i],choice)&&level!=levels[i]){level=levels[i];window=150;SaveTuning();StopCalibration();NewPreview();}}
+            for(int i=0;i<3;i++){Rect r=new Rect(i*237,182,225,83);choice.normal.background=level==levels[i]?selected:button;if(GUI.Button(r,names[i],choice)){if(level!=levels[i]){level=levels[i];window=150;SaveTuning();StopCalibration();NewPreview();sound.Menu(tracks[song]);}sound.Sample("button",.25f);}}
             if(Button(new Rect(222,283,270,56),"開始吸氣 →"))StartRun();
             bool p=GUI.Toggle(new Rect(0,361,330,29),practice,"輕鬆練習 · 不會死亡",toggle);bool b=GUI.Toggle(new Rect(354,361,355,29),blind,"純聽練習 · 隱藏魚群，不會死亡",toggle);
             if(p!=practice||b!=blind){practice=p;blind=b;NewPreview();}

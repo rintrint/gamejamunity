@@ -1,11 +1,11 @@
 {
   "success": true,
-  "version": "V14.0.0",
+  "version": "V14.0.1",
   "platform": "Windows x64",
-  "archive": "SealGugu-V14.0.0-Windows-x64.zip",
+  "archive": "SealGugu-V14.0.1-Windows-x64.zip",
   "fileCount": 154,
-  "bytes": 198426274,
-  "sha256": "789902f44a6768130e11943a8061fc8780a323c269034e5781e7b2ef322fe493",
+  "bytes": 198426301,
+  "sha256": "4bf2fe50b5b9cb8f96cba486ab44fe6e03d448756466b34cc46825f9c5b49b25",
   "developmentEntryPointsAbsent": true,
   "zipCrcVerified": true
 }

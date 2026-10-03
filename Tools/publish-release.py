@@ -59,5 +59,8 @@ else:
     if asset.get('state') != 'uploaded' or asset['size'] != os.path.getsize(args.zip):
         raise RuntimeError('The uploaded release asset could not be verified; release remains draft.')
     final = request(base + '/releases/' + str(release['id']), 'PATCH', {'draft': False})
+    # GitHub replaces the temporary draft URL when the version tag is published.
+    final = request(base + '/releases/' + str(release['id']))
+    asset = next(item for item in final['assets'] if item['id'] == asset['id'])
     print(json.dumps({'release': final['html_url'], 'asset': asset['browser_download_url'],
                       'size': asset['size'], 'tag': final['tag_name']}, ensure_ascii=False))
