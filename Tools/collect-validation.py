@@ -26,7 +26,7 @@ checks = [line for line in log.splitlines() if line.startswith(('GUGU_INPUT_PARI
 for name in ['input-parity.txt','audio-parity.txt','desktop-parity.txt']:
     shutil.copy2(args.capture/name, out/name)
 (out/'Screenshots').mkdir(exist_ok=True)
-for name in ['menu','setup','opening-full','swim-fat','surface','friends','desktop-fps']:
+for name in ['menu','setup','opening-full','swim-fat','surface','friends','desktop-fps','hover-Start-Botton','hover-Credits-Botton','hover-Exit-Botton']:
     shutil.copy2(args.capture/(name+'.png'), out/'Screenshots'/(name+'.png'))
 summary = f'''# {capture['version']} 發布驗證
 
@@ -34,7 +34,9 @@ Unity 6000.6.4f1，Windows x64。HTML 第 13 版基準 commit：`1665a124f2a60c3
 
 | 檢查 | 結果／證據 |
 | --- | --- |
-| 原始 JS 對照 C# | 64 情境、6,014 檢查點、589,032 斷言通過；`core-parity.json` |
+| 歷史 V13 JS 對照 C#（原消耗率） | 64 情境、6,014 檢查點、589,032 斷言通過；`core-parity.json` |
+| 新版氧氣平衡 | 實際預設 0.5 倍；237 個斷言、81 組消耗率及 18 條完整路線通過；`oxygen-balance.json` |
+| HTML UI 對照 | 相同文字 RGB、冰塊提亮 1.035 與柔和陰影；`html-ui-reference.json` 與 Hover 截圖 |
 | 原生視窗 | 19 個場景正常；`native-capture.json` 與 `Screenshots` |
 | Input System | 同次更新 50 個獨立按鍵邊緣、每一下都有吃魚回饋；`input-parity.txt` |
 | 原生音訊 | 3 歌、16 音效、各事件實際觸發、45 個獨立 DSP 排程校正拍；`audio-parity.txt` |
@@ -48,7 +50,8 @@ Unity 6000.6.4f1，Windows x64。HTML 第 13 版基準 commit：`1665a124f2a60c3
 
 實時測試透過真正的 Input System 按鍵事件與 DSP 音樂時鐘執行，未直接呼叫核心判定來製造命中。
 最大自動輸入判定誤差 {soak['maximumJudgementErrorMs']:.3f} ms；這不是玩家反應、音樂辨識或聲學輸出延遲的量測。
-暫停、途中連打補氣、成長與結算全部走正式遊戲邏輯。其餘歌曲／難度由 JS 對照資料涵蓋。
+暫停、途中連打補氣、成長與結算全部走正式遊戲邏輯。其餘歌曲／難度也由新版倍率的 18 條核心完整路線及歷史 JS 對照資料涵蓋。
+背景測試使用隔離的虛擬鍵盤並暫時關閉 Input System 的失焦停用；正式遊戲仍在失焦時暫停。早期測試的失焦問題、重現和修正紀錄見 `soak-rerun-notes.json`。
 
 截圖來自含測試入口的 QA 建置；Release 使用獨立正式建置，不含 QA 命令列入口。
 畫面已檢查選曲、設定、CREDITS、三種體型、缺氧頭部漸變、吃魚、換氣及四種結局。

@@ -1,0 +1,9 @@
+{
+    "version": "V14.1.1",
+    "success": true,
+    "runtimeMultiplier": 0.5,
+    "assertions": 237,
+    "rateCases": 81,
+    "perfectRoutes": 18,
+    "note": "Original V13 golden uses 1x for historical parity; release default is 0.5x. Only time/depth consumption changes; refill, grace, pause, judgement and stability do not."
+}

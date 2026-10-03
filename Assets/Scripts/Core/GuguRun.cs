@@ -32,7 +32,7 @@ namespace SealGugu
         public bool accent;
         public Note Copy() { return (Note)MemberwiseClone(); }
     }
-    [Serializable] public sealed class RunSettings { public double delay = 0, window = 150; }
+    [Serializable] public sealed class RunSettings { public double delay = 0, window = 150, oxygenDrainMultiplier = GuguRun.OXYGEN_DRAIN_MULTIPLIER; }
     [Serializable] public sealed class Profile
     {
         public string label;
@@ -63,6 +63,8 @@ namespace SealGugu
 
     public sealed class GuguRun
     {
+        public const double OXYGEN_DRAIN_MULTIPLIER = .5;
+        public readonly double oxygenDrainMultiplier;
         public const double DEFAULT_WINDOW = 150, REFILL_FRACTION = .12, REFILL_LIMIT = 100 - 1e-9;
         static readonly string[] Phrase = { "lower", "lower", "upper", "upper", "upper", "upper", "lower", "lower", "lower", "upper", "upper", "lower", "upper", "lower", "lower", "upper" };
         public Track track;
@@ -86,7 +88,7 @@ namespace SealGugu
             if (track == null || track.charts == null) throw new ArgumentNullException("track");
             this.track = track; difficulty = level; this.practice = practice;
             profile = Profile.For(level);
-            settings = settings ?? new RunSettings(); setTiming(settings.delay, settings.window);
+            settings = settings ?? new RunSettings(); oxygenDrainMultiplier = settings.oxygenDrainMultiplier; setTiming(settings.delay, settings.window);
             Note[] source = track.charts.Get(level);
             if (source == null) throw new ArgumentException("Missing difficulty chart: " + level);
             var chart = new List<Note>();
@@ -230,7 +232,7 @@ namespace SealGugu
             double dt = Math.Max(0, to - time);
             if (phase == "underwater")
             {
-                air = Math.Max(0, air - dt * (4.15 + depth * .012));
+                air = Math.Max(0, air - dt * (4.15 + depth * .012) * oxygenDrainMultiplier);
                 if (air <= 0 && !practice) { time = to; lose("oxygen"); return; }
                 if (practice) air = Math.Max(1, air);
             }

@@ -1,0 +1,47 @@
+{
+  "version": "V14.1.1",
+  "initialUnisolatedRun": {
+    "success": false,
+    "status": "lost",
+    "food": 97,
+    "misses": 10,
+    "errors": [
+      "real input playthrough lost: rhythm, food=97, misses=10"
+    ],
+    "maxFrameTimeMs": 154.56430613994598
+  },
+  "completeDiagnosticRerun": {
+    "success": true,
+    "food": 279,
+    "totalFish": 279,
+    "misses": 0,
+    "perfect": 289,
+    "wallSeconds": 211.0201788,
+    "maximumJudgementErrorMs": 8.41416666666106,
+    "maxFrameTimeMs": 145.02599835395813
+  },
+  "focusLossReproduction": {
+    "success": false,
+    "queuedNotes": 42,
+    "hits": 32,
+    "misses": 10,
+    "finalSongTime": 31.948,
+    "finalInputAt": 20.949703266666674,
+    "ignoredExternalTestInputs": 0,
+    "maxFrameTimeMs": 143.1031972169876,
+    "missedNoteDetails": [
+      "id=33 time=28.316 kind=fish lane=upper",
+      "id=34 time=28.746 kind=fish lane=upper",
+      "id=35 time=29.172 kind=fish lane=upper",
+      "id=36 time=29.612 kind=fish lane=lower",
+      "id=37 time=30.04 kind=fish lane=lower",
+      "id=38 time=30.474 kind=fish lane=lower",
+      "id=39 time=30.91 kind=fish lane=upper",
+      "id=40 time=31.338 kind=fish lane=upper",
+      "id=41 time=31.562 kind=fish lane=lower",
+      "id=42 time=31.768 kind=fish lane=lower"
+    ]
+  },
+  "investigation": "Initial background run accumulated 10 misses after 97 fish; the next full foreground song passed (279 fish, 0 misses). A later run reproduced consecutive misses when another player took focus: queued inputs continued, but inputAt stopped advancing, with no external input callbacks. Unity InputSettings defaults to ResetAndDisableNonBackgroundDevices even when Application.runInBackground is true. QA now temporarily uses IgnoreFocus plus a dedicated virtual-keyboard filter, restoring settings afterward, and records background/disabled-keyboard frame counts. The release player keeps its normal pause-on-focus-loss behavior; these QA changes are excluded from its build.",
+  "finalEvidence": "realtime-soak.json is the final isolated run, not the failed first attempt."
+}

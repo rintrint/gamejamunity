@@ -32,3 +32,7 @@ pwsh -File Tools/test-core-parity.ps1 -SourceGame C:/path/to/web/gamejam
 
 The golden file belongs under `Tools`, outside Resources, so it is not included
 in the shipped player. Do not regenerate expected values from the C# port.
+
+## V14.1.1 intentional balance change
+
+The shipped default oxygen multiplier is now **0.5**. Historical golden replays explicitly pass `oxygenDrainMultiplier = 1`, preserving the unmodified HTML baseline. `OxygenBalanceParity.Verify` separately gates every build on the new default: all 3 songs × 3 difficulties × 3 depths × 3 frame rates, intro grace, no surface drain, unchanged 12% refill, pause, and the doubled oxygen-exhaustion boundary. Full-song native QA uses the real default 0.5. These tests do not claim unchanged oxygen balance.

@@ -33,6 +33,12 @@ namespace SealGugu.Diagnostics
             public int queuedNotes, noteCount, hits, misses, perfect, good, food, totalFish, queuedRefillTaps, clockSampleCount;
             public List<ClockSample> clockSamples = new List<ClockSample>();
             public List<string> errors = new List<string>();
+            public List<string> missedNoteDetails = new List<string>();
+            public double oxygenDrainMultiplier, finalAir, finalSongTime, finalInputAt, finalLastPress;
+            public string finalPhase, feedbackReason;
+            public bool isolatedGameplayKeyboard;
+            public int ignoredExternalTestInputs;
+            public int backgroundFrames, disabledTestKeyboardFrames;
         }
         static object Field(object target, string name)
         {
@@ -75,20 +81,26 @@ namespace SealGugu.Diagnostics
             bool previousPractice = (bool)Field(game, "practice"), previousBlind = (bool)Field(game, "blind"), previousMute = sound.muted;
             float previousSpeed = (float)Field(game, "speed"), previousDelay = (float)Field(game, "delay"), previousWindow = (float)Field(game, "window");
             bool previousBackground = Application.runInBackground, previousAutomated = (bool)Field(game, "automatedTest");
+            var previousInputBackground = InputSystem.settings.backgroundBehavior;
             Keyboard previousKeyboard = Keyboard.current, keyboard = null;
             double began = Time.realtimeSinceStartupAsDouble, deadline = began + 270, lastClockSample = -100, lastResume = -100, clockDifferenceSum = 0;
             GuguRun run = null;
             try
             {
                 Set(game, "automatedTest", true); Application.runInBackground = true;
+                // Native keyboards are normally disabled on focus loss even with runInBackground.
+                // This QA-only keyboard must keep receiving its scheduled events. The shell
+                // filters other keyboards above, and normal focus behavior is restored below.
+                InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
                 Set(game, "song", 0); Set(game, "level", "expert"); Set(game, "practice", false); Set(game, "blind", false);
                 Set(game, "speed", 1f); Set(game, "delay", 0f); Set(game, "window", 150f);
                 Invoke(game, "Back"); sound.Mute(true); Invoke(game, "StartRun");
-                run = game.run; report.trackId = run.track.id; report.trackDuration = run.track.duration; report.noteCount = run.notes.Count;
+                run = game.run; report.oxygenDrainMultiplier=run.oxygenDrainMultiplier; report.trackId = run.track.id; report.trackDuration = run.track.duration; report.noteCount = run.notes.Count;
                 report.totalFish = run.totalFish; report.outputEstimateMs = sound.outputEstimate * 1000;
                 AudioClip clip = sound.TrackClip(run.track); report.nativeClipDuration = (double)clip.samples / clip.frequency;
                 AudioSource music = (AudioSource)Field(sound, "music");
                 keyboard = InputSystem.AddDevice<Keyboard>("Gugu real-time DSP soak");
+                game.automatedKeyboard=keyboard;game.ignoredExternalTestInputs=0;report.isolatedGameplayKeyboard=true;
                 deadline = began + run.track.duration + 45;
 
                 // Observe the actual opening animation clock and press inside its hold.
@@ -113,6 +125,8 @@ namespace SealGugu.Diagnostics
                 {
                     Frame(report); double now = Time.realtimeSinceStartupAsDouble;
                     Require(now < deadline, "song did not complete within its real-time deadline", report);
+                    if(!Application.isFocused)report.backgroundFrames++;
+                    if(!keyboard.enabled)report.disabledTestKeyboardFrames++;
                     Require(run.status != "lost", "real input playthrough lost: " + run.reason + ", food=" + run.food + ", misses=" + run.misses, report);
                     double audible = sound.time;
                     if (!pausedOnce && run.status == "playing" && audible >= 12)
@@ -203,11 +217,15 @@ namespace SealGugu.Diagnostics
                 report.wallSeconds = Time.realtimeSinceStartupAsDouble - began; report.completedUtc = DateTime.UtcNow.ToString("O");
                 if (run != null)
                 {
+                    report.finalAir=run.air;report.finalSongTime=run.time;report.finalInputAt=run.inputAt;report.finalLastPress=run.lastPress;report.finalPhase=run.phase;report.feedbackReason=run.feedback?.reason;
+                    foreach(var note in run.notes)if(note.result=="miss")report.missedNoteDetails.Add("id="+note.id+" time="+note.time+" kind="+note.kind+" lane="+note.lane);
                     report.status = run.status; report.outcome = run.outcome; report.food = run.food; report.hits = run.hits; report.misses = run.misses;
                     report.perfect = run.counts.perfect; report.good = run.counts.good; report.accuracy = run.accuracy;
                 }
                 if (!report.success && report.errors.Count == 0) report.errors.Add("Real-time soak was interrupted or threw before completion; see the player log for the exception.");
+                report.ignoredExternalTestInputs=game.ignoredExternalTestInputs;game.automatedKeyboard=null;
                 if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
+                InputSystem.settings.backgroundBehavior=previousInputBackground;
                 if (previousKeyboard != null && previousKeyboard.added) previousKeyboard.MakeCurrent();
                 sound.Silence(); Set(game, "song", previousSong); Set(game, "level", previousLevel);
                 Set(game, "practice", previousPractice); Set(game, "blind", previousBlind);

@@ -34,6 +34,7 @@ namespace SealGugu
         public double at, error, food, growth, air, gain;
         public bool big, automatic;
     }
+    // Historical V13 parity explicitly uses the original drain rate (1x). Current default balance has separate tests.
     // Golden traces are produced by unmodified shipped JavaScript, independently
     // of this port. Any discrepancy throws, causing the Editor build gate to fail.
     public static class CoreParity
@@ -58,7 +59,7 @@ namespace SealGugu
             {
                 Track track = Array.Find(charts.tracks, t => t.id == scenario.trackId);
                 if (track == null) throw new ArgumentException("Golden track missing " + scenario.trackId);
-                var run = new GuguRun(track, scenario.level, scenario.practice, new RunSettings { delay = scenario.delay, window = scenario.window });
+                var run = new GuguRun(track, scenario.level, scenario.practice, new RunSettings { delay = scenario.delay, window = scenario.window, oxygenDrainMultiplier = 1 });
                 for (int index = 0; index < scenario.steps.Length; index++)
                 {
                     GoldenStep step = scenario.steps[index]; int before = run.events.Count;

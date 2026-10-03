@@ -82,6 +82,7 @@ namespace SealGugu
             pointerAllowed &= viewport.Contains(Event.current.mousePosition);
         }
         public void EndPointerClip() { pointerAllowed = pointerClips.Pop(); }
+        public bool PointerOver(Rect rect) { return GUI.enabled && pointerAllowed && rect.Contains(Event.current.mousePosition); }
         public void Interactive(Rect rect)
         {
             if (Event.current.type != EventType.Repaint || !GUI.enabled || !pointerAllowed) return;

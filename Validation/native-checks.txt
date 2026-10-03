@@ -5,13 +5,5 @@ floe-third: native 189.248000 s; chart 189.248000 s; difference 0.000 ms; 48000 
 drift-tide: native 190.500000 s; chart 190.500000 s; difference 0.000 ms; 48000 Hz; 2 channels.
 drift-tide: 45 distinct calibration click voices retain exact chart timestamps, including after button feedback.
 GUGU_DESKTOP_PARITY PASS: 17 assertions; actual window/fullscreen round trip; restore 1280x720; global key isolation, held-key suppression, paused FPS, system cursor handles.
-GUGU_SOAK_SUCCESS 279/279 fish; 211.0 real seconds; 1028 clock samples; max decoder/audible difference=21.33ms; C:\Users\user\Documents\GitHub\gamejamunity\Captures\V14.1.0\realtime-soak.json
-GUGU_CAPTURE_SUCCESS 19 scenes; C:\Users\user\Documents\GitHub\gamejamunity\Captures\V14.1.0
-GUGU_INPUT_PARITY PASS: native InputSystem integration, 21 assertions, 50 independent press edges in one input update.
-GUGU_AUDIO_PARITY PASS: native audio integration, 185 assertions.
-floe-second: native 207.613500 s; chart 207.613500 s; difference 0.000 ms; 48000 Hz; 2 channels.
-floe-third: native 189.248000 s; chart 189.248000 s; difference 0.000 ms; 48000 Hz; 2 channels.
-drift-tide: native 190.500000 s; chart 190.500000 s; difference 0.000 ms; 48000 Hz; 2 channels.
-drift-tide: 45 distinct calibration click voices retain exact chart timestamps, including after button feedback.
-GUGU_DESKTOP_PARITY PASS: 17 assertions; actual window/fullscreen round trip; restore 1280x720; global key isolation, held-key suppression, paused FPS, system cursor handles.
-GUGU_CAPTURE_SUCCESS 19 scenes; C:\Users\user\Documents\GitHub\gamejamunity\Captures\V14.1.0
+GUGU_SOAK_SUCCESS 279/279 fish; 211.0 real seconds; 1023 clock samples; max decoder/audible difference=21.33ms; C:\Users\user\Documents\GitHub\gamejamunity\Captures\V14.1.1-verified\realtime-soak.json
+GUGU_CAPTURE_SUCCESS 19 scenes; C:\Users\user\Documents\GitHub\gamejamunity\Captures\V14.1.1-verified

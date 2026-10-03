@@ -1,18 +1,19 @@
 {
-  "version": "V14.1.0",
+  "version": "V14.1.1",
   "codeReviewPassed": true,
   "renderReviewPassed": true,
   "actualPointerTest": "passed",
   "hoverPointerTest": "passed",
   "verifiedWithComputerUse": [
-    "Start hover applies warm tint and Windows IDC_HAND; click opens setup",
-    "Select beginner then expert at its lower edge; expert selected while setup stays open, no background Credits click",
-    "Click background Exit outside setup: dialog remains and application stays running; Windows IDC_ARROW",
-    "Scroll through tuning to calibration; disabled Apply is not actionable",
-    "Close setup, hover Credits (warm tint + IDC_HAND), open credits, close it",
-    "Hover Exit (warm tint + IDC_HAND); click exits owned QA player"
+    "Start, Credits and Exit retain original ice artwork, subtly brighten and cast a soft blue silhouette shadow on hover. No yellow recoloring.",
+    "Native Windows IDC_HAND observed on all three main menu controls; IDC_ARROW when hovering blocked background Exit.",
+    "Start opens setup; beginner then expert selected without clicking background Credits.",
+    "Clicking blocked background Exit leaves setup open and player running.",
+    "Begin breathing primary button uses pale ivory hover and soft shadow.",
+    "Credits opens and Back returns to menu; Exit closes the tested QA player."
   ],
-  "keyboardValidation": "Native Input System integration: 17 assertions, actual fullscreen/windowed round trip, left Alt+Enter and right Alt+numpad Enter, held-key suppression, saved dimensions, F1 on menu/setup/calibration/opening/pause, no gameplay side effects.",
-  "limitation": "Computer-use external keyboard injection was not received by Input System (existing Escape also unaffected). No claim of successful physical keyboard testing. Real mouse interaction and native Windows cursor handles were independently observed.",
-  "sourceObservationCount": 14
+  "htmlReference": "Actual local gugu.html computed CSS palette plus final cascade hover selectors; see html-ui-reference.json.",
+  "keyboardValidation": "Native Input System integration: 17 desktop assertions, fullscreen/windowed round trip, F1 isolation and native system cursors. See desktop-parity.txt.",
+  "limitation": "No claim of physical keyboard testing. UI interaction used computer-use actual mouse; cursor handles independently recorded. Font antialiasing and shadow rasterization differ between Unity and browser.",
+  "sourceObservationCount": 23
 }

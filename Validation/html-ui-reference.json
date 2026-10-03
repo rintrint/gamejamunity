@@ -1,0 +1,30 @@
+{
+  "version": "V14.1.1",
+  "source": "HTML edition 13: scenes.css -> pulse.css -> duet.css -> drift.css -> floe.css -> gugu.css",
+  "verifiedWith": "Browser getComputedStyle on the original local gugu.html?dev=1 underwater preview; source CSS for hover selectors",
+  "underwater": {
+    "scoreAndAccuracy": "#dbf8ff",
+    "scoreShadow": "0 2px 3px #204b68",
+    "songAndAirAndFoodAndStability": "#e6f8fc",
+    "songAndAirShadow": "0 1px 4px #16485a",
+    "comboNumber": "#fff0a5",
+    "comboLabel": "#fffdf0",
+    "growthLabels": "#e7faff",
+    "footer": "#e6f8fc / 0.72 opacity",
+    "brand": "#ecfaff",
+    "sceneNumber": "#d6f0f7 / 0.8 opacity",
+    "perfect": "#ffe99b",
+    "good": "#bceefa",
+    "miss": "#ffc1b6",
+    "timing": "#edffff",
+    "missTiming": "#ffe2da"
+  },
+  "hover": {
+    "ice": "brightness(1.035) drop-shadow(0 5px 5px #4f9dbc35)",
+    "transition": "filter .18s ease",
+    "genericButton": "#ffffff",
+    "primaryButton": "#fffdf0",
+    "tuningButton": "#fff7df",
+    "note": "Unity uses original artwork with cached brightness variants and a Gaussian alpha silhouette, no yellow tint. Reduced-motion skips the transition. Text RGB values match the browser; font antialiasing and shadow rasterization are native Unity."
+  }
+}

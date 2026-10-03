@@ -146,6 +146,15 @@ namespace SealGugu.Diagnostics
                 Destroy(capture);
                 Debug.Log("GUGU_CAPTURE " + mode + " " + name);
             }
+            game.PreviewScene("menu");
+            foreach(string asset in new[]{"Start-Botton","Credits-Botton","Exit-Botton"}) {
+                game.previewIceHover=asset;
+                yield return new WaitForSecondsRealtime(.3f);
+                yield return new WaitForEndOfFrame();
+                var hover=ScreenCapture.CaptureScreenshotAsTexture();
+                File.WriteAllBytes(Path.Combine(outputDirectory,"hover-"+asset+".png"),hover.EncodeToPNG());Destroy(hover);
+            }
+            game.previewIceHover="";
             if (Array.IndexOf(Environment.GetCommandLineArgs(), "-guguSoak") >= 0)
             {
                 var soak = NativeSoak.Run(game, Path.Combine(outputDirectory, "realtime-soak.json"));

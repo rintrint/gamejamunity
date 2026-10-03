@@ -9,13 +9,14 @@ namespace SealGugu
     /// <summary>The native game shell. The deterministic run never depends on GUI animation.</summary>
     public sealed class GuguGame : MonoBehaviour
     {
-        public const string Version="V14.1.0";
+        public const string Version="V14.1.1";
         [Tooltip("小組成員可在此資產的 entries 直接輸入名字。")]
         public GameCredits credits;
         public GuguRun run { get; private set; }
         GuguRenderer view;
         GuguAudio sound;
         GuguDesktop desktop;
+        readonly GuguUiArt uiArt=new GuguUiArt();
         Track[] tracks;
         int song;
         string level="expert",modal="",error="";
@@ -29,16 +30,22 @@ namespace SealGugu
         Vector2 setupScroll,creditsScroll;
         Font sans,serif;
         Texture2D panel,button,selected,sliderTrack,sliderThumb;
-        GUIStyle label,heading,action,choice,toggle,scrollbar,thumb,panelStyle;
+        GUIStyle label,heading,action,primaryAction,tuningAction,choice,toggle,scrollbar,thumb,panelStyle;
         GUISkin theme;
         readonly Dictionary<string,Texture2D> art=new Dictionary<string,Texture2D>();
         static readonly Color Ink=new Color(.157f,.318f,.427f),Muted=new Color(.306f,.451f,.533f);
-        static readonly Color HoverTint=new Color(1f,.969f,.84f,1f);
+        static readonly Color SelectedTint=Css(0xfff7d7),DiveInk=Css(0xe6f8fc),ScoreInk=Css(0xdbf8ff),SongShadow=Css(0x16485a);
+        static Color Css(uint hex,float alpha=1){return new Color((hex>>16&255)/255f,(hex>>8&255)/255f,(hex&255)/255f,alpha);}
+        bool DiveUi => Scene=="play";
+        Color WorldInk => DiveUi?DiveInk:Ink;
         const float W=1280,H=720;
         public bool IsPreview { get; private set; }
         public bool hidePreviewBadge;
 #if UNITY_EDITOR || GUGU_QA
         public bool automatedTest;
+        public InputDevice automatedKeyboard;
+        public int ignoredExternalTestInputs;
+        public string previewIceHover="";
 #endif
         float lastDt;
         string Scene => run==null||run.status=="ready"?"menu":run.breathingActive?"breath":run.status=="won"||run.status=="lost"?"end":"play";
@@ -57,10 +64,16 @@ namespace SealGugu
             }catch(Exception e){error="遊戲資源載入失敗："+e.Message;Debug.LogException(e);}
             foreach(string key in new[]{"d","f","upArrow","j","k","downArrow","space","escape"}){
                 string captured=key;var input=new InputAction("Seal "+key,InputActionType.PassThrough,"<Keyboard>/"+key);
-                input.performed+=ctx=>{if(ctx.ReadValue<float>()>.5f)Key(captured,ctx.time);};input.Enable();inputs.Add(input);
+                input.performed+=ctx=>{
+#if UNITY_EDITOR || GUGU_QA
+                    // A background QA run must not score typing in another application.
+                    if(automatedTest&&automatedKeyboard!=null&&ctx.control.device!=automatedKeyboard){if(ctx.ReadValue<float>()>.5f)ignoredExternalTestInputs++;return;}
+#endif
+                    if(ctx.ReadValue<float>()>.5f)Key(captured,ctx.time);
+                };input.Enable();inputs.Add(input);
             }
         }
-        void OnDestroy(){foreach(var input in inputs)input.Dispose();view?.Dispose();}
+        void OnDestroy(){foreach(var input in inputs)input.Dispose();view?.Dispose();uiArt.Dispose();}
         void OnApplicationFocus(bool focus){
 #if UNITY_EDITOR || GUGU_QA
             if(automatedTest)return;
@@ -139,11 +152,13 @@ namespace SealGugu
         void Styles()
         {
             if(label!=null)return;
-            panel=Round(new Color(.93f,.98f,.965f,.96f),24);button=Round(new Color(.965f,.991f,.972f,.97f),22);selected=Round(HoverTint,18);
+            panel=Round(new Color(.93f,.98f,.965f,.96f),24);button=Round(Css(0xedf9fc,219f/255),22);selected=Round(SelectedTint,18);
             sliderTrack=Round(new Color(.55f,.72f,.80f,.8f),4);sliderThumb=Round(new Color(.24f,.48f,.59f),10);
             label=new GUIStyle(GUI.skin.label){font=sans,fontSize=18,wordWrap=true,normal={textColor=Ink},alignment=TextAnchor.UpperLeft,padding=new RectOffset(0,0,0,0)};
             heading=new GUIStyle(label){font=serif?serif:sans,fontSize=32,fontStyle=FontStyle.Bold};
-            action=new GUIStyle(GUI.skin.button){font=sans,fontSize=21,normal={background=button,textColor=Ink},hover={background=selected,textColor=Ink},active={background=selected,textColor=Ink},focused={background=selected,textColor=Ink},border=new RectOffset(22,22,22,22),padding=new RectOffset(14,14,8,8)};
+            action=new GUIStyle(GUI.skin.button){font=sans,fontSize=21,normal={background=button,textColor=Ink},hover={background=Round(Color.white,22),textColor=Ink},active={background=Round(Color.white,22),textColor=Ink},focused={background=button,textColor=Ink},border=new RectOffset(22,22,22,22),padding=new RectOffset(14,14,8,8)};
+            primaryAction=new GUIStyle(action);primaryAction.normal.background=Round(Css(0xf3faf1,236f/255),22);primaryAction.hover.background=Round(Css(0xfffdf0),22);primaryAction.active.background=primaryAction.hover.background;
+            tuningAction=new GUIStyle(action);tuningAction.normal.background=Round(Css(0xedf9f5,237f/255),22);tuningAction.hover.background=Round(Css(0xfff7df),22);tuningAction.active.background=tuningAction.hover.background;
             choice=new GUIStyle(action){fontSize=20,wordWrap=true,alignment=TextAnchor.MiddleCenter};
             toggle=new GUIStyle(GUI.skin.toggle){font=sans,fontSize=18,normal={textColor=Ink},onNormal={textColor=Ink},hover={textColor=Ink},onHover={textColor=Ink},padding=new RectOffset(28,0,0,0)};
             scrollbar=new GUIStyle(GUI.skin.horizontalSlider){fixedHeight=8,normal={background=sliderTrack},border=new RectOffset(4,4,4,4),margin=new RectOffset(0,0,9,8)};
@@ -161,26 +176,36 @@ namespace SealGugu
             for(int y=0;y<size;y++)for(int x=0;x<size;x++){float dx=Mathf.Max(radius-x,x-(size-radius-1)),dy=Mathf.Max(radius-y,y-(size-radius-1));float d=Mathf.Sqrt(Mathf.Max(0,dx)*Mathf.Max(0,dx)+Mathf.Max(0,dy)*Mathf.Max(0,dy));pixels[y*size+x]=new Color(color.r,color.g,color.b,color.a*Mathf.Clamp01(radius+.5f-d));}
             t.SetPixels(pixels);t.Apply();t.wrapMode=TextureWrapMode.Clamp;t.filterMode=FilterMode.Bilinear;return t;
         }
-        void Text(Rect r,string text,int size=18,TextAnchor align=TextAnchor.UpperLeft,Color? color=null,bool title=false)
+        void Text(Rect r,string text,int size=18,TextAnchor align=TextAnchor.UpperLeft,Color? color=null,bool title=false,Color? shadow=null,float shadowY=1,float blur=0,float outline=0)
         {
-            var s=title?heading:label;s.fontSize=size;s.alignment=align;s.normal.textColor=color??Ink;GUI.Label(r,text,s);
+            var s=title?heading:label;s.fontSize=size;s.alignment=align;
+            if(shadow.HasValue){
+                Color tint=shadow.Value;s.normal.textColor=tint;
+                if(outline>0)for(int dx=-1;dx<=1;dx++)for(int dy=-1;dy<=1;dy++)if(dx!=0||dy!=0)GUI.Label(new Rect(r.x+dx*outline,r.y+dy*outline,r.width,r.height),text,s);
+                if(blur>0){tint.a*=.12f;s.normal.textColor=tint;for(int dx=-1;dx<=1;dx++)for(int dy=-1;dy<=1;dy++)GUI.Label(new Rect(r.x+dx*blur*.5f,r.y+shadowY+dy*blur*.5f,r.width,r.height),text,s);}
+                tint=shadow.Value;tint.a*=blur>0?.6f:1;s.normal.textColor=tint;GUI.Label(new Rect(r.x,r.y+shadowY,r.width,r.height),text,s);
+            }
+            s.normal.textColor=color??Ink;GUI.Label(r,text,s);
         }
         void Box(Rect r,Texture2D tex=null){panelStyle.normal.background=tex?tex:panel;GUI.Box(r,GUIContent.none,panelStyle);}
-        bool Button(Rect r,string text){desktop.Interactive(r);if(GUI.Button(r,text,action)){sound?.Sample("button",.25f);return true;}return false;}
+        bool Button(Rect r,string text,GUIStyle style=null){desktop.Interactive(r);uiArt.DrawButtonShadow(r,desktop.PointerOver(r),GUI.enabled,reduced);if(GUI.Button(r,text,style??action)){sound?.Sample("button",.25f);return true;}return false;}
         bool Ice(Rect r,string asset)
         {
             desktop.Interactive(r);
-            bool hover=GUI.enabled&&r.Contains(Event.current.mousePosition);
+            bool hover=desktop.PointerOver(r);
+            #if UNITY_EDITOR || GUGU_QA
+            if(IsPreview)hover=previewIceHover==asset;
+#endif
             bool active=hover&&Event.current.type==EventType.Repaint&&Mouse.current!=null&&Mouse.current.leftButton.isPressed;
             var im=Art("floe/"+asset+(active?"-Click":""));if(!im)im=Art("floe/"+asset);
-            Color previous=GUI.color;if(hover)GUI.color=previous*HoverTint;
-            if(im)GUI.DrawTexture(r,im,ScaleMode.ScaleToFit,true);
-            GUI.color=previous;
+            bool ice=asset=="Start-Botton"||asset=="Credits-Botton"||asset=="Exit-Botton";
+            if(ice)uiArt.Draw(r,im,hover,GUI.enabled,reduced);
+            else if(im)GUI.DrawTexture(new Rect(r.x,r.y+(active&&!reduced?3:0),r.width,r.height),im,ScaleMode.ScaleToFit,true);
             if(GUI.Button(r,GUIContent.none,GUIStyle.none)){sound.Sample("button",.25f);return true;}return false;
         }
         bool Tap(Rect r,string text,string lane,bool bite=true)
         {
-            desktop.Interactive(r);
+            desktop.Interactive(r);uiArt.DrawButtonShadow(r,desktop.PointerOver(r),GUI.enabled,reduced);
             if(GUI.enabled&&Event.current.type==EventType.MouseDown&&Event.current.button==0&&r.Contains(Event.current.mousePosition)){Press(lane,Time.realtimeSinceStartupAsDouble,bite);Event.current.Use();}
             GUI.Button(r,text,action);return false;
         }
@@ -215,12 +240,12 @@ namespace SealGugu
         }
         void Header()
         {
-            Text(new Rect(desktop.FpsVisible?174:39,9,330,38),"≈ 海豹咕咕",28,TextAnchor.UpperLeft,null,true);
-            Text(new Rect(desktop.FpsVisible?184:49,47,250,25),"一口氣的旅程",14,TextAnchor.UpperLeft,Muted);
-            Text(new Rect(1020,25,132,28),Version,18,TextAnchor.MiddleRight,Muted);
+            Text(new Rect(desktop.FpsVisible?174:39,9,330,38),"≈ 海豹咕咕",28,TextAnchor.UpperLeft,DiveUi?Css(0xecfaff):Ink,true,DiveUi?Css(0x235c77):(Color?)null,1,3);
+            Text(new Rect(desktop.FpsVisible?184:49,47,250,25),"一口氣的旅程",14,TextAnchor.UpperLeft,DiveUi?Css(0xecfaff):Muted);
+            Text(new Rect(1020,25,132,28),Version,18,TextAnchor.MiddleRight,DiveUi?Css(0xe9f9ff):Muted);
             if(Button(new Rect(1160,15,47,45),sound.muted?"♪":"♫")){sound.Mute(!sound.muted);if(!sound.muted&&run.status=="ready")sound.Menu(tracks[song]);}
             if((run.status=="playing"||run.status=="breathing")&&!IsPreview&&Button(new Rect(1214,15,47,45),"Ⅱ"))Pause();
-            if(Scene!="menu")Text(new Rect(50,88,600,27),Scene=="breath"?"02 / 給自己一口氣":Scene=="play"?"03 / 循著音樂，游向海底":"04 / 旅程的另一端",16,TextAnchor.UpperLeft,Muted);
+            if(Scene!="menu")Text(new Rect(50,88,600,27),Scene=="breath"?"02 / 給自己一口氣":Scene=="play"?"03 / 循著音樂，游向海底":"04 / 旅程的另一端",16,TextAnchor.UpperLeft,DiveUi?Css(0xd6f0f7,.8f):Muted);
         }
         void Menu()
         {
@@ -250,7 +275,7 @@ namespace SealGugu
         }
         void Meter(Rect r,string name,string value,float fraction,Color fill,int valueSize=24)
         {
-            Text(new Rect(r.x,r.y,r.width*.55f,32),name,17);Text(new Rect(r.x+r.width*.5f,r.y-2,r.width*.5f,35),value,valueSize,TextAnchor.UpperRight);
+            Text(new Rect(r.x,r.y,r.width*.55f,32),name,17,TextAnchor.UpperLeft,WorldInk,false,DiveUi?(Color?)SongShadow:null,1,4);Text(new Rect(r.x+r.width*.5f,r.y-2,r.width*.5f,35),value,valueSize,TextAnchor.UpperRight,WorldInk,false,DiveUi?(Color?)SongShadow:null,1,4);
             GUI.DrawTexture(new Rect(r.x,r.y+34,r.width,15),sliderTrack,ScaleMode.StretchToFill,true,0,Color.white,0,7);
             GUI.DrawTexture(new Rect(r.x,r.y+34,Mathf.Max(0,r.width*Mathf.Clamp01(fraction)),15),Texture2D.whiteTexture,ScaleMode.StretchToFill,true,0,fill,0,7);
         }
@@ -265,31 +290,31 @@ namespace SealGugu
         }
         void Hud()
         {
-            Text(new Rect(51,126,235,23),"SCORE",15,TextAnchor.UpperLeft,Muted);
-            Text(new Rect(51,152,270,39),run.score.ToString("0000000"),30);
-            Text(new Rect(51,195,260,28),"ACCURACY  "+run.accuracy.ToString("F2")+"%",17);
+            Text(new Rect(51,126,235,23),"SCORE",15,TextAnchor.UpperLeft,ScoreInk,false,Css(0x204b68),2,3);
+            Text(new Rect(51,152,270,39),run.score.ToString("0000000"),30,TextAnchor.UpperLeft,ScoreInk,false,Css(0x204b68),2,3);
+            Text(new Rect(51,195,260,28),"ACCURACY  "+run.accuracy.ToString("F2")+"%",17,TextAnchor.UpperLeft,ScoreInk,false,Css(0x204b68),2,3);
             string cue=Cue(out double remain);if(cue=="none"){
                 var matrix=GUI.matrix;GUIUtility.ScaleAroundPivot(Vector2.one*(reduced?1:comboScale),new Vector2(640,165));
-                Text(new Rect(510,117,260,85),run.combo.ToString(),70,TextAnchor.MiddleCenter);GUI.matrix=matrix;
-                Text(new Rect(540,201,200,26),"C O M B O",18,TextAnchor.MiddleCenter,Muted);
+                Text(new Rect(510,117,260,85),run.combo.ToString(),70,TextAnchor.MiddleCenter,Css(0xfff0a5),false,Css(0x34667f),3,1,2);GUI.matrix=matrix;
+                Text(new Rect(540,201,200,26),"C O M B O",18,TextAnchor.MiddleCenter,Css(0xfffdf0),false,Css(0x255a77),3,2);
             }
             GateAlert();
             Meter(new Rect(948,126,281,50),"肺活量",GuguRun.airDisplay(run.air)+"%",(float)run.air/100,run.air<35?new Color(.88f,.5f,.45f):new Color(.41f,.73f,.79f));
             Meter(new Rect(948,193,281,50),"節奏穩定",Math.Ceiling(run.stability)+"%",(float)run.stability/100,new Color(.72f,.75f,.88f),21);
-            if(Button(new Rect(948,251,281,75),"遊玩調整  ☷\n"+speed.ToString("F1")+"× · "+delay+"ms · ±"+window+"ms"))OpenTuning();
+            if(Button(new Rect(948,251,281,75),"遊玩調整  ☷\n"+speed.ToString("F1")+"× · "+delay+"ms · ±"+window+"ms",tuningAction))OpenTuning();
             int stage=0;for(int i=0;i<3;i++)if(run.time>=run.track.stageBounds[i])stage=i;
-            Text(new Rect(51,229,305,27),(run.practice?"練習 · ":"")+"0"+(stage+1)+" / "+new[]{"晨光淺海","藍色冰廊","極光歸途"}[stage]+" · "+run.stageFood[stage]+"/"+run.stageTotals[stage],15,TextAnchor.UpperLeft,Muted);
-            Text(new Rect(51,259,280,31),run.track.title,24);
-            Text(new Rect(51,291,300,28),new[]{"小海豹","圓滾滾","飽飽海豹"}[run.form]+" · 體型 "+Math.Round(run.growth*100)+"% · "+run.depth+" m",15,TextAnchor.UpperLeft,Muted);
-            if(judgeAge<.7f){var matrix=GUI.matrix;GUIUtility.ScaleAroundPivot(Vector2.one*(reduced?1:judgeScale),new Vector2(666,280));var color=grade=="MISS"?new Color(.82f,.31f,.34f):grade=="GOOD"?new Color(.24f,.57f,.64f):new Color(.71f,.56f,.25f);color.a=Mathf.Clamp01(1-(judgeAge-.45f)*4);Text(new Rect(486,244,360,66),grade,56,TextAnchor.MiddleCenter,color);Text(new Rect(446,312,440,33),timing,17,TextAnchor.MiddleCenter,color);GUI.matrix=matrix;}
-            if(run.danger>.05)Text(new Rect(948,341,284,90),run.air<10?"最後一口氣！準拍衝向釣魚人的洞口。":run.air<25?"氧氣不足，下一個冰洞一定要抓準。":"呼吸漸急。看好釣魚人，準備上岸。",18,TextAnchor.UpperLeft,new Color(1,.92f,.80f));
-            Text(new Rect(562,520,356,43),run.phase=="underwater"?"跟著鼓點，咬住小魚。":run.called?"朋友聽見了，旅程即將完成。":"跟著音樂，準備下一段旅程。",21,TextAnchor.MiddleCenter);
-            Text(new Rect(562,563,356,38),run.time<run.track.introEnd?"前奏 · 放鬆準備，魚群正在靠近":double.IsInfinity(remain)?"準備上岸，呼喚同伴":(blind?"純聽練習 · ":"")+"冰洞倒數 "+Math.Max(0,remain).ToString("F1")+" 秒",16,TextAnchor.MiddleCenter,Muted);
+            Text(new Rect(51,229,305,27),(run.practice?"練習 · ":"")+"0"+(stage+1)+" / "+new[]{"晨光淺海","藍色冰廊","極光歸途"}[stage]+" · "+run.stageFood[stage]+"/"+run.stageTotals[stage],15,TextAnchor.UpperLeft,DiveInk,false,SongShadow,1,4);
+            Text(new Rect(51,259,280,31),run.track.title,24,TextAnchor.UpperLeft,DiveInk,false,SongShadow,1,4);
+            Text(new Rect(51,291,300,28),new[]{"小海豹","圓滾滾","飽飽海豹"}[run.form]+" · 體型 "+Math.Round(run.growth*100)+"% · "+run.depth+" m",15,TextAnchor.UpperLeft,DiveInk,false,SongShadow,1,4);
+            if(judgeAge<.7f){var matrix=GUI.matrix;GUIUtility.ScaleAroundPivot(Vector2.one*(reduced?1:judgeScale),new Vector2(666,280));var color=grade=="MISS"?Css(0xffc1b6):grade=="GOOD"?Css(0xbceefa):Css(0xffe99b);color.a=Mathf.Clamp01(1-(judgeAge-.45f)*4);Text(new Rect(486,244,360,66),grade,56,TextAnchor.MiddleCenter,color,false,Css(0x345976,color.a),3,1,1.5f);Text(new Rect(446,312,440,33),timing,17,TextAnchor.MiddleCenter,grade=="MISS"?Css(0xffe2da,color.a):Css(0xedffff,color.a),false,Css(0x204564,color.a),2,4);GUI.matrix=matrix;}
+            if(run.danger>.05)Text(new Rect(948,341,284,90),run.air<10?"最後一口氣！準拍衝向釣魚人的洞口。":run.air<25?"氧氣不足，下一個冰洞一定要抓準。":"呼吸漸急。看好釣魚人，準備上岸。",18,TextAnchor.UpperLeft,Css(0xffe7c6),false,Css(0x204e65),2,4);
+            Text(new Rect(562,520,356,43),run.phase=="underwater"?"跟著鼓點，咬住小魚。":run.called?"朋友聽見了，旅程即將完成。":"跟著音樂，準備下一段旅程。",21,TextAnchor.MiddleCenter,Css(0xe8faff),false,Css(0x234b67),2,4);
+            Text(new Rect(562,563,356,38),run.time<run.track.introEnd?"前奏 · 放鬆準備，魚群正在靠近":double.IsInfinity(remain)?"準備上岸，呼喚同伴":(blind?"純聽練習 · ":"")+"冰洞倒數 "+Math.Max(0,remain).ToString("F1")+" 秒",16,TextAnchor.MiddleCenter,Css(0xe8faff),false,Css(0x234b67),2,4);
             Meter(new Rect(64,601,844,50),"飽食度",run.food+" / "+run.targets.full,(float)run.food/run.targets.full,new Color(.93f,.77f,.40f),22);
-            Text(new Rect(64,654,844,25),run.targets.grow+" · 長大",16);Text(new Rect(64,654,844,25),run.targets.fat+" · 進化",16,TextAnchor.UpperCenter);Text(new Rect(64,654,844,25),run.targets.full+" · 吃飽",16,TextAnchor.UpperRight);
+            Text(new Rect(64,654,844,25),run.targets.grow+" · 長大",16,TextAnchor.UpperLeft,Css(0xe7faff));Text(new Rect(64,654,844,25),run.targets.fat+" · 進化",16,TextAnchor.UpperCenter,Css(0xe7faff));Text(new Rect(64,654,844,25),run.targets.full+" · 吃飽",16,TextAnchor.UpperRight,Css(0xe7faff));
             if(!IsPreview){Tap(new Rect(978,602,116,78),"上排\nD F ↑","upper");Tap(new Rect(1107,602,116,78),"下排\nJ K ↓","lower");}
         }
-        void Footer(){Text(new Rect(30,692,350,22),run.track.title+" · "+run.totalFish+" 隻魚",14,TextAnchor.UpperLeft,Muted);Text(new Rect(350,692,590,22),"D F ↑ 上排  ·  J K ↓ 下排  ·  ESC 暫停",14,TextAnchor.UpperCenter,Muted);Text(new Rect(980,692,267,22),Fmt(run.time)+" / "+Fmt(run.track.duration),14,TextAnchor.UpperRight,Muted);if(!run.openingBreath)GUI.DrawTexture(new Rect(0,716,W*(float)run.progress,4),Texture2D.whiteTexture,ScaleMode.StretchToFill,false,0,new Color(.38f,.67f,.76f),0,0);}
+        void Footer(){Text(new Rect(30,692,350,22),run.track.title+" · "+run.totalFish+" 隻魚",14,TextAnchor.UpperLeft,new Color(WorldInk.r,WorldInk.g,WorldInk.b,.72f));Text(new Rect(350,692,590,22),"D F ↑ 上排  ·  J K ↓ 下排  ·  ESC 暫停",14,TextAnchor.UpperCenter,new Color(WorldInk.r,WorldInk.g,WorldInk.b,.72f));Text(new Rect(980,692,267,22),Fmt(run.time)+" / "+Fmt(run.track.duration),14,TextAnchor.UpperRight,new Color(WorldInk.r,WorldInk.g,WorldInk.b,.72f));if(!run.openingBreath)GUI.DrawTexture(new Rect(0,716,W*(float)run.progress,4),Texture2D.whiteTexture,ScaleMode.StretchToFill,false,0,new Color(.38f,.67f,.76f),0,0);}
         void Ending()
         {
             Box(new Rect(230,387,820,288));string title,copy;
@@ -298,7 +323,7 @@ namespace SealGugu
             Text(new Rect(252,446,776,48),title,33,TextAnchor.MiddleCenter,Ink,true);
             string reason=run.reason=="oxygen"?"氧氣耗盡。":run.reason=="rhythm"?"節奏穩定度歸零。":run.reason=="leap"?"錯過了大吸氣前的上岸機會。":run.reason=="route"?"沒有完成跨洞、上岸與呼喚。":"";
             Text(new Rect(258,502,764,107),reason+copy+" 吃到 "+run.food+" / "+run.totalFish+" 隻魚；吃飽目標 "+run.targets.full+" 隻。\n準確率 "+run.accuracy.ToString("F1")+"% · 最高 "+run.maxCombo+" COMBO · PERFECT "+run.counts.perfect+" / GOOD "+run.counts.good+" / MISS "+run.counts.miss+"\n時機／錯軌 "+run.overpresses+" 次 · 魚速 "+speed.ToString("F1")+"× · 延遲 "+delay+" ms · 判定 ±"+window+" ms",17,TextAnchor.UpperCenter);
-            if(Button(new Rect(439,617,200,44),"再一次 ↗"))StartRun();if(Button(new Rect(661,617,180,44),"回到開始"))Back();
+            if(Button(new Rect(439,617,200,44),"再一次 ↗",primaryAction))StartRun();if(Button(new Rect(661,617,180,44),"回到開始"))Back();
         }
         void Modal()
         {
@@ -313,7 +338,7 @@ namespace SealGugu
             }
             Box(new Rect(332,85,616,565));Text(new Rect(365,111,550,48),modal=="pause"?"海會等你。":"找到舒服的手感。",32,TextAnchor.MiddleCenter,Ink,true);
             Text(new Rect(365,166,550,39),modal=="pause"?"氧氣、音樂與旅程都停在這一刻。":"設定會自動保存，下次遊玩仍然適用。",18,TextAnchor.MiddleCenter);
-            Tuning(374,223,532);if(Button(new Rect(428,554,235,54),modal=="pause"?"繼續旅行 ↗":"完成調整")){if(modal=="pause")Resume();else CloseModal();}
+            Tuning(374,223,532);if(Button(new Rect(428,554,235,54),modal=="pause"?"繼續旅行 ↗":"完成調整",primaryAction)){if(modal=="pause")Resume();else CloseModal();}
             if(Button(new Rect(678,554,182,54),"回到開始"))Back();
         }
         void Setup()
@@ -324,13 +349,13 @@ namespace SealGugu
             setupScroll=GUI.BeginScrollView(new Rect(271,100,738,570),setupScroll,new Rect(0,0,714,1100));
             Text(new Rect(0,0,690,26),"選擇音樂",18);
             for(int i=0;i<tracks.Length;i++){
-                Rect r=new Rect(i*237,37,225,92);desktop.Interactive(r);choice.normal.background=song==i?selected:button;
+                Rect r=new Rect(i*237,37,225,92);desktop.Interactive(r);choice.normal.background=song==i?selected:button;choice.hover.background=choice.active.background=choice.normal.background;
                 if(GUI.Button(r,tracks[i].title+"\n"+Math.Round(tracks[i].bpm)+" BPM · "+Fmt(tracks[i].duration),choice)){if(song!=i){song=i;StopCalibration();sound.Silence();NewPreview();sound.Menu(tracks[song]);}sound.Sample("button",.25f);}
             }
             Text(new Rect(0,146,690,26),"選擇難度",18);
             string[] levels={"beginner","intermediate","expert"},names={"新手\n每 4 拍一次","中階\n每 2 拍一次","高手\n全拍＋八分連打"};
-            for(int i=0;i<3;i++){Rect r=new Rect(i*237,182,225,83);desktop.Interactive(r);choice.normal.background=level==levels[i]?selected:button;if(GUI.Button(r,names[i],choice)){if(level!=levels[i]){level=levels[i];window=150;SaveTuning();StopCalibration();NewPreview();sound.Menu(tracks[song]);}sound.Sample("button",.25f);}}
-            if(Button(new Rect(222,283,270,56),"開始吸氣 →"))StartRun();
+            for(int i=0;i<3;i++){Rect r=new Rect(i*237,182,225,83);desktop.Interactive(r);choice.normal.background=level==levels[i]?selected:button;choice.hover.background=choice.active.background=choice.normal.background;if(GUI.Button(r,names[i],choice)){if(level!=levels[i]){level=levels[i];window=150;SaveTuning();StopCalibration();NewPreview();sound.Menu(tracks[song]);}sound.Sample("button",.25f);}}
+            if(Button(new Rect(222,283,270,56),"開始吸氣 →",primaryAction))StartRun();
             bool p=Toggle(new Rect(0,361,330,29),practice,"輕鬆練習 · 不會死亡",toggle);bool b=Toggle(new Rect(354,361,355,29),blind,"純聽練習 · 隱藏魚群，不會死亡",toggle);
             if(p!=practice||b!=blind){practice=p;blind=b;NewPreview();}
             Text(new Rect(0,406,712,142),"D／F／↑ 打上排，J／K／↓ 打下排。\n開場看肚子鼓起、氣流收攏時，按一下收氣。途中上岸才需連打補氣，時間到自動下海。\n空拍可自由上下移動。魚靠近判定點時，太早、太晚或按錯軌會 Miss，該魚不能再補按。節奏穩定度歸零則旅程結束。",17);
