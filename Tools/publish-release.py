@@ -52,7 +52,7 @@ else:
         description = f.read()
     # A draft is only made public after the build upload completes.
     release = request(base + '/releases', 'POST', {'tag_name': args.tag, 'target_commitish': args.target,
-        'name': '海豹咕咕 ' + args.tag, 'body': description, 'draft': True, 'prerelease': False})
+        'name': '海豹呼呼 ' + args.tag, 'body': description, 'draft': True, 'prerelease': False})
     upload = release['upload_url'].split('{')[0] + '?name=' + urllib.parse.quote(os.path.basename(args.zip))
     with open(args.zip, 'rb') as f:
         asset = request(upload, 'POST', f.read(), True)

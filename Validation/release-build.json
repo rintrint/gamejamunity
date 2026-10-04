@@ -1,12 +1,13 @@
 {
-  "version": "V14.2.2",
+  "version": "V15.0.0",
   "success": true,
   "unityVersion": "6000.6.4f1",
   "development": false,
-  "buildBytes": 278822669,
-  "buildDirectory": "Builds/V14.2.2",
-  "verifiedUtc": "2026-10-04T02:27:46.952979+00:00",
-  "startupMode": "native rendered Windows player",
+  "buildBytes": 286305623,
+  "buildDirectory": "Builds/V15.0.0",
+  "verifiedUtc": "2026-10-04T03:01:40.005408+00:00",
+  "startupMode": "native URP 2D Windows player",
   "managedExceptions": false,
-  "note": "Built through ProjectBuild.BuildWindows in the open Unity Editor; GUGU_BUILD_SUCCESS observed. Core, oxygen and difficulty gates passed. Formal EXE launched; version, main menu, Start dialog and opening breath inspected via computer-use. Player.log confirms normal shutdown and no managed exception. No full-song audiovisual replay performed this release. Release package excludes QA entry points."
+  "note": "Formal BuildWindows succeeded. Core, oxygen, difficulty and native URP scene/animation gates passed. Formal EXE V15.0.0 main menu, title artwork, song selection and opening breath inspected through computer-use. Player.log confirms normal shutdown. The full-song URP test in Validation/URP was completed before the version-only runtime bump; no full-song repeat this release. Release ZIP CRC and exclusion of QA entry points verified.",
+  "assemblySha256": "1675f0d56b1aba96625e2c75604de586498a045d916cca806d9936658333d991"
 }

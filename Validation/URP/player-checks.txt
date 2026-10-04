@@ -1,0 +1,6 @@
+GUGU_INPUT_PARITY PASS: native InputSystem integration, 21 assertions, 50 independent press edges in one input update.
+GUGU_AUDIO_PARITY PASS: native audio integration, 190 assertions.
+GUGU_DESKTOP_PARITY PASS: 17 assertions; actual window/fullscreen round trip; restore 1280x720; global key isolation, held-key suppression, paused FPS, system cursor handles.
+GUGU_PRESENTATION PASS: 19 assertions; 17 extra captures; Microsoft JhengHei, borderless aspect fill and synchronized hunger.
+GUGU_SOAK_SUCCESS 279/279 fish; 211.1 real seconds; 1027 clock samples; max decoder/audible difference=21.33ms; C:\Users\user\Documents\GitHub\gamejamunity\Captures\URP-final\realtime-soak.json
+GUGU_CAPTURE_SUCCESS 19 scenes; C:\Users\user\Documents\GitHub\gamejamunity\Captures\URP-final

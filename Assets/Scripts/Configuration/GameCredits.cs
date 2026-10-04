@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SealGugu
 {
     /// <summary>Editable team credits; no code changes are needed to add names.</summary>
-    [CreateAssetMenu(fileName = "GameCredits", menuName = "海豹咕咕/製作名單")]
+    [CreateAssetMenu(fileName = "GameCredits", menuName = "海豹呼呼/製作名單")]
     public sealed class GameCredits : ScriptableObject
     {
         [Tooltip("製作小組名稱")]

@@ -74,7 +74,7 @@ namespace SealGugu.Editor
             var opening=new GuguRun(SurfaceTrack());opening.startBreath();opening.advanceBreath(2.7);opening.update(10);
             Require(opening.status=="breathing"&&opening.time==0&&opening.air==100,"opening timed inhale unaffected");
         }
-        [UnityEditor.MenuItem("Tools/海豹咕咕/驗證半速氧氣消耗")]
+        [UnityEditor.MenuItem("Tools/海豹呼呼/驗證半速氧氣消耗")]
         public static void Verify() {
             report=new Report();
             var charts=JsonUtility.FromJson<ChartDocument>(Resources.Load<TextAsset>("Data/chart").text);

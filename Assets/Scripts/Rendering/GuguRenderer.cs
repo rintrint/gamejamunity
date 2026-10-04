@@ -11,6 +11,8 @@ namespace SealGugu
     /// </summary>
     public sealed class GuguRenderer : IDisposable
     {
+        public HuhuStage stage;
+        HuhuSealAnimation Rig=>stage?stage.sealAnimation:null;
         public float speedMultiplier = .7f;
         public float menuHungerProgress=-1;
         public int MenuHungerFrame { get; private set; }
@@ -103,6 +105,13 @@ namespace SealGugu
         /// <summary>Prepare source images and face masks before the song clock starts.</summary>
         public void Preload()
         {
+            if(stage&&stage.sealArt){
+                var art=stage.sealArt;
+                if(art.portrait)images["tide/seal"]=art.portrait;
+                if(art.eatingAtlas)images["duet/seal-eating"]=art.eatingAtlas;
+                if(art.menuHungerAtlas)images["v14-2/menu-hunger"]=art.menuHungerAtlas;
+                for(int i=0;i<Math.Min(3,art.swimming.Length);i++){var form=art.swimming[i];if(form.image){images[swimmers[i].key]=form.image;swimmers[i]=new Art(swimmers[i].key,form.crop,form.mouthAnchor);}}
+            }
             foreach(string key in new[]{"tide/ocean","tide/props","tide/seal","floe/menu-ocean","duet/effects-atlas","duet/seal-eating","drift/inhale-atlas","gugu/breath-crisis","gugu/breathless-expressions","scenes/hunger-strip","v14-2/menu-hunger"})Image(key);
             foreach(var illustration in illustrations.Values)Image(illustration.key);
             for(int i=0;i<swimmers.Length;i++)Tinted(Image(swimmers[i].key),swimmers[i].rect,0,swimHeads[i],"swim"+i);
@@ -165,6 +174,7 @@ namespace SealGugu
         void Slice(Texture2D image,Rect source,Rect destination,float alpha=1)
         {
             if(image==null||destination.width<=0||destination.height<=0||alpha<=0)return;
+            if(stage){stage.Slice(image,source,destination,alpha);return;}
             var old=GUI.color;GUI.color=new Color(old.r,old.g,old.b,old.a*alpha);
             GUI.DrawTextureWithTexCoords(destination,image,new Rect(source.x/image.width,1-(source.y+source.height)/image.height,source.width/image.width,source.height/image.height),true);
             GUI.color=old;
@@ -178,6 +188,7 @@ namespace SealGugu
         void Sprite(Texture2D image,Rect crop,float x,float y,float w,float h,float alpha=1,float rotation=0,bool flip=false,Vector2? anchor=null,float scale=1)
         {
             if(image==null)return;
+            if(stage){var p=anchor??new Vector2(.5f,.5f);stage.Slice(image,crop,new Rect(x-w*p.x*scale,y-h*p.y*scale,w*scale,h*scale),alpha,rotation,flip,new Vector2(x,y));return;}
             var matrix=GUI.matrix;var point=new Vector2(x,y);
             if(rotation!=0)GUIUtility.RotateAroundPivot(rotation*Mathf.Rad2Deg,point);
             if(flip||scale!=1)GUIUtility.ScaleAroundPivot(new Vector2(flip?-scale:scale,scale),point);
@@ -198,6 +209,7 @@ namespace SealGugu
         void Portrait(float x,float y,float w,float time,bool flat=false,float scale=1)
         {
             var image=Image("tide/seal");if(image==null)return;
+            if(flat&&Rig){Rig.Sample("Rest",time);scale*=Rig.bodyScale;}
             Seal(image,new Rect(0,0,image.width,image.height),x,y,w,rotation:flat?-.08f:0,scale:scale);
         }
 
@@ -232,6 +244,7 @@ namespace SealGugu
 
         void Text(string value,float x,float baseline,int size,Color color)
         {
+            if(stage){stage.LabelText(value,x,baseline,size,color);return;}
             if(textStyle==null)textStyle=new GUIStyle(GUI.skin.label) {alignment=TextAnchor.MiddleCenter,clipping=TextClipping.Overflow,wordWrap=false};
             textStyle.font=font;textStyle.fontSize=Math.Max(16,size);GuguTypography.SetLabelColor(textStyle,color);
             GUI.Label(new Rect(x-260,baseline-size*1.05f,520,size*1.4f),value,textStyle);
@@ -239,6 +252,7 @@ namespace SealGugu
 
         void Flat(Color color)
         {
+            if(stage){stage.Group("Transitions");stage.Slice(Texture2D.whiteTexture,new Rect(0,0,1,1),viewport,color.a);return;}
             var old=GUI.color;GUI.color=color;GUI.DrawTexture(viewport,Texture2D.whiteTexture);GUI.color=old;
         }
 
@@ -257,14 +271,14 @@ namespace SealGugu
             var image=Image(menu?"floe/menu-ocean":"tide/ocean");if(image==null)return;
             Rect source=menu?new Rect(0,0,image.width,image.height):new Rect(0,dive?image.height*.39f:0,image.width,image.height*(dive?.61f:.49f));
             source=CoverSource(CoverSource(source,16f/9),w/h);
-            Slice(image,source,new Rect(0,0,w,h));
+            Slice(image,source,stage?stage.Viewport:new Rect(0,0,w,h));
             if(dive){
                 if(shade==null){
                     shade=Texture(1,128,"Underwater wash");var colors=new Color[128];
                     for(int y=0;y<128;y++)colors[y]=Color.Lerp(new Color(21/255f,74/255f,105/255f,179/255f),new Color(61/255f,140/255f,165/255f,56/255f),y/127f);
                     shade.SetPixels(colors);shade.Apply(false,false);
                 }
-                Full(shade,new Rect(0,0,w,h));
+                Full(shade,stage?stage.Viewport:new Rect(0,0,w,h));
             }
         }
         public static int HungerFrame(float progress) {
@@ -274,7 +288,9 @@ namespace SealGugu
         }
         void MenuSeal(float x,float y,float w) {
             var image=Image("v14-2/menu-hunger");if(image==null)return;
-            int frame=HungerFrame(menuHungerProgress);MenuHungerFrame=frame;
+            int frame=HungerFrame(menuHungerProgress);
+            if(Rig){Rig.Sample(menuHungerProgress<0?"Idle":"Hungry",menuHungerProgress<0?0:menuHungerProgress,false);frame=Mathf.Clamp(Mathf.RoundToInt(Rig.frame),0,5);}
+            MenuHungerFrame=frame;
             // Register both atlas rows to the same tail/belly baseline.
             float cw=image.width/3f, sx=frame%3*cw,sy=frame<3?100:580;
             Rect crop=new Rect(sx,sy,cw,395);
@@ -325,7 +341,7 @@ namespace SealGugu
 
         public void Draw(GuguRun run,string scene,float time,float dt,float w,float h,Rect viewportBounds)
         {
-            if(Event.current!=null&&Event.current.type!=EventType.Repaint)return;
+            if(!stage&&Event.current!=null&&Event.current.type!=EventType.Repaint)return;
             width=w;height=h;viewport=viewportBounds;
             if(current!=run)Reset(run);
             bool menu=run==null||run.status=="ready"||scene=="menu";
@@ -349,13 +365,16 @@ namespace SealGugu
             if(menu)
             {
                 bool small=w<760;
+                if(stage)stage.Group("Seal");
                 MenuSeal(w*(small?.24f:.255f),h*(small?.59f:.64f)+(reducedMotion?0:Mathf.Sin(time*1.3f)*3),small?Math.Min(205,w*.52f):Math.Min(350,w*.28f));
                 return;
             }
+            if(stage)stage.Group("Scenery");
             Scenery(dive,time,run);
             var health=Oxygen(run.air,time,playing&&run.phase!="shore",reducedMotion);HeadTint=health.tint;
             Gate gate=Cue(run);float urgency=Math.Max(gate.strength*.66f,health.severity*.32f);
             if(urgency>0) {
+                if(stage)stage.Group("Crisis");
                 var crisis=Image("gugu/breath-crisis");
                 if(crisis!=null)Slice(crisis,CoverSource(new Rect(0,0,crisis.width,crisis.height),viewport.width/viewport.height),viewport,
                     urgency*(reducedMotion?1:.86f+.14f*Mathf.Pow(Mathf.Sin(time*5),2)));
@@ -364,6 +383,7 @@ namespace SealGugu
             if(playing&&!run.breathingActive)Play(run,time,dive,health,gate);
             else
             {
+                if(stage)stage.Group("Seal");
                 float bob=reducedMotion?0:Mathf.Sin(endingTime*2)*5;
                 bool breathing=run.breathingActive;float sw=breathing?Math.Min(430,w*.7f):Math.Min(340,w*.47f);
                 float sx=breathing?w*.4f:w*.52f,sy=h*(breathing?.50f:ending?(w<760?.49f:.46f):w<760?.64f:.61f);
@@ -381,6 +401,7 @@ namespace SealGugu
             bool small=width<760;float x=width*(small?.47f:.35f),upper=small?Math.Max(360,height*.47f):height*.49f,lower=height*(small?.63f:.68f);
             float speed=(width*.68f+60)/F(run.profile.approach)*speedMultiplier,body=Math.Min(225,width*.24f)*1.2f*growth;
             float sy=Mathf.Lerp(upper,lower,laneY);SealX=x;SealY=sy;SealWidth=body;
+            if(stage)stage.Group("Lanes");
             foreach(string lane in new[]{"upper","lower"})
             {
                 float y=lane=="upper"?upper:lower;
@@ -388,7 +409,9 @@ namespace SealGugu
                 Text(lane=="upper"?"D / F / ↑":"J / K / ↓",Math.Max(54,x-body*.8f),y-34,16,dive?new Color(.96f,.984f,1):new Color(.192f,.373f,.475f));
             }
             Asset(2,x-body*.75f,sy+20,body*.7f,body*.43f,.45f,-.15f,true);
+            if(stage)stage.Group("Seal");
             EatingSeal(run,x,sy,body,time,health);
+            if(stage)stage.Group("Notes");
             if(!hideNotes)foreach(var note in run.notes)
             {
                 float nx=x+F(run.noteTime(note)-run.time)*speed,ny=note.lane=="upper"?upper:lower;
@@ -409,6 +432,7 @@ namespace SealGugu
                     if(note.kind=="surface"||note.kind=="exit")Asset(9,nx+12,ny-101,small?95:135,100);
                 }
             }
+            if(stage)stage.Group("Hit effects");
             foreach(var item in caught)
             {
                 float age=F(run.time-item.at);if(age<0||age>.12f)continue;
@@ -433,12 +457,14 @@ namespace SealGugu
             BiteFrame=biting?Math.Min(5,2+Mathf.FloorToInt(age/.19f*4)):0;
             if(mix<1)
             {
-                float breath=reducedMotion?1:1+Mathf.Sin(F(run.time)*3.65f)*.025f;
-                float impulse=Math.Max(0,1-F(run.time-inputAt)/.12f),scale=breath+health.heave*.5f+(reducedMotion?0:impulse*.018f);
-                float roll=reducedMotion?0:Mathf.Sin(F(run.time)*3.65f)*.013f;
+                if(Rig)Rig.Sample("Swim",run.time);
+                float breath=reducedMotion?1:Rig?Rig.bodyScale:1+Mathf.Sin(F(run.time)*3.65f)*.025f;
+                float impulse=Math.Max(0,1-F(run.time-inputAt)/.12f),scale=breath+health.heave*.5f+(reducedMotion?0:impulse*(Rig?Rig.inputPulse:.018f));
+                float roll=reducedMotion?0:Rig?Rig.roll:Mathf.Sin(F(run.time)*3.65f)*.013f;
                 Seal(Image(swim.key),swim.rect,x,y,w,swim.anchor,1-mix,roll*health.tailStrength+health.shiver-health.stoop*.45f,scale:scale,tint:health.tint,head:swimHeads[form],cacheKey:"swim"+form);
             }
             if(!biting||mix<=0)return;
+            if(Rig){Rig.Sample("Eat",age,false);BiteFrame=Mathf.Clamp(Mathf.RoundToInt(Rig.frame),0,5);}
             var image=Image("duet/seal-eating");if(image==null)return;int frame=BiteFrame;float cell=image.width/3f,sh=image.height/2f;
             var eyes=biteEyes[frame];var head=new Head(.46f,.72f,new[]{new Vector4(eyes[0].x,eyes[0].y,.17f,.225f),new Vector4(eyes[1].x,eyes[1].y,.17f,.225f)},b0:.60f,b1:.78f);
             Seal(image,new Rect(frame%3*cell,frame/3*sh,cell,sh),x,y,w,biteAnchors[frame],mix,tint:health.tint,head:head,cacheKey:"bite"+frame);
@@ -448,8 +474,13 @@ namespace SealGugu
         {
             var image=Image("tide/seal");if(image==null)return;
             if(health.tint>0)image=Tinted(image,new Rect(0,0,image.width,image.height),health.tint,portraitHead,"portrait");
-            w*=InhaleScale(F(state.expansion));
+            if(Rig)Rig.Sample("Inhale",state.expansion,false);
+            w*=Rig?Rig.bodyScale:InhaleScale(F(state.expansion));
             float h=w*image.height/image.width,hinge=.57f,sourceH=image.height*hinge,top=x-w/2,leftY=y-h/2;
+            if(stage){
+                stage.Belly(image,new Rect(top,leftY,w,h),F(state.expansion));
+                BellyScale=Belly(.42f,F(state.expansion));SealX=x;SealY=y;SealWidth=w;return;
+            }
             Slice(image,new Rect(0,0,image.width,sourceH),new Rect(top,leftY,w,h*hinge));
             // After a uniform whole-body enlargement, the abdomen alone expands below
             // the spine. Head/flippers retain their proportions; the back does not bulge.
@@ -469,6 +500,7 @@ namespace SealGugu
 
         void Inhalation(float x,float y,float w,float time,GuguRun run)
         {
+            if(stage)stage.Group("Breath mist");
             var state=run.breathVisual();float mouthX=x+w*.306f,size=Math.Min(height*.34f,width*.31f),center=mouthX+size*(.13f+.55f*(1-F(state.expansion)));
             Mist(0,center,y-10,size*F(state.ringScale),size*F(state.ringScale),reducedMotion?0:-time*.42f,F(state.mist)*.82f);
             if(!reducedMotion)for(int i=0;i<8;i++)
@@ -492,6 +524,7 @@ namespace SealGugu
         float FriendsBaseline() {return Math.Max(238,height*.53f);}
         void Friends(float time,float bob)
         {
+            if(Rig){Rig.Sample("Friends",endingTime);if(!reducedMotion)bob=Rig.bob;}
             float w=FriendsWidth(),baseline=FriendsBaseline(),y=baseline-w*.3f,gap=w*.04f;
             Portrait(width*.5f-(w+gap)/2,y,w,time);var friend=illustrations["friend"];
             Illustration("friend",width*.5f+(w+gap)/2,baseline-w*friend.rect.height/friend.rect.width/2+bob*.35f,w);
@@ -500,6 +533,7 @@ namespace SealGugu
 
         void Danger(float x,float y,float amount)
         {
+            if(stage)stage.Group("Danger vignette");
             if(vignette==null)
             {
                 vignette=Texture(128,128,"Low oxygen camera vignette");var data=new Color32[128*128];
@@ -574,7 +608,7 @@ namespace SealGugu
 
         public void Dispose()
         {
-            foreach(var image in generated)if(image!=null)UnityEngine.Object.Destroy(image);
+            foreach(var image in generated)if(image!=null){if(Application.isPlaying)UnityEngine.Object.Destroy(image);else UnityEngine.Object.DestroyImmediate(image);}
             generated.Clear();heads.Clear();pixels.Clear();images.Clear();
         }
     }

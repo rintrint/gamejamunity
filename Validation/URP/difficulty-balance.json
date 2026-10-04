@@ -1,0 +1,116 @@
+{
+    "version": "V14.2.2",
+    "success": true,
+    "assertions": 125,
+    "imperfectRoutes": 6,
+    "rows": [
+        {
+            "track": "floe-second",
+            "difficulty": "beginner",
+            "total": 279,
+            "grow": 60,
+            "fat": 110,
+            "full": 170,
+            "oxygen": 0.55,
+            "missPenalty": 6.0,
+            "perfectRecovery": 3.0,
+            "goodRecovery": 1.5
+        },
+        {
+            "track": "floe-second",
+            "difficulty": "intermediate",
+            "total": 279,
+            "grow": 70,
+            "fat": 130,
+            "full": 200,
+            "oxygen": 0.75,
+            "missPenalty": 8.0,
+            "perfectRecovery": 2.2,
+            "goodRecovery": 1.0
+        },
+        {
+            "track": "floe-second",
+            "difficulty": "expert",
+            "total": 279,
+            "grow": 80,
+            "fat": 150,
+            "full": 230,
+            "oxygen": 1.0,
+            "missPenalty": 11.0,
+            "perfectRecovery": 1.5,
+            "goodRecovery": 0.5
+        },
+        {
+            "track": "floe-third",
+            "difficulty": "beginner",
+            "total": 233,
+            "grow": 50,
+            "fat": 90,
+            "full": 140,
+            "oxygen": 0.55,
+            "missPenalty": 6.0,
+            "perfectRecovery": 3.0,
+            "goodRecovery": 1.5
+        },
+        {
+            "track": "floe-third",
+            "difficulty": "intermediate",
+            "total": 233,
+            "grow": 50,
+            "fat": 110,
+            "full": 160,
+            "oxygen": 0.75,
+            "missPenalty": 8.0,
+            "perfectRecovery": 2.2,
+            "goodRecovery": 1.0
+        },
+        {
+            "track": "floe-third",
+            "difficulty": "expert",
+            "total": 233,
+            "grow": 60,
+            "fat": 130,
+            "full": 190,
+            "oxygen": 1.0,
+            "missPenalty": 11.0,
+            "perfectRecovery": 1.5,
+            "goodRecovery": 0.5
+        },
+        {
+            "track": "drift-tide",
+            "difficulty": "beginner",
+            "total": 414,
+            "grow": 80,
+            "fat": 170,
+            "full": 250,
+            "oxygen": 0.55,
+            "missPenalty": 6.0,
+            "perfectRecovery": 3.0,
+            "goodRecovery": 1.5
+        },
+        {
+            "track": "drift-tide",
+            "difficulty": "intermediate",
+            "total": 414,
+            "grow": 100,
+            "fat": 190,
+            "full": 290,
+            "oxygen": 0.75,
+            "missPenalty": 8.0,
+            "perfectRecovery": 2.2,
+            "goodRecovery": 1.0
+        },
+        {
+            "track": "drift-tide",
+            "difficulty": "expert",
+            "total": 414,
+            "grow": 110,
+            "fat": 230,
+            "full": 340,
+            "oxygen": 1.0,
+            "missPenalty": 11.0,
+            "perfectRecovery": 1.5,
+            "goodRecovery": 0.5
+        }
+    ]
+}

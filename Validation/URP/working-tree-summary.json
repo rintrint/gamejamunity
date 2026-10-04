@@ -1,0 +1,32 @@
+{
+  "scope": "Pre-release Huhu URP 2D verification, before the runtime version string was bumped from V14.2.2 to V15.0.0",
+  "baseCommit": "61f7e6a3cafab31628d7e186d9d0bd8a5db03412",
+  "unity": "6000.6.4f1",
+  "urp": "17.6.0",
+  "renderer": "Renderer2D",
+  "playerBuild": "Builds/URP-Preview",
+  "captureDirectory": "Captures/URP-final",
+  "visualInspection": [
+    "menu",
+    "opening-full",
+    "swim-fat",
+    "low-thin",
+    "surface",
+    "friends",
+    "rest"
+  ],
+  "editorUI": [
+    "Scene visible outside Play",
+    "Preview Scene switch",
+    "Quick medium form preview",
+    "Four scene roots visible"
+  ],
+  "rhythmCoreModified": false,
+  "limitations": [
+    "HUD and dialogs retain existing IMGUI controls; scenery, seal, notes and effects use native scene objects.",
+    "Automated timing test uses virtual keyboard and muted normal-speed audio; not a human audio-device latency calibration."
+  ],
+  "titleSha256": "8b13e8aef20436b689134a91469784a1494923cf42256dc9386b19315488a34e",
+  "verifiedUtc": "2026-10-04T02:55:13.420241+00:00",
+  "releaseVerification": "Validation/release-build.json"
+}

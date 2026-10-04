@@ -1,0 +1,33 @@
+{
+    "version": "V14.2.2",
+    "font": "Microsoft JhengHei",
+    "success": true,
+    "hungerReturnedToNormal": true,
+    "assertions": 19,
+    "captures": [
+        "aspect-1280x720-menu.png",
+        "aspect-1280x720-swim-fat.png",
+        "aspect-1280x720-opening-full.png",
+        "aspect-1280x720-friends.png",
+        "aspect-1280x800-menu.png",
+        "aspect-1280x800-swim-fat.png",
+        "aspect-1280x800-opening-full.png",
+        "aspect-1280x800-friends.png",
+        "aspect-1680x720-menu.png",
+        "aspect-1680x720-swim-fat.png",
+        "aspect-1680x720-opening-full.png",
+        "aspect-1680x720-friends.png",
+        "hunger-3.png",
+        "hunger-22.png",
+        "hunger-45.png",
+        "hunger-69.png",
+        "hunger-100.png"
+    ],
+    "hungerFrames": [
+        0,
+        1,
+        3,
+        3,
+        0
+    ]
+}

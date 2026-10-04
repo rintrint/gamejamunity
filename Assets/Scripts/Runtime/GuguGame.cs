@@ -9,9 +9,10 @@ namespace SealGugu
     /// <summary>The native game shell. The deterministic run never depends on GUI animation.</summary>
     public sealed class GuguGame : MonoBehaviour
     {
-        public const string Version="V14.2.2";
+        public const string Version="V15.0.0";
         [Tooltip("小組成員可在此資產的 entries 直接輸入名字。")]
         public GameCredits credits;
+        public HuhuStage stage;
         public GuguRun run { get; private set; }
         GuguRenderer view;
         GuguAudio sound;
@@ -54,10 +55,11 @@ namespace SealGugu
         string Scene => run==null||run.status=="ready"?"menu":run.breathingActive?"breath":run.status=="won"||run.status=="lost"?"end":"play";
         void Awake()
         {
+            HuhuSettingsMigration.Once();
             Application.targetFrameRate=144;QualitySettings.vSyncCount=0;Application.runInBackground=false;
             if(!credits)credits=Resources.Load<GameCredits>("GameCredits");
             sans=GuguTypography.Create();
-            desktop=gameObject.AddComponent<GuguDesktop>();sound=gameObject.AddComponent<GuguAudio>();view=new GuguRenderer{font=sans};view.Preload();
+            desktop=gameObject.AddComponent<GuguDesktop>();sound=gameObject.AddComponent<GuguAudio>();view=new GuguRenderer{font=sans,stage=stage};view.Preload();
             try{
                 tracks=JsonUtility.FromJson<ChartDocument>(Resources.Load<TextAsset>("Data/chart").text).tracks;
                 for(int i=0;i<tracks.Length;i++)tracks[i].title="音樂"+(i+1);
@@ -251,16 +253,26 @@ namespace SealGugu
             if(GUI.enabled&&Event.current.type==EventType.MouseDown&&Event.current.button==0&&r.Contains(Event.current.mousePosition)){Press(lane,Time.realtimeSinceStartupAsDouble,bite);Event.current.Use();}
             GUI.Button(r,text,action);return false;
         }
+        void LateUpdate()
+        {
+            if(!stage||run==null)return;
+            float scale=Mathf.Min(Screen.width/W,Screen.height/H),x=(Screen.width-W*scale)*.5f,y=(Screen.height-H*scale)*.5f;
+            var bounds=new Rect(-x/scale,-y/scale,Screen.width/scale,Screen.height/scale);
+            float t=(float)(run.openingBreath?run.breathElapsed:run.status=="ready"?visual:run.time);
+            stage.Begin(Scene,bounds);view.DrawBackdrop(run,Scene,bounds.width,bounds.height);
+            view.Draw(run,Scene,t,run.status=="paused"||IsPreview?0:lastDt,W,H,bounds);stage.End();
+        }
         void OnGUI()
         {
             Styles();GUI.skin=theme;float scale=Mathf.Min(Screen.width/W,Screen.height/H);float x=(Screen.width-W*scale)*.5f,y=(Screen.height-H*scale)*.5f;
-            if(Event.current.type==EventType.Repaint)view.DrawBackdrop(run,Scene,Screen.width,Screen.height);
+            if(!stage&&Event.current.type==EventType.Repaint)view.DrawBackdrop(run,Scene,Screen.width,Screen.height);
             canvasBounds=new Rect(-x/scale,-y/scale,Screen.width/scale,Screen.height/scale);
             GUI.matrix=Matrix4x4.TRS(new Vector3(x,y,0),Quaternion.identity,new Vector3(scale,scale,1));
             desktop.BeginGui();
+            if(stage)stage.DrawLabels(sans);
             if(run!=null){
                 float t=(float)(run.openingBreath?run.breathElapsed:run.status=="ready"?visual:run.time);
-                if(Event.current.type==EventType.Repaint)view.Draw(run,Scene,t,run.status=="paused"||IsPreview?0:lastDt,W,H,canvasBounds);
+                if(!stage&&Event.current.type==EventType.Repaint)view.Draw(run,Scene,t,run.status=="paused"||IsPreview?0:lastDt,W,H,canvasBounds);
                 // The dimmer is only paint. Disable every underlying control before
                 // processing the foreground window, including manual mouse-down taps.
                 bool backgroundEnabled=GUI.enabled;GUI.enabled=backgroundEnabled&&modal=="";
@@ -283,7 +295,7 @@ namespace SealGugu
         }
         void Header()
         {
-            Text(new Rect(desktop.FpsVisible?174:39,9,330,38),"≈ 海豹咕咕",28,TextAnchor.UpperLeft,DiveUi?Css(0xecfaff):Ink,true,DiveUi?Css(0x235c77):(Color?)null,1,3);
+            Text(new Rect(desktop.FpsVisible?174:39,9,330,38),"≈ 海豹呼呼",28,TextAnchor.UpperLeft,DiveUi?Css(0xecfaff):Ink,true,DiveUi?Css(0x235c77):(Color?)null,1,3);
             Text(new Rect(desktop.FpsVisible?184:49,47,250,25),"一口氣的旅程",14,TextAnchor.UpperLeft,DiveUi?Css(0xecfaff):Muted);
             Text(new Rect(1020,25,132,28),Version,18,TextAnchor.MiddleRight,DiveUi?Css(0xe9f9ff):Muted);
             if(Button(new Rect(1160,15,47,45),sound.muted?"♪":"♫")){sound.Mute(!sound.muted);if(!sound.muted&&run.status=="ready")sound.Menu(tracks[song]);}
@@ -293,11 +305,11 @@ namespace SealGugu
         void Menu()
         {
 
-            Text(new Rect(192,202,510,93),"海豹咕咕",68,TextAnchor.UpperLeft,new Color(.22f,.43f,.53f),true);
-            Text(new Rect(195,299,500,48),"一口氣，游向你。",27,TextAnchor.UpperLeft,Ink,true);
-            if(Ice(new Rect(717,158,461,192),"Start-Botton")){modal="setup";setupScroll=Vector2.zero;}
-            if(Ice(new Rect(806,331,448,186),"Credits-Botton"))modal="credits";
-            if(Ice(new Rect(781,518,422,176),"Exit-Botton")){sound.Silence();Application.Quit();}
+            if(!stage){var logo=Art("huhu/title");if(logo)GUI.DrawTexture(GuguUiArt.Fit(new Rect(145,185,530,175),logo),logo);}
+            Text(new Rect(195,320,500,42),"一口氣，游向你。",27,TextAnchor.UpperLeft,Ink,true);
+            if(Ice(HuhuStage.AnchorRect(stage?stage.startAnchor:null,new Rect(717,158,461,192)),"Start-Botton")){modal="setup";setupScroll=Vector2.zero;}
+            if(Ice(HuhuStage.AnchorRect(stage?stage.creditsAnchor:null,new Rect(806,331,448,186)),"Credits-Botton"))modal="credits";
+            if(Ice(HuhuStage.AnchorRect(stage?stage.exitAnchor:null,new Rect(781,518,422,176)),"Exit-Botton")){sound.Silence();Application.Quit();}
         }
         string Cue(out double remaining)
         {

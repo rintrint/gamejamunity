@@ -11,18 +11,18 @@ namespace SealGugu.Editor
 {
     public static class ProjectBuild
     {
-        public const string Version = "14.2.2";
+        public const string Version = "15.0.0";
         public const string ScenePath = "Assets/Scenes/Main.unity";
 
         [Serializable]
         private sealed class ParityReport
         {
-            public string version = "V14.2.2", unityVersion, sourceCommit, verifiedUtc, summary;
+            public string version = "V15.0.0", unityVersion, sourceCommit, verifiedUtc, summary;
             public bool success;
             public int scenarios, checkpoints, assertions;
         }
 
-        [MenuItem("Tools/海豹咕咕/驗證 HTML V13 邏輯一致性")]
+        [MenuItem("Tools/海豹呼呼/驗證 HTML V13 邏輯一致性")]
         public static void RunParity()
         {
             var chartAsset = Resources.Load<TextAsset>("Data/chart");
@@ -56,13 +56,13 @@ namespace SealGugu.Editor
             Debug.Log("GUGU_PARITY_SUCCESS " + report.summary);
         }
 
-        [MenuItem("Tools/海豹咕咕/準備專案與主場景")]
+        [MenuItem("Tools/海豹呼呼/準備專案與主場景")]
         public static void Initialize()
         {
             Directory.CreateDirectory("Assets/Scenes");
             Directory.CreateDirectory("Assets/Resources");
             PlayerSettings.companyName = "第二組";
-            PlayerSettings.productName = "海豹咕咕";
+            PlayerSettings.productName = "海豹呼呼";
             PlayerSettings.bundleVersion = Version;
             PlayerSettings.SplashScreen.show = false;
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, "com.rintrint.sealgugu");
@@ -101,13 +101,13 @@ namespace SealGugu.Editor
                 camera.orthographic = true;
                 camera.transform.position = new Vector3(0, 0, -10);
                 camera.gameObject.AddComponent<AudioListener>();
-                new GameObject("海豹咕咕 · V14.2.2").AddComponent<GuguGame>();
+                new GameObject("海豹呼呼 · V15.0.0").AddComponent<GuguGame>();
                 EditorSceneManager.SaveScene(scene, ScenePath);
             }
             else EditorSceneManager.OpenScene(ScenePath);
             var game = UnityEngine.Object.FindAnyObjectByType<GuguGame>();
-            if(game&&game.gameObject.name!="海豹咕咕 · "+GuguGame.Version){
-                game.gameObject.name="海豹咕咕 · "+GuguGame.Version;
+            if(game&&game.gameObject.name!="海豹呼呼 · "+GuguGame.Version){
+                game.gameObject.name="海豹呼呼 · "+GuguGame.Version;
                 EditorSceneManager.MarkSceneDirty(game.gameObject.scene);
                 EditorSceneManager.SaveScene(game.gameObject.scene);
             }
@@ -120,18 +120,24 @@ namespace SealGugu.Editor
             }
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
-            Debug.Log("GUGU_PROJECT_READY V14.2.2; editable credits: Assets/Resources/GameCredits.asset");
+            Debug.Log("GUGU_PROJECT_READY V15.0.0; editable credits: Assets/Resources/GameCredits.asset");
         }
 
-        [MenuItem("Tools/海豹咕咕/打包 Windows V14.2.2")]
-        public static void BuildWindows()
+        [MenuItem("Tools/海豹呼呼/打包 Windows V15.0.0")]
+        public static void BuildWindows() { Build(null,false); }
+
+        [MenuItem("Tools/海豹呼呼/建置 URP 本機測試包（不發布）")]
+        public static void BuildUrpPreview() { HuhuMigration.Upgrade(); HuhuMigration.Verify(); Build("Builds/URP-Preview",true); }
+
+        static void Build(string outputOverride,bool qa)
         {
             Initialize();
+            HuhuMigration.Verify();
             RunParity();
             OxygenBalanceParity.Verify();
             DifficultyBalanceParity.Verify();
             string[] args=Environment.GetCommandLineArgs();int outputFlag=Array.IndexOf(args,"-guguOutput");
-            var directory = Path.GetFullPath(outputFlag>=0&&outputFlag+1<args.Length?args[outputFlag+1]:"Builds/V"+Version);
+            var directory = Path.GetFullPath(outputOverride ?? (outputFlag>=0&&outputFlag+1<args.Length?args[outputFlag+1]:"Builds/V"+Version));
             Directory.CreateDirectory(directory);
             var buildOptions = BuildOptions.CompressWithLz4HC;
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-guguDevelopment"))
@@ -141,13 +147,13 @@ namespace SealGugu.Editor
                 scenes = new[] { ScenePath },
                 locationPathName = Path.Combine(directory, "SealGugu.exe"),
                 target = BuildTarget.StandaloneWindows64,
-                extraScriptingDefines = (buildOptions & BuildOptions.Development) != 0 || Array.IndexOf(args,"-guguQA")>=0 ? new[] { "GUGU_QA" } : Array.Empty<string>(),
+                extraScriptingDefines = qa || (buildOptions & BuildOptions.Development) != 0 || Array.IndexOf(args,"-guguQA")>=0 ? new[] { "GUGU_QA" } : Array.Empty<string>(),
                 options = buildOptions
             });
             if (report.summary.result != BuildResult.Succeeded)
                 throw new Exception("Windows build failed: " + report.summary.result + "; errors=" + report.summary.totalErrors);
             File.WriteAllText(Path.Combine(directory, "README.txt"),
-                "海豹咕咕 V14.2.2\r\n\r\n開啟 SealGugu.exe。請保留同資料夾的 SealGugu_Data、UnityPlayer.dll 與其他檔案。\r\n" +
+                "海豹呼呼 V15.0.0\r\n\r\n開啟 SealGugu.exe。請保留同資料夾的 SealGugu_Data、UnityPlayer.dll 與其他檔案。\r\n" +
                 "上排 D / F / ↑；下排 J / K / ↓；開場吸氣 Space；途中岸上換氣連打 Space 或上下排按鍵；Esc 暫停；Alt + Enter 切換視窗／全螢幕；F1 顯示／隱藏 FPS。\r\n" +
                 "預設判定 ±150ms，可在選曲及暫停設定調整魚速、延遲與判定。\r\n");
             var notices = Path.Combine(directory, "ThirdPartyNotices");

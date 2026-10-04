@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b99c3bd6a1ad19242a750663bfa85690, type: 3}
+  m_Name: SealArt
+  m_EditorClassIdentifier: Assembly-CSharp::SealGugu.HuhuSealArt
+  swimming:
+  - image: {fileID: 2800000, guid: f1f75baab60b07d49a09cde8fbfa2992, type: 3}
+    crop:
+      serializedVersion: 2
+      x: 185
+      y: 670
+      width: 552
+      height: 158
+    mouthAnchor: {x: 0.99, y: 0.58}
+  - image: {fileID: 2800000, guid: 015390b557b3036438767ce1b9d70b21, type: 3}
+    crop:
+      serializedVersion: 2
+      x: 165
+      y: 579
+      width: 501
+      height: 175
+    mouthAnchor: {x: 0.99, y: 0.61}
+  - image: {fileID: 2800000, guid: 0ed800f07e4321b4a8b5cd0713fd3625, type: 3}
+    crop:
+      serializedVersion: 2
+      x: 164
+      y: 541
+      width: 497
+      height: 214
+    mouthAnchor: {x: 0.99, y: 0.72}
+  portrait: {fileID: 2800000, guid: 0a85e16d6d59fe74cb0c701129b8833e, type: 3}
+  eatingAtlas: {fileID: 2800000, guid: 5ca8b15a1488c5c4d8f4e420ce90c924, type: 3}
+  menuHungerAtlas: {fileID: 2800000, guid: 0b852dce82f16bb4a8cc3818c2417a45, type: 3}
