@@ -35,8 +35,14 @@ in the shipped player. Do not regenerate expected values from the C# port.
 
 ## V14.1.1 intentional balance change
 
-The shipped default oxygen multiplier is now **0.5**. Historical golden replays explicitly pass `oxygenDrainMultiplier = 1`, preserving the unmodified HTML baseline. `OxygenBalanceParity.Verify` separately gates every build on the new default: all 3 songs × 3 difficulties × 3 depths × 3 frame rates, intro grace, no surface drain, unchanged 12% refill, pause, and the doubled oxygen-exhaustion boundary. Full-song native QA uses the real default 0.5. These tests do not claim unchanged oxygen balance.
+The shipped default oxygen multiplier is now **0.5**. Historical golden replays explicitly pass `oxygenDrainMultiplier = 1`, preserving the unmodified HTML baseline. `OxygenBalanceParity.Verify` separately gates every build on the new default: all 3 songs × 3 difficulties × 3 depths × 3 frame rates, intro grace, the then-current surface exemption, unchanged 12% refill, pause, and the doubled oxygen-exhaustion boundary. Full-song native QA uses the real default 0.5. These tests do not claim unchanged oxygen balance.
 
 ## V14.2.0 difficulty profiles
 
 Historical fixtures explicitly use `legacyBalance = true` as well as oxygen multiplier 1. Current builds additionally gate on `DifficultyBalanceParity`: song-specific rounded thresholds, all difficulty drain rates, Miss and hit stability changes, ghost/angel/friends/rest boundaries, mashing protection, and six imperfect complete routes for beginner/intermediate. The default base drain remains 0.5. Beginner/intermediate/expert multiply it by 0.55/0.75/1; full-food targets use 0.60/0.70/(360/438), rounded to tens. Displayed oxygen/stability are floored integers so asymptotic surface refill never falsely displays 100%.
+
+## V14.2.2 surface oxygen correction
+
+Normal play now consumes oxygen during mid-song surface refill stops. Surface depth is zero, so independent expected rates are 1.14125 / 1.55625 / 2.075 percentage points per second for beginner / intermediate / expert. Timestamped input pays elapsed consumption before applying the unchanged 12% missing-capacity refill. Historical HTML fixtures explicitly use `legacyBalance = true` to retain their original surface exemption; expected HTML traces are not regenerated from C#.
+
+`OxygenBalanceParity` now exercises 27 surface timing combinations (3 difficulties × 3 frame rates × 3 input calibration offsets), covering idle decline, alternating lane refill input, stopping taps, pause/resume, and a frame spanning automatic departure. It also checks oxygen exhaustion before a late tap, the practice oxygen floor, opening inhale and the final shore. Existing full-song routes and difficulty tests run against the new default behavior.

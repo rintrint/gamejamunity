@@ -9,7 +9,7 @@ namespace SealGugu
     /// <summary>The native game shell. The deterministic run never depends on GUI animation.</summary>
     public sealed class GuguGame : MonoBehaviour
     {
-        public const string Version="V14.2.1";
+        public const string Version="V14.2.2";
         [Tooltip("小組成員可在此資產的 entries 直接輸入名字。")]
         public GameCredits credits;
         public GuguRun run { get; private set; }

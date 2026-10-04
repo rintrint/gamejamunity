@@ -1,16 +1,18 @@
-# V14.2.1 發布驗證
+# V14.2.2 發布驗證
 
-Unity 6000.6.4f1，Windows x64。此版本只修正 UI Hover、文字顏色及控制項辨識度。
+Unity 6000.6.4f1，Windows x64。修正途中上岸連打換氣的持續耗氧。
 
 | 本次重新執行 | 結果／證據 |
 | --- | --- |
 | HTML V13 核心對照 | 64 情境、6,014 檢查點、589,032 斷言通過；`core-parity.json` |
-| 氧氣平衡 | 237 斷言、81 組消耗率、18 條完整路線通過；`oxygen-balance.json` |
+| 目前氧氣平衡 | 936 斷言、81 組消耗率、18 條完整歌曲路線、27 組換氣時序組合通過；`oxygen-balance.json` |
 | 難度平衡 | 125 斷言、6 條不完美通關路線通過；`difficulty-balance.json` |
-| Unity 正式建置 | Windows 非 Development 建置成功；`release-build.json` |
-| UI 實際操作 | Editor 與正式 EXE 的選單／對話框檢查；`ui-review-V14.2.1.json` |
-| 發布包 | 154 個檔案、ZIP CRC 與 SHA-256、測試入口排除；`windows-package.json` |
+| Unity 正式建置 | 非 Development Windows 建置成功，輸出 `Builds/V14.2.2`；`release-build.json` |
+| 正式 EXE 啟動 | 已查看 V14.2.2 主畫面、Start 選曲及開場吸氣，正常關閉；Player.log 無 managed exception |
+| 發布包 | 154 個檔案、ZIP CRC 與 SHA-256、測試入口排除檢查通過；`windows-package.json` |
 
-滑鼠檢查涵蓋一般文字不變色、未選與已選歌曲／難度 Hover、選取難度不穿透背景、練習選項及校正區辨識度、Start 與 CREDITS 的返回冰塊 Hover。正式 EXE 顯示 V14.2.1，使用 Microsoft JhengHei，檢查期間 Player.log 無 managed exception。
+換氣測試使用獨立公式計算各難度耗氧，涵蓋 30／60／144 FPS 與 -200／0／+200 ms 校正。驗證連打前先計入時間耗氧、停止連打後下降、暫停與恢復、自動下海跨越的時間邊界、缺氧時不能靠遲來的按鍵復活、練習模式與安全的結尾岸上。開場仍採原本一次收氣。
 
-本次未重新進行整首歌、音訊 PCM／DSP 或多比例自動截圖測試。這些區域的原始程式與資產未在本次變更；先前結果保留原始版本欄位，不當作 V14.2.1 重測結果。前次完整驗證索引見 `README_V14.2.0.md`。
+歷史 HTML golden 明確使用 `legacyBalance = true`，保留原作的岸上免耗氧；目前版本的完整路線及新測試使用預設的新規則。沒有改寫歷史預期值以迎合 C#。
+
+本次未重跑完整歌曲的影音實機測試或音訊 PCM／DSP、比例與 Hover 自動檢查。其先前報告保留原始版本欄位，不當作 V14.2.2 的重測結果。前次驗證索引見 `README_V14.2.1.md`。

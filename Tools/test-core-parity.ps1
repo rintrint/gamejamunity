@@ -3,7 +3,7 @@ param(
     [string]$ProjectRoot = (Split-Path $PSScriptRoot -Parent)
 )
 $ErrorActionPreference = 'Stop'
-Add-Type -Path (Join-Path $ProjectRoot 'Assets/Scripts/Core/GuguRun.cs'), (Join-Path $ProjectRoot 'Assets/Scripts/Core/CoreParity.cs')
+Add-Type -Path (Join-Path $ProjectRoot 'Assets/Scripts/Core/DifficultyBalance.cs'), (Join-Path $ProjectRoot 'Assets/Scripts/Core/GuguRun.cs'), (Join-Path $ProjectRoot 'Assets/Scripts/Core/CoreParity.cs')
 $options = [System.Text.Json.JsonSerializerOptions]::new()
 $options.IncludeFields = $true
 $chartPath = Join-Path $SourceGame 'assets/floe/chart.json'

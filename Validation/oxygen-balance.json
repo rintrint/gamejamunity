@@ -1,9 +1,10 @@
 {
-    "version": "V14.2.1",
+    "version": "V14.2.2",
     "success": true,
     "runtimeMultiplier": 0.5,
-    "assertions": 237,
+    "assertions": 936,
     "rateCases": 81,
     "perfectRoutes": 18,
-    "note": "Original V13 golden uses 1x for historical parity; release default is 0.5x. Difficulty oxygen multipliers are applied on top of the 0.5 base; refill, grace and pause retain original rules."
+    "surfaceCases": 27,
+    "note": "Original V13 golden uses 1x for historical parity; release default is 0.5x. Difficulty oxygen multipliers are applied on top of the 0.5 base; Surface refill now consumes oxygen at depth-zero rate while retaining 12% refill, opening/intro grace and pause behavior. Legacy HTML fixtures explicitly keep the old surface exemption."
 }

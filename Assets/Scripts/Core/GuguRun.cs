@@ -65,6 +65,7 @@ namespace SealGugu
     {
         public const double OXYGEN_DRAIN_MULTIPLIER = .5;
         public readonly double oxygenDrainMultiplier;
+        readonly bool drainDuringSurface;
         public readonly DifficultyBalance balance;
         public const double DEFAULT_WINDOW = 150, REFILL_FRACTION = .12, REFILL_LIMIT = 100 - 1e-9;
         static readonly string[] Phrase = { "lower", "lower", "upper", "upper", "upper", "upper", "lower", "lower", "lower", "upper", "upper", "lower", "upper", "lower", "lower", "upper" };
@@ -91,6 +92,8 @@ namespace SealGugu
             profile = Profile.For(level);
             settings = settings ?? new RunSettings();
             balance = DifficultyBalance.For(settings.legacyBalance ? "expert" : level);
+            // Historical HTML fixtures retain their original balance; normal play keeps breathing effort active.
+            drainDuringSurface = !settings.legacyBalance;
             oxygenDrainMultiplier = settings.oxygenDrainMultiplier; setTiming(settings.delay, settings.window);
             Note[] source = track.charts.Get(level);
             if (source == null) throw new ArgumentException("Missing difficulty chart: " + level);
@@ -229,13 +232,14 @@ namespace SealGugu
         void syncOutcome() { if (status == "won") outcome = food >= targets.full ? "friends" : "rest"; }
         void consumeSegment(double to)
         {
-            if (phase == "surface") { time = Math.Max(time, to); return; }
-            // Preserve DriftRun's intro oxygen grace and chronological debt exactly.
-            if (time < track.introEnd) time = Math.Min(to, track.introEnd);
+            if (phase == "surface" && !drainDuringSurface) { time = Math.Max(time, to); return; }
+            // Intro grace is for the initial underwater lead-in, not mid-song refill stops.
+            if (phase == "underwater" && time < track.introEnd) time = Math.Min(to, track.introEnd);
             double dt = Math.Max(0, to - time);
-            if (phase == "underwater")
+            if (phase == "underwater" || phase == "surface")
             {
-                air = Math.Max(0, air - dt * (4.15 + depth * .012) * oxygenDrainMultiplier * balance.oxygen);
+                double oxygenDepth = phase == "surface" ? 0 : depth;
+                air = Math.Max(0, air - dt * (4.15 + oxygenDepth * .012) * oxygenDrainMultiplier * balance.oxygen);
                 if (air <= 0 && !practice) { time = to; lose("oxygen"); return; }
                 if (practice) air = Math.Max(1, air);
             }

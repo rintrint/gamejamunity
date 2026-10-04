@@ -1,11 +1,12 @@
 {
-  "version": "V14.2.1",
+  "version": "V14.2.2",
   "success": true,
   "unityVersion": "6000.6.4f1",
   "development": false,
   "buildBytes": 278822669,
-  "verifiedUtc": "2026-10-04T02:12:46.0125374Z",
+  "buildDirectory": "Builds/V14.2.2",
+  "verifiedUtc": "2026-10-04T02:27:46.952979+00:00",
   "startupMode": "native rendered Windows player",
   "managedExceptions": false,
-  "note": "Built through ProjectBuild.BuildWindows in the open Unity Editor. Required core/oxygen/difficulty checks passed. Release EXE launched and menu, setup, selection, label hover and both Back controls inspected via computer-use. Player.log contains no managed exception. Package script verified the release assembly excludes QA entry points."
+  "note": "Built through ProjectBuild.BuildWindows in the open Unity Editor; GUGU_BUILD_SUCCESS observed. Core, oxygen and difficulty gates passed. Formal EXE launched; version, main menu, Start dialog and opening breath inspected via computer-use. Player.log confirms normal shutdown and no managed exception. No full-song audiovisual replay performed this release. Release package excludes QA entry points."
 }

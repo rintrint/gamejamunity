@@ -1,4 +1,4 @@
-# 海豹咕咕 V14.2.1
+# 海豹咕咕 V14.2.2
 
 Unity **6.6 / 6000.6.4f1** 原生 Windows 版。以 HTML 第 13 版 `1665a124f2a60c380989dd53af80a943386e2d7e` 為移植基準，保留原始歌曲、譜面和手繪風格，並持續改善平衡與介面。這個專案只有海豹咕咕，沒有舊版切換選單。
 
@@ -30,6 +30,8 @@ V14.2.0 新增音效同步的主畫面飢餓動畫，結束後恢復開心表情
 
 V14.2.1 修正一般文字 Hover 變色，補齊 Start／CREDITS 內返回按鈕的冰塊 Hover。選曲、難度、練習與校正按鈕增加清楚的底色、描邊、選取及滑鼠回饋。詳見 `Documentation/RELEASE_V14.2.1.md`。
 
+V14.2.2 修正途中上岸連打換氣時肺活量完全停止下降的問題。換氣期間持續以岸上耗氧率消耗，依難度套用倍率；每次按鍵仍補回剩餘容量的 12%。詳見 `Documentation/RELEASE_V14.2.2.md`。
+
 ## 用 Unity 編輯
 
 1. Unity Hub → Add / Add project from disk，選此 repo 資料夾。
@@ -50,7 +52,7 @@ V14.2.1 修正一般文字 Hover 變色，補齊 Start／CREDITS 內返回按鈕
 
 ## 打包與驗證
 
-Unity 選单 **Tools → 海豹咕咕 → 打包 Windows V14.2.1**。輸出 `Builds/Windows/SealGugu.exe`。命令列也可使用：
+Unity 選单 **Tools → 海豹咕咕 → 打包 Windows V14.2.2**。輸出 `Builds/V14.2.2/SealGugu.exe`；預設依版本保存，避免覆蓋前一版。命令列也可使用：
 
 ```powershell
 & 'C:\Program Files\Unity\Hub\Editor\6000.6.4f1\Editor\Unity.exe' -batchmode -nographics -quit -projectPath "$PWD" -executeMethod SealGugu.Editor.ProjectBuild.BuildWindows -logFile "$PWD\build.log"

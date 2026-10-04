@@ -11,8 +11,8 @@ p.add_argument('--project', type=Path, required=True)
 p.add_argument('--build', type=Path)
 args = p.parse_args()
 root = args.project.resolve()
-build = args.build.resolve() if args.build else root / 'Builds/Windows'
 version = re.search(r'const string Version\s*=\s*"([^"]+)"', (root/'Assets/Scripts/Runtime/GuguGame.cs').read_text(encoding='utf-8-sig')).group(1)
+build = args.build.resolve() if args.build else root / 'Builds' / version
 for required in ['SealGugu.exe', 'UnityPlayer.dll',
                  'SealGugu_Data/Managed/Assembly-CSharp.dll', 'README.txt']:
     if not (build / required).is_file():
