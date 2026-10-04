@@ -31,7 +31,7 @@ namespace SealGugu.Diagnostics
 
         private static readonly string[] Modes = {
             "menu", "setup", "credits", "tuning", "opening", "opening-full", "swim-thin", "swim-medium", "swim-fat",
-            "low-thin", "low-medium", "low-fat", "bite", "gate", "surface",
+            "low-thin", "low-medium", "low-fat", "bite", "gate", "surface-rise", "surface-impact", "surface",
             "friends", "rest", "hungryGhost", "angel"
         };
         private string outputDirectory;

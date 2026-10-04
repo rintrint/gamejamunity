@@ -1,11 +1,11 @@
 {
   "success": true,
-  "version": "V15.0.0",
+  "version": "V15.1.0",
   "platform": "Windows x64",
-  "archive": "SealGugu-V15.0.0-Windows-x64.zip",
-  "fileCount": 177,
-  "bytes": 205492773,
-  "sha256": "66d45d5252b8d02899737a90c5cb6e0a5d058716dcf81ed6640ad6cc4c8eaa10",
+  "archive": "SealBreath-V15.1.0-Windows-x64.zip",
+  "fileCount": 179,
+  "bytes": 209473055,
+  "sha256": "38cff8f88fdf6a6b42c49388ba1c91bd0c89fe06460ae0ee0760d7b393dd1403",
   "developmentEntryPointsAbsent": true,
   "zipCrcVerified": true
 }

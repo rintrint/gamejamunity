@@ -16,6 +16,7 @@ namespace SealGugu
         public const float MusicVolume=.93f*.75f, MenuHungerVolume=.6f*.75f;
         double hungerAt=-100,hungerDuration;
         public float MenuHungerProgress => muted||hungerDuration<=0||AudioSettings.dspTime<hungerAt||AudioSettings.dspTime>=hungerAt+hungerDuration ? -1 : (float)((AudioSettings.dspTime-hungerAt)/hungerDuration);
+        public double MenuHungerElapsed => MenuHungerProgress<0 ? -1 : AudioSettings.dspTime-hungerAt;
         double anchor, position, pausedAt, duration, lastHeart = -100, lastMistake = -100;
         bool running;
         public bool muted { get; private set; }
@@ -112,11 +113,12 @@ namespace SealGugu
             if(e.type=="won"||e.type=="lost")StopEffects();
             switch(e.type){
                 case "breathTap":Sample("button",.22f,0,.09f);break;
-                case "breath":if(e.big)Sample(g.initialAir>=90?"breathGood":"breathBad",.5f);else Sample("inhale",.35f,0,1.5f);break;
+                case "breath":if(e.big)Sample(g.initialAir>=90?"breathGood":"breathBad",.5f);else {Sample("inhale",.35f,0,1.5f);if(!string.IsNullOrEmpty(e.result))Sample(e.result=="perfect"?"breathGood":"breathBad",.35f);}break;
                 case "bigBreath":Sample("inhale",.85f,0,1.7f);Sample("dive",.55f,.7);break;
                 case "splash":Sample("dive",.5f);break;
                 case "call":Sample("happy",.4f);break;
-                case "hit":if(e.note.kind=="surface"||e.note.kind=="exit"){Sample("surface",.42f);Sample("fisher",.4f,.05);if(e.note.kind=="surface")Sample(e.result=="perfect"?"breathGood":"breathBad",.35f,.3);}break;
+                case "surfaceRise":Sample("surface",.42f);Sample("fisher",.4f,GuguRun.SURFACE_IMPACT_SECONDS);break;
+                case "hit":break;
                 case "miss":if(AudioSettings.dspTime-lastMistake>.16){Sample("ice",.12f,0,.16f);lastMistake=AudioSettings.dspTime;}break;
                 case "lost":if(g.reason=="entry"||g.reason=="leap")Sample("ice",.4f);Sample(g.outcome=="angel"?"angel":"ghost",.5f,.12);break;
                 case "won":if(g.outcome=="friends"){Sample("happy",.4f);Sample("belly",.45f,1.4);}else{Sample("sad",.3f);Sample("hungry",.5f,1.8);}break;

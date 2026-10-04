@@ -1,0 +1,32 @@
+{
+  "sourceGif": "開始畫面的餓餓海豹.gif",
+  "frames": 3,
+  "frameSize": [
+    825,
+    464
+  ],
+  "durationsSeconds": [
+    0.08,
+    0.08,
+    0.08
+  ],
+  "bounds": [
+    134,
+    181,
+    420,
+    392
+  ],
+  "atlasSize": [
+    2475,
+    464
+  ],
+  "sourceBackground": "IMG_4352.webp",
+  "backgroundSize": [
+    1794,
+    1010
+  ],
+  "presentationAspect": "16:9 proportional cover; no stretch",
+  "pixelExactFrames": true,
+  "gifSha256": "b64599bf787979f0b2662f4b1aeee4669b66ed059f8700630a6718aba8c0e0c8",
+  "backgroundSha256": "a339d098f6cc9a643a4a3b589b69fe089beceddc0b9a5177c4222800c4d78591"
+}

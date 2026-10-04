@@ -37,7 +37,12 @@ namespace SealGugu
                 var type=v.GetType();var source=(AudioSource)type.GetField("source").GetValue(v);
                 return source.clip!=null&&source.clip.name=="eat"&&(double)type.GetField("end").GetValue(v)>=AudioSettings.dspTime;
             });
+            var background = InputSystem.settings.backgroundBehavior;
+            bool automated = game.automatedTest; var oldKeyboard = game.automatedKeyboard;
+            game.automatedTest = true;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
             Keyboard previous = Keyboard.current, keyboard = InputSystem.AddDevice<Keyboard>("Gugu validation keyboard");
+            game.automatedKeyboard = keyboard;
             int assertions = 0;
             try
             {
@@ -96,6 +101,8 @@ namespace SealGugu
             finally
             {
                 InputSystem.RemoveDevice(keyboard);
+                game.automatedKeyboard = oldKeyboard; game.automatedTest = automated;
+                InputSystem.settings.backgroundBehavior = background;
                 if (previous != null && previous.added) previous.MakeCurrent();
                 sound.Mute(wasMuted);back.Invoke(game, null);AudioListener.volume=listenerVolume;
             }

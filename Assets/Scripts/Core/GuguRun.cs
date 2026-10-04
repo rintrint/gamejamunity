@@ -63,9 +63,13 @@ namespace SealGugu
 
     public sealed class GuguRun
     {
-        public const double OXYGEN_DRAIN_MULTIPLIER = .5;
+        public const double OXYGEN_DRAIN_MULTIPLIER = 1;
         public readonly double oxygenDrainMultiplier;
         readonly bool drainDuringSurface;
+        public const double SURFACE_ARRIVAL_SECONDS = .85, SURFACE_IMPACT_SECONDS = .26;
+        public double arrivalAt = -100;
+        bool arrivalPending;
+        string arrivalGrade;
         public readonly DifficultyBalance balance;
         public const double DEFAULT_WINDOW = 150, REFILL_FRACTION = .12, REFILL_LIMIT = 100 - 1e-9;
         static readonly string[] Phrase = { "lower", "lower", "upper", "upper", "upper", "upper", "lower", "lower", "lower", "upper", "upper", "lower", "upper", "lower", "lower", "upper" };
@@ -172,7 +176,8 @@ namespace SealGugu
         public double accuracy { get { int total = hits + misses; return total != 0 ? jsRound((counts.perfect + counts.good * .5) / total * 10000) / 100 : 100; } }
         public Note target { get { for (int i = cursor; i < notes.Count; i++) if (notes[i].result == null) return notes[i]; return null; } }
         public bool openingBreath { get { return status == "breathing" || status == "paused" && beforePause == "breathing"; } }
-        public bool breathingActive { get { string s = status == "paused" ? beforePause : status; return s == "breathing" || s == "playing" && phase == "surface"; } }
+        public bool arriving { get { return drainDuringSurface && (status == "playing" || status == "paused") && (phase == "surface" || phase == "shore") && time >= arrivalAt && time < arrivalAt + SURFACE_ARRIVAL_SECONDS; } }
+        public bool breathingActive { get { string s = status == "paused" ? beforePause : status; return s == "breathing" || s == "playing" && phase == "surface" && !arriving; } }
         public double breathRemaining
         {
             get
@@ -215,7 +220,7 @@ namespace SealGugu
         public void tapBreath()
         {
             if (status == "breathing") inhale();
-            else if (status == "playing" && phase == "surface" && breathRemaining > 0)
+            else if (status == "playing" && phase == "surface" && !arriving && breathRemaining > 0)
             {
                 double before = air; air = refillAir(air); breathTaps++; lastBreathTap = time;
                 events.Add(new GameEvent { type = "breathTap", at = time, air = air, gain = air - before, taps = breathTaps });
@@ -230,7 +235,26 @@ namespace SealGugu
             events.Add(new GameEvent { type = "lost", at = time });
         }
         void syncOutcome() { if (status == "won") outcome = food >= targets.full ? "friends" : "rest"; }
+        void BeginArrival(bool refill)
+        {
+            phase = refill ? "surface" : "shore"; depth = 0;
+            if(refill) surfaceAt = time;
+            if(!drainDuringSurface) { if(refill) events.Add(new GameEvent {type="breath",at=time}); return; }
+            arrivalAt = time; arrivalPending = true;
+            events.Add(new GameEvent {type="surfaceRise",at=time});
+        }
         void consumeSegment(double to)
+        {
+            double settled = arrivalAt + SURFACE_ARRIVAL_SECONDS;
+            if(arrivalPending && to >= settled) {
+                consumeAir(Math.Max(time,settled));
+                if(status != "playing") return;
+                arrivalPending = false;
+                if(phase == "surface") events.Add(new GameEvent {type="breath",at=settled,result=arrivalGrade});
+            }
+            consumeAir(to);
+        }
+        void consumeAir(double to)
         {
             if (phase == "surface" && !drainDuringSurface) { time = Math.Max(time, to); return; }
             // Intro grace is for the initial underwater lead-in, not mid-song refill stops.
@@ -294,13 +318,13 @@ namespace SealGugu
             {
                 hits++; combo++;
                 if (note.kind == "fish") { food += note.fish; stageFood[note.stage] += note.fish; depth = note.depth; }
-                if (note.kind == "surface") { phase = "surface"; surfaceAt = time; depth = 0; events.Add(new GameEvent { type = "breath", at = time }); }
+                if (note.kind == "surface") BeginArrival(true);
                 if (note.kind == "dive" || note.kind == "leap")
                 {
                     phase = "underwater"; depth = 12; if (note.kind == "leap") leaped = true;
                     events.Add(new GameEvent { type = note.kind == "leap" ? "bigBreath" : "splash", at = time });
                 }
-                if (note.kind == "exit") { phase = "shore"; depth = 0; }
+                if (note.kind == "exit") BeginArrival(false);
                 if (note.kind == "call") { called = true; events.Add(new GameEvent { type = "call", at = time }); }
             }
             else
@@ -308,8 +332,8 @@ namespace SealGugu
                 misses++; combo = 0;
                 if (note.kind == "leap") { if (practice) { leaped = true; phase = "underwater"; } else lose("leap"); }
                 if (practice && note.kind == "dive") phase = "underwater";
-                if (practice && note.kind == "surface") { phase = "surface"; air = 100; }
-                if (practice && note.kind == "exit") phase = "shore";
+                if (practice && note.kind == "surface") { if(drainDuringSurface)BeginArrival(true);else phase="surface"; air = 100; }
+                if (practice && note.kind == "exit") { if(drainDuringSurface)BeginArrival(false);else phase="shore"; }
                 if (practice && note.kind == "call") called = true;
                 if (note.kind == "dive" && phase == "shore" && !practice) lose("entry");
             }
@@ -321,6 +345,7 @@ namespace SealGugu
             {
                 e.result = Math.Abs(error) <= profile.perfect ? "perfect" : "good";
                 if (e.result == "perfect") counts.perfect++; else counts.good++;
+                if(note.kind == "surface") arrivalGrade=e.result;
                 errors.Add(error * 1000); score += e.result == "perfect" ? 1000 : 500; maxCombo = Math.Max(maxCombo, combo);
             }
             else counts.miss++;

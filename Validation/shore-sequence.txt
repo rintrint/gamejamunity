@@ -1,0 +1,1 @@
+PASS: 729 actual chart stops at 30/60/144 FPS and -200/0/+200 ms; 7686 assertions; all four ending boundaries.

@@ -1,12 +1,14 @@
-# 海豹呼呼 V15.0.0
+# 海豹呼呼 V15.1.0
 
 Unity **6.6 / 6000.6.4f1** 原生 Windows 版。以 HTML 第 13 版 `1665a124f2a60c380989dd53af80a943386e2d7e` 為移植基準，保留原始歌曲、譜面和手繪風格，並持續改善平衡與介面。這個專案只有海豹呼呼，沒有舊版切換選單。
+
+V15.1.0 更新美術提供的主畫面背景與 GIF 飢餓動畫，補齊統一上岸撞飛演出、四種結局與 Credits。Windows 執行檔改名 `SealBreath.exe`。詳見 [V15.1.0 發布說明](Documentation/RELEASE_V15.1.0.md)。
 
 V15.0.0 改名「海豹呼呼」，並遷移至 URP 17.6 的 2D Renderer。開啟 `Assets/Scenes/Main.unity`，選 Presentation 可直接預覽與編輯四幕。主畫面使用 imagegen 透明標題圖，角色美術、Animator 與 clips 集中於 `Assets/Animation/Seal`。詳見 [場景與動畫編輯指南](Documentation/HUHU_URP_EDITING.md)。更新內容見 [V15.0.0 發布說明](Documentation/RELEASE_V15.0.0.md)。
 
 ## 直接遊玩
 
-到 GitHub Releases 下載 Windows x64 ZIP，完整解壓縮後執行 **SealGugu.exe**。請保留旁邊的 `SealGugu_Data`、`UnityPlayer.dll`、`MonoBleedingEdge` 等資料；不能只拿走 exe。
+到 GitHub Releases 下載 Windows x64 ZIP，完整解壓縮後執行 **SealBreath.exe**。請保留旁邊的 `SealBreath_Data`、`UnityPlayer.dll`、`MonoBleedingEdge` 等資料；不能只拿走 exe。
 
 | 操作 | 按鍵 |
 | --- | --- |
@@ -20,7 +22,7 @@ V15.0.0 改名「海豹呼呼」，並遷移至 URP 17.6 的 2D Renderer。開�
 
 三首歌曲各有新手、中階、高手。預設判定 ±150 ms；可調魚速 0.1–2.0×、延遲 ±200 ms、判定範圍 ±40–200 ms。魚速只影響視覺距離，不會改動音樂或拍點。設定儲存在本機。
 
-空拍可以自由移動；有魚靠近時，太早、太晚或按錯排會 Miss，不能連按補中。漏接的魚會繼續離開畫面。V14.2.0 新手／中階的吃飽目標約為各歌曲魚數的 60%／70%，高手約 82%；成長與通關門檻以 10 隻為單位。新手／中階自然耗氧為高手的 55%／75%，Miss 穩定度扣除 6／8（高手 11）。途中補氣採剩餘容量的 12%，永遠不會直接補到 100%。
+空拍可以自由移動；有魚靠近時，太早、太晚或按錯排會 Miss，不能連按補中。漏接的魚會繼續離開畫面。V14.2.0 新手／中階的吃飽目標約為各歌曲魚數的 60%／70%，高手約 82%；成長與通關門檻以 10 隻為單位。新手／中階自然耗氧皆為高手的 50%，Miss 穩定度扣除 6／8（高手 11）。途中補氣採剩餘容量的 12%，永遠不會直接補到 100%。
 
 V14.0.1 修正了選曲視窗的滑鼠穿透，主畫面統一由 Start 進入選曲及設定。遊玩時每次上下按鍵都會播放吃魚音效，包含空拍；同一次命中不會重複疊加。完整修正內容見 `Documentation/RELEASE_V14.0.1.md`。
 
@@ -48,19 +50,19 @@ V14.2.2 修正途中上岸連打換氣時肺活量完全停止下降的問題。
 
 - **小組（Group）**：小組名稱，預設「第二組」。
 - **名單（Entries）**：每一格輸入一位成員的姓名與分工；按 **+** 新增。
-- 預設第一格「內容待補」可直接覆寫。儲存專案後重新打包，就會反映在主畫面的 CREDITS。
+- 已填入五位組員姓名，可直接修改各格。儲存專案後重新打包，就會反映在主畫面的 CREDITS。
 
 名單是一般 ScriptableObject 資產，會隨 Git 一起保存；不需要修改程式碼。
 
 ## 打包與驗證
 
-Unity 選单 **Tools → 海豹呼呼 → 打包 Windows V15.0.0**。輸出 `Builds/V15.0.0/SealGugu.exe`；預設依版本保存，避免覆蓋前一版。命令列也可使用：
+Unity 選单 **Tools → 海豹呼呼 → 打包 Windows V15.1.0**。輸出 `Builds/V15.1.0/SealBreath.exe`；預設依版本保存，避免覆蓋前一版。命令列也可使用：
 
 ```powershell
 & 'C:\Program Files\Unity\Hub\Editor\6000.6.4f1\Editor\Unity.exe' -batchmode -nographics -quit -projectPath "$PWD" -executeMethod SealGugu.Editor.ProjectBuild.BuildWindows -logFile "$PWD\build.log"
 ```
 
-打包前會自動執行原版 JavaScript 對照資料測試。歷史 HTML 一致性測試明確使用舊版耗氧倍率 1；目前遊戲預設基礎倍率 0.5 再乘以難度倍率，另由 `Validation/oxygen-balance.json` 驗證。詳細數量與結果寫入 `Validation/core-parity.json`。對照生成方式見 `Tools/CORE_PARITY.md`。
+打包前會自動執行原版 JavaScript 對照資料測試。歷史 HTML 一致性測試明確使用舊版耗氧倍率 1；目前遊戲高手基礎倍率 1（HTML 第 13 版），新手／中階皆乘以 0.5，另由 `Validation/oxygen-balance.json` 驗證。詳細數量與結果寫入 `Validation/core-parity.json`。對照生成方式見 `Tools/CORE_PARITY.md`。
 
 開發建置加 `-guguDevelopment`；該建置可接受 `-guguCapture <絕對輸出路徑>`，一次輸出各場景的原生畫面與狀態報告。這些預覽／自動截圖入口不會編入正式 release。
 

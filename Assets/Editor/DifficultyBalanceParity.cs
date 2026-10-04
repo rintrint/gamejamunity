@@ -35,8 +35,8 @@ namespace SealGugu.Editor
                 if(level!="expert"){
                     var route=Ready(track,level);int fishIndex=0,skip=level=="beginner"?3:4;
                     foreach(var note in route.notes){
-                        if(route.phase=="surface")for(int i=0;i<8&&route.phase=="surface";i++)route.press("lower",route.time+.03);
-                        double at=route.noteTime(note);for(double t=route.time+1.0/60;t<at;t+=1.0/60)route.update(t);
+                        // Refill only once the shared landing animation has completed.
+                        double at=route.noteTime(note);for(double t=route.time+1.0/60;t<at;t+=1.0/60){route.update(t);if(route.breathingActive&&route.time-route.lastBreathTap>=.125)route.press("lower",route.time);}
                         if(note.kind=="fish"&&++fishIndex%skip==0)continue;
                         route.press(note.lane,at);
                     }

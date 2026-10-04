@@ -84,9 +84,10 @@ namespace SealGugu.Diagnostics
             check("big inhale and dive",new GameEvent{type="bigBreath"},new[]{"inhale","dive"});
             check("water splash",new GameEvent{type="splash"},new[]{"dive"});
             check("call friends",new GameEvent{type="call"},new[]{"happy"});
-            check("perfect ice hole",new GameEvent{type="hit",note=new Note{kind="surface"},result="perfect"},new[]{"surface","fisher","breathGood"});
-            check("good ice hole",new GameEvent{type="hit",note=new Note{kind="surface"},result="good"},new[]{"surface","fisher","breathBad"});
-            check("final shore",new GameEvent{type="hit",note=new Note{kind="exit"},result="perfect"},new[]{"surface","fisher"});
+            check("every ice-hole arrival",new GameEvent{type="surfaceRise"},new[]{"surface","fisher"});
+            check("perfect seated inhale",new GameEvent{type="breath",result="perfect"},new[]{"inhale","breathGood"});
+            check("good seated inhale",new GameEvent{type="breath",result="good"},new[]{"inhale","breathBad"});
+            check("arrival hit does not duplicate collision audio",new GameEvent{type="hit",note=new Note{kind="exit"},result="perfect"},Array.Empty<string>());
             check("miss",new GameEvent{type="miss",note=new Note{kind="fish"}},new[]{"ice"});
             run.reason="oxygen";run.outcome="hungryGhost";check("hungry ghost",new GameEvent{type="lost"},new[]{"ghost"});
             run.outcome="angel";check("angel",new GameEvent{type="lost"},new[]{"angel"});

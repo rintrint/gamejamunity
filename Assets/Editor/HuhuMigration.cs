@@ -49,7 +49,13 @@ namespace SealGugu.Editor {
                 for(int i=0;i<3;i++)art.swimming[i]=new HuhuSealArt.SwimForm{image=Resources.Load<Texture2D>("Art/floe/swim-"+names[i]),crop=crops[i],mouthAnchor=new Vector2(.99f,ys[i])};
                 art.portrait=Resources.Load<Texture2D>("Art/tide/seal");art.eatingAtlas=Resources.Load<Texture2D>("Art/duet/seal-eating");art.menuHungerAtlas=Resources.Load<Texture2D>("Art/v14-2/menu-hunger");AssetDatabase.CreateAsset(art,"Assets/Animation/Seal/SealArt.asset");
             }
-            stage.sealArt=art;
+            if(!art.menuBackground)art.menuBackground=Resources.Load<Texture2D>("Art/v15-1/menu-background");
+            if(!art.menuGifAtlas)art.menuGifAtlas=Resources.Load<Texture2D>("Art/v15-1/hunger-gif");
+            if(!art.menuGifTiming)art.menuGifTiming=Resources.Load<TextAsset>("Art/v15-1/hunger-gif");
+            if(!art.surfaceFisher)art.surfaceFisher=Resources.Load<Texture2D>("Art/huhu/fisher-poses");
+            if(!art.resting)art.resting=Resources.Load<Texture2D>("Art/huhu/resting");
+            if(!art.angel)art.angel=Resources.Load<Texture2D>("Art/huhu/angel-new");
+            EditorUtility.SetDirty(art);stage.sealArt=art;
             var controller=Animations();
             if(!stage.sealAnimation){
                 string path="Assets/Prefabs/SealActor.prefab";var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -131,6 +137,10 @@ namespace SealGugu.Editor {
             EditorGUILayout.LabelField("快速預覽",EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
             foreach(var preset in new[]{"swim-thin","swim-medium","swim-fat"})if(GUILayout.Button(preset.Replace("swim-",""))){Undo.RecordObject(stage,"Preview seal form");stage.previewScene=HuhuScene.Underwater;stage.previewPose=preset;stage.RefreshPreview();SceneView.RepaintAll();}
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            if(GUILayout.Button("撞飛 → 接替 → 吸氣")){Undo.RecordObject(stage,"Preview shore arrival");stage.previewScene=HuhuScene.Breath;stage.previewPose="surface";stage.previewTime=.42f;stage.RefreshPreview();SceneView.RepaintAll();}
+            foreach(var pose in new[]{"friends","rest","hungryGhost","angel"})if(GUILayout.Button(pose=="friends"?"朋友":pose=="rest"?"攤平":pose=="angel"?"天使":"餓死鬼")){Undo.RecordObject(stage,"Preview ending");stage.previewScene=HuhuScene.Ending;stage.previewPose=pose;stage.RefreshPreview();SceneView.RepaintAll();}
             EditorGUILayout.EndHorizontal();
             if(GUILayout.Button("更新預覽並框選畫面")){stage.RefreshPreview();SceneView.lastActiveSceneView?.LookAt(Vector3.zero,Quaternion.identity,7);SceneView.RepaintAll();}
             if(GUILayout.Button("儲存場景調整")){EditorSceneManager.MarkSceneDirty(stage.gameObject.scene);EditorSceneManager.SaveScene(stage.gameObject.scene);}

@@ -9,7 +9,7 @@ namespace SealGugu
     /// <summary>The native game shell. The deterministic run never depends on GUI animation.</summary>
     public sealed class GuguGame : MonoBehaviour
     {
-        public const string Version="V15.0.0";
+        public const string Version="V15.1.0";
         [Tooltip("小組成員可在此資產的 entries 直接輸入名字。")]
         public GameCredits credits;
         public HuhuStage stage;
@@ -52,7 +52,7 @@ namespace SealGugu
         public string previewIceHover="";
 #endif
         float lastDt;
-        string Scene => run==null||run.status=="ready"?"menu":run.breathingActive?"breath":run.status=="won"||run.status=="lost"?"end":"play";
+        string Scene => run==null||run.status=="ready"?"menu":(run.breathingActive||run.arriving)?"breath":run.status=="won"||run.status=="lost"?"end":"play";
         void Awake()
         {
             HuhuSettingsMigration.Once();
@@ -137,7 +137,7 @@ namespace SealGugu
         void Update()
         {
             if(run==null)return;float dt=Time.unscaledDeltaTime;lastDt=Mathf.Min(.05f,dt);
-            view.menuHungerProgress=sound.MenuHungerProgress;
+            view.menuHungerProgress=sound.MenuHungerProgress;view.menuHungerElapsed=sound.MenuHungerElapsed;
             if(IsPreview)return;
             if(run.status=="breathing"){
                 run.advanceBreath(dt);double cycle=Math.Floor(run.breathElapsed/3.6);
@@ -278,7 +278,7 @@ namespace SealGugu
                 bool backgroundEnabled=GUI.enabled;GUI.enabled=backgroundEnabled&&modal=="";
                 try {
                     Header();
-                    if(Scene=="menu")Menu();else if(Scene=="breath")Breathing();else if(Scene=="play")Hud();else Ending();
+                    if(Scene=="menu")Menu();else if(Scene=="breath"){if(run.arriving)ArrivalHud();else Breathing();}else if(Scene=="play"){if(run.arriving)ArrivalHud();else Hud();}else Ending();
                     if(Scene!="menu")Footer();
                 } finally { GUI.enabled=backgroundEnabled; }
                 if(modal!=""){
@@ -314,6 +314,7 @@ namespace SealGugu
         string Cue(out double remaining)
         {
             remaining=0;if(run.status!="playing"&&!(run.status=="paused"&&run.beforePause=="playing"))return "none";
+            if(run.arriving)return "arrival";
             if(run.phase=="surface"){remaining=run.breathRemaining;return "refill";}
             if(run.phase!="underwater")return "none";
             if(run.time-run.missedGateAt<1.5)return "missed";
@@ -325,8 +326,8 @@ namespace SealGugu
         {
             string cue=Cue(out double left);if(cue=="none")return;
             Color c=new Color(1,.91f,.81f,.96f);var old=GUI.color;GUI.color=c;Box(new Rect(345,121,590,94));GUI.color=old;
-            Text(new Rect(355,130,570,47),cue=="approach"?"換氣冰洞！":cue=="missed"?"錯過換氣！":run.air>=90?"繼續！多吸一點":"快！連打補氣",34,TextAnchor.MiddleCenter,new Color(.56f,.23f,.19f),true);
-            Text(new Rect(355,178,570,28),cue=="approach"?"等洞口到海豹面前，準拍按 D / F / ↑":cue=="missed"?"屏住最後一口氣，抓住下一個冰洞！":run.air>=90?"越接近滿氣越難補，再多按幾下！":"SPACE 或上下排連打 · 氧氣就是生命",16,TextAnchor.MiddleCenter,new Color(.56f,.23f,.19f));
+            Text(new Rect(355,130,570,47),cue=="arrival"?"借過一下！":cue=="approach"?"換氣冰洞！":cue=="missed"?"錯過換氣！":run.air>=90?"繼續！多吸一點":"快！連打補氣",34,TextAnchor.MiddleCenter,new Color(.56f,.23f,.19f),true);
+            Text(new Rect(355,178,570,28),cue=="arrival"?"衝出冰洞，站穩後立刻連打吸氣！":cue=="approach"?"等洞口到海豹面前，準拍按 D / F / ↑":cue=="missed"?"屏住最後一口氣，抓住下一個冰洞！":run.air>=90?"越接近滿氣越難補，再多按幾下！":"SPACE 或上下排連打 · 氧氣就是生命",16,TextAnchor.MiddleCenter,new Color(.56f,.23f,.19f));
         }
         void Meter(Rect r,string name,string value,float fraction,Color fill,int valueSize=24)
         {
@@ -342,6 +343,12 @@ namespace SealGugu
             Meter(new Rect(294,612,610,50),"肺活量",GuguRun.airDisplay(run.air)+"%",(float)run.air/100,new Color(.39f,.71f,.79f));
             if(opening)GUI.DrawTexture(new Rect(294+610*.9f,643,2,25),Texture2D.whiteTexture,ScaleMode.StretchToFill,false,0,new Color(.55f,.44f,.24f),0,0);
             if(!IsPreview)Tap(new Rect(950,602,182,67),opening?"收氣\nSPACE":"連打補氣\nSPACE","lower",false);
+        }
+        void ArrivalHud()
+        {
+            Meter(new Rect(948,126,281,50),"肺活量",GuguRun.airDisplay(run.air)+"%",(float)run.air/100,new Color(.41f,.73f,.79f));
+            Text(new Rect(220,550,840,46),"借過一下！",34,TextAnchor.MiddleCenter,Ink,true);
+            Text(new Rect(220,600,840,32),"衝出冰洞，站穩後立刻連打吸氣！",21,TextAnchor.MiddleCenter,Ink);
         }
         void Hud()
         {
@@ -373,7 +380,7 @@ namespace SealGugu
         void Ending()
         {
             Box(new Rect(230,387,820,288));string title,copy;
-            switch(run.outcome){case "friends":title="吃飽了，也交到朋友了。";copy="你跨過冰洞、呼喚了同伴。下一次，一起游吧。";break;case "rest":title="沒吃飽，先攤一下。";copy="平安回到岸上。休息一下，再去找小魚吧。";break;case "angel":title="有翅膀的小海豹。";copy="肚子暖暖的，旅程化成了一雙小翅膀。";break;default:title="還餓著的小幽靈。";copy="還沒吃飽的海豹，變成了餓死鬼。";break;}
+            switch(run.outcome){case "friends":title="吃飽了，也交到朋友了。";copy="你跨過冰洞、呼喚了同伴。下一次，一起游吧。";break;case "rest":title="沒吃飽，先攤一下。";copy="平安回到岸上。休息一下，再去找小魚吧。";break;case "angel":title="有翅膀的小海豹。";copy="已吃到第二次成長門檻（"+run.targets.fat+" 隻魚），這次化成天使。";break;default:title="還餓著的小幽靈。";copy="還沒達到第二次成長門檻（"+run.targets.fat+" 隻魚），變成了餓死鬼。";break;}
             Text(new Rect(252,408,776,26),(run.practice?"PRACTICE / ":"")+(run.status=="won"?"旅程完成":"旅程結束"),16,TextAnchor.MiddleCenter,Muted);
             Text(new Rect(252,446,776,48),title,33,TextAnchor.MiddleCenter,Ink,true);
             string reason=run.reason=="oxygen"?"氧氣耗盡。":run.reason=="rhythm"?"節奏穩定度歸零。":run.reason=="leap"?"錯過了大吸氣前的上岸機會。":run.reason=="route"?"沒有完成跨洞、上岸與呼喚。":"";
@@ -472,9 +479,16 @@ namespace SealGugu
                 foreach(var n in run.notes)if(n.time<19.1)n.result="hit";run.cursor=run.notes.FindIndex(n=>n.result==null);
                 view.Reset(run);if(mode=="bite"){var note=run.notes.First(n=>n.kind=="fish");view.Emit(new GameEvent{type="hit",note=note,result="perfect"},run);run.time+=.08;}return;
             }
-            if(mode=="gate"||mode=="surface"){
+            if(mode=="gate"||mode.StartsWith("surface")){
                 var hole=run.notes.First(n=>n.kind=="surface");run.status="playing";run.time=run.noteTime(hole)-(mode=="gate"?1.5:0);run.phase=mode=="gate"?"underwater":"surface";run.air=18;run.depth=18;
-                foreach(var n in run.notes)if(n.time<run.time)n.result="hit";if(mode=="surface")hole.result="hit";run.cursor=run.notes.FindIndex(n=>n.result==null);return;
+                foreach(var n in run.notes)if(n.time<run.time)n.result="hit";
+                if(mode!="gate"){
+                    run.phase="underwater";run.judge(hole,true);
+                    run.time+=mode=="surface-rise"?.12:mode=="surface-impact"?.42:1.4;
+                    run.departureCursor=run.departures.Count(n=>run.noteTime(n)<=run.time);
+                    run.events.Clear();
+                }
+                run.cursor=run.notes.FindIndex(n=>n.result==null);return;
             }
             run.status=mode=="friends"||mode=="rest"?"won":"lost";run.outcome=mode;run.food=mode=="friends"?run.targets.full:mode=="rest"?run.targets.full-10:mode=="angel"?run.targets.fat:run.targets.fat-10;run.phase="shore";run.leaped=run.called=true;
         }

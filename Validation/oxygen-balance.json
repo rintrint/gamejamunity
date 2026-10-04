@@ -1,10 +1,10 @@
 {
-    "version": "V15.0.0",
+    "version": "V15.1.0",
     "success": true,
-    "runtimeMultiplier": 0.5,
+    "runtimeMultiplier": 1.0,
     "assertions": 936,
     "rateCases": 81,
     "perfectRoutes": 18,
     "surfaceCases": 27,
-    "note": "Original V13 golden uses 1x for historical parity; release default is 0.5x. Difficulty oxygen multipliers are applied on top of the 0.5 base; Surface refill now consumes oxygen at depth-zero rate while retaining 12% refill, opening/intro grace and pause behavior. Legacy HTML fixtures explicitly keep the old surface exemption."
+    "note": "Expert equals HTML V13: 4.15 + depth * 0.012 per second. Beginner/intermediate both use 50%. Every surface arrival blocks refill until seated, continues drain, and then refills 12% of missing air. Historical golden keeps original behavior."
 }

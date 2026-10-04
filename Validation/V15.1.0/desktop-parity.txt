@@ -1,0 +1,1 @@
+PASS: 17 assertions; actual window/fullscreen round trip; restore 1280x720; global key isolation, held-key suppression, paused FPS, system cursor handles.

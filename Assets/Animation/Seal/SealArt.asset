@@ -40,3 +40,9 @@ MonoBehaviour:
   portrait: {fileID: 2800000, guid: 0a85e16d6d59fe74cb0c701129b8833e, type: 3}
   eatingAtlas: {fileID: 2800000, guid: 5ca8b15a1488c5c4d8f4e420ce90c924, type: 3}
   menuHungerAtlas: {fileID: 2800000, guid: 0b852dce82f16bb4a8cc3818c2417a45, type: 3}
+  surfaceFisher: {fileID: 2800000, guid: 1657ba89583cb794aa79d1029aeb0179, type: 3}
+  resting: {fileID: 2800000, guid: 242dfc3e374480c4c80e398375b470aa, type: 3}
+  angel: {fileID: 2800000, guid: 4653d359dbc8c24409f9bbf09ebc2a14, type: 3}
+  menuBackground: {fileID: 2800000, guid: a9ea8334e05b47d1b3240df5874da3d5, type: 3}
+  menuGifAtlas: {fileID: 2800000, guid: 53527c9f2bbe4d4ea9ca04d7e9cce567, type: 3}
+  menuGifTiming: {fileID: 4900000, guid: 4d2de5e9247643ab842546f43aeb62a0, type: 3}

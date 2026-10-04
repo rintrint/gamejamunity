@@ -1,5 +1,5 @@
 {
-    "version": "V15.0.0",
+    "version": "V15.1.0",
     "success": true,
     "assertions": 125,
     "imperfectRoutes": 6,
@@ -11,7 +11,7 @@
             "grow": 60,
             "fat": 110,
             "full": 170,
-            "oxygen": 0.55,
+            "oxygen": 0.5,
             "missPenalty": 6.0,
             "perfectRecovery": 3.0,
             "goodRecovery": 1.5
@@ -23,7 +23,7 @@
             "grow": 70,
             "fat": 130,
             "full": 200,
-            "oxygen": 0.75,
+            "oxygen": 0.5,
             "missPenalty": 8.0,
             "perfectRecovery": 2.2,
             "goodRecovery": 1.0
@@ -47,7 +47,7 @@
             "grow": 50,
             "fat": 90,
             "full": 140,
-            "oxygen": 0.55,
+            "oxygen": 0.5,
             "missPenalty": 6.0,
             "perfectRecovery": 3.0,
             "goodRecovery": 1.5
@@ -59,7 +59,7 @@
             "grow": 50,
             "fat": 110,
             "full": 160,
-            "oxygen": 0.75,
+            "oxygen": 0.5,
             "missPenalty": 8.0,
             "perfectRecovery": 2.2,
             "goodRecovery": 1.0
@@ -83,7 +83,7 @@
             "grow": 80,
             "fat": 170,
             "full": 250,
-            "oxygen": 0.55,
+            "oxygen": 0.5,
             "missPenalty": 6.0,
             "perfectRecovery": 3.0,
             "goodRecovery": 1.5
@@ -95,7 +95,7 @@
             "grow": 100,
             "fat": 190,
             "full": 290,
-            "oxygen": 0.75,
+            "oxygen": 0.5,
             "missPenalty": 8.0,
             "perfectRecovery": 2.2,
             "goodRecovery": 1.0

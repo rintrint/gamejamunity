@@ -46,14 +46,25 @@ namespace SealGugu.Diagnostics
                 }
                 Screen.SetResolution(1280,720,FullScreenMode.Windowed);
                 for(int i=0;i<60&&(Screen.width!=1280||Screen.height!=720);i++)yield return null;
+                var gif=Resources.Load<Texture2D>("Art/v15-1/hunger-gif");
+                var bg=Resources.Load<Texture2D>("Art/v15-1/menu-background");
+                Check(gif&&gif.width==2475&&gif.height==464&&gif.GetPixel(0,0).a==0,"original GIF frames and transparency imported without resizing");
+                Check(bg&&bg.width==1794&&bg.height==1010,"artist's clean background imported at its original dimensions");
+                foreach(double elapsed in new[]{0.0,.079,.08,.159,.16,.239,.24,.32,.40})
+                    Check(view.MenuFrameAt(elapsed)==(int)Math.Floor((elapsed+1e-9)/.08)%3,"GIF keeps 80 ms timing at "+elapsed);
                 game.PreviewScene("menu");sound.Mute(false);AudioListener.volume=0;sound.MenuHunger();
-                foreach(float progress in new[]{.03f,.22f,.45f,.69f,1.0f}){
-                    while(sound.MenuHungerProgress>=0&&sound.MenuHungerProgress<progress)yield return null;
+                double deadline=Time.realtimeSinceStartupAsDouble+15;
+                while(sound.MenuHungerElapsed>=0){
+                    Check(Time.realtimeSinceStartupAsDouble<deadline,"hunger audio must end");
                     yield return null;yield return new WaitForEndOfFrame();
-                    report.hungerFrames.Add(view.MenuHungerFrame);Capture(directory,"hunger-"+Mathf.RoundToInt(progress*100));
+                    int frame=view.MenuHungerFrame;
+                    if(frame>=0&&!report.hungerFrames.Contains(frame)){
+                        report.hungerFrames.Add(frame);Capture(directory,"hunger-gif-"+frame);
+                    }
                 }
-                Check(report.hungerFrames.Contains(3),"hunger reaches a belly-rumble expression");
-                Check(view.MenuHungerFrame==0&&sound.MenuHungerProgress<0,"hunger ends in relaxed idle");report.hungerReturnedToNormal=true;
+                yield return null;yield return new WaitForEndOfFrame();Capture(directory,"hunger-idle");
+                Check(report.hungerFrames.Contains(0)&&report.hungerFrames.Contains(1)&&report.hungerFrames.Contains(2),"all three supplied poses appear while the actual audio is playing");
+                Check(view.MenuHungerFrame==-1&&sound.MenuHungerElapsed<0,"hunger ends in relaxed idle");report.hungerReturnedToNormal=true;
                 game.PreviewScene("opening");yield return null;yield return new WaitForEndOfFrame();float before=view.SealWidth;
                 game.PreviewScene("opening-full");yield return null;yield return new WaitForEndOfFrame();
                 Check(view.SealWidth>before*1.06f&&view.BellyScale>1.25f,"full inhale enlarges whole body a little and belly more");

@@ -27,7 +27,12 @@ namespace SealGugu.Diagnostics
         }
         public static IEnumerator Run(GuguGame game, string output) {
             var desktop = game.GetComponent<GuguDesktop>();
+            var background=InputSystem.settings.backgroundBehavior;
+            var priorTestKeyboard=game.automatedKeyboard;
+            // QA runs in a separate background window; do not disable its virtual keyboard on focus loss.
+            InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             var previous = Keyboard.current; var keyboard = InputSystem.AddDevice<Keyboard>("Desktop validation keyboard");
+            game.automatedKeyboard=keyboard;
             var flags = BindingFlags.Instance | BindingFlags.NonPublic;
             var modal = typeof(GuguGame).GetField("modal", flags);
             var calibration = typeof(GuguGame).GetField("calibration", flags);
@@ -75,6 +80,8 @@ namespace SealGugu.Diagnostics
                 File.WriteAllText(Path.Combine(output, "desktop-parity.txt"), result); Debug.Log("GUGU_DESKTOP_PARITY " + result);
             } finally {
                 InputSystem.RemoveDevice(keyboard); if(previous!=null && previous.added) previous.MakeCurrent();
+                game.automatedKeyboard=priorTestKeyboard;
+                InputSystem.settings.backgroundBehavior=background;
                 calibration.SetValue(game, false); back.Invoke(game, null); game.automatedTest = automated;
             }
         }

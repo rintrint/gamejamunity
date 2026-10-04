@@ -1,0 +1,1 @@
+PASS: native InputSystem integration, 21 assertions, 50 independent press edges in one input update.

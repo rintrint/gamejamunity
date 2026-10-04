@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -102,7 +103,7 @@ namespace SealGugu
             if(belly&&!bellyDrawn)belly.gameObject.SetActive(false);
             foreach(var pair in pools){if(!pair.Key)continue;int count=cursors.TryGetValue(pair.Key,out var used)?used:0;for(int i=count;i<pair.Value.Count;i++)if(pair.Value[i])pair.Value[i].gameObject.SetActive(false);}
             if(ActiveScene==HuhuScene.Menu){
-                Group("Title");Rect r=AnchorRect(titleAnchor,new Rect(145,195,530,170));if(titleArtwork)Slice(titleArtwork,new Rect(0,0,titleArtwork.width,titleArtwork.height),r);
+                Group("Title");Rect r=AnchorRect(titleAnchor,new Rect(145,195,530,170));if(titleArtwork)Slice(titleArtwork,new Rect(0,0,titleArtwork.width,titleArtwork.height),GuguUiArt.Fit(r,titleArtwork));
                 if(!Application.isPlaying){PreviewButton(startAnchor,"Start-Botton");PreviewButton(creditsAnchor,"Credits-Botton");PreviewButton(exitAnchor,"Exit-Botton");}
             }
             painting=false;
@@ -120,15 +121,25 @@ namespace SealGugu
                 var tracks=JsonUtility.FromJson<ChartDocument>(Resources.Load<TextAsset>("Data/chart").text).tracks;
                 editorRun=new GuguRun(tracks[0]);editorRun.startBreath();editorRun.advanceBreath(2.7);editorRun.inhale();
                 if(previewScene==HuhuScene.Menu){editorRun=new GuguRun(tracks[0]);}
-                else if(previewScene==HuhuScene.Breath){editorRun.startBreath();editorRun.advanceBreath(2.3);}
-                else if(previewScene==HuhuScene.Ending){editorRun.status="won";editorRun.outcome=previewPose=="angel"?"angel":previewPose=="rest"?"rest":"friends";}
+                else if(previewScene==HuhuScene.Breath){
+                    if(previewPose.StartsWith("surface")){
+                        var hole=editorRun.notes.First(n=>n.kind=="surface");editorRun.time=editorRun.noteTime(hole);editorRun.air=40;
+                        editorRun.judge(hole,true);editorRun.events.Clear();
+                    }else{editorRun.startBreath();editorRun.advanceBreath(2.3);}
+                }
+                else if(previewScene==HuhuScene.Ending){editorRun.status="won";editorRun.outcome=previewPose=="angel"?"angel":previewPose=="rest"?"rest":previewPose=="hungryGhost"?"hungryGhost":"friends";editorRun.status=editorRun.outcome=="angel"||editorRun.outcome=="hungryGhost"?"lost":"won";}
                 else{editorRun.time=18;editorRun.food=previewPose.Contains("fat")?editorRun.targets.fat:previewPose.Contains("medium")?editorRun.targets.grow:0;editorRun.air=previewPose.StartsWith("low")?14:95;}
                 editorView.Reset(editorRun);shown=previewScene;shownPose=previewPose;
             }
             float t=previewAnimation?Time.realtimeSinceStartup:previewTime;
             string state=previewScene==HuhuScene.Menu?"menu":previewScene==HuhuScene.Breath?"breath":previewScene==HuhuScene.Ending?"end":"play";
             if(previewScene==HuhuScene.Underwater)editorRun.time=18+t;
-            editorView.menuHungerProgress=previewPose=="hungry"?(t%3)/3:-1;
+            if(previewScene==HuhuScene.Breath&&previewPose.StartsWith("surface")){
+                float age=previewAnimation?t%5:previewTime;editorRun.time=editorRun.arrivalAt+age;
+                editorRun.air=40;editorRun.lastBreathTap=age>=GuguRun.SURFACE_ARRIVAL_SECONDS?editorRun.time-(age%.125f):-100;
+                editorRun.departureCursor=editorRun.departures.Count(n=>editorRun.noteTime(n)<=editorRun.time);
+            }
+            editorView.menuHungerProgress=previewPose=="hungry"?(t%3)/3:-1;editorView.menuHungerElapsed=previewPose=="hungry"?t:-1;
             Begin(state,new Rect(0,0,1280,720));editorView.DrawBackdrop(editorRun,state,1280,720);editorView.Draw(editorRun,state,t,0,1280,720,Viewport);End();
         }
         void OnDisable(){if(editorView!=null){editorView.Dispose();editorView=null;}}

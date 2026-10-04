@@ -1,13 +1,14 @@
 {
-  "version": "V15.0.0",
+  "version": "V15.1.0",
   "success": true,
   "unityVersion": "6000.6.4f1",
   "development": false,
-  "buildBytes": 286305623,
-  "buildDirectory": "Builds/V15.0.0",
-  "verifiedUtc": "2026-10-04T03:01:40.005408+00:00",
+  "buildBytes": 291535692,
+  "buildDirectory": "Builds/V15.1.0",
+  "verifiedUtc": "2026-10-04T04:42:10.002430+00:00",
   "startupMode": "native URP 2D Windows player",
   "managedExceptions": false,
-  "note": "Formal BuildWindows succeeded. Core, oxygen, difficulty and native URP scene/animation gates passed. Formal EXE V15.0.0 main menu, title artwork, song selection and opening breath inspected through computer-use. Player.log confirms normal shutdown. The full-song URP test in Validation/URP was completed before the version-only runtime bump; no full-song repeat this release. Release ZIP CRC and exclusion of QA entry points verified.",
-  "assemblySha256": "1675f0d56b1aba96625e2c75604de586498a045d916cca806d9936658333d991"
+  "qaReport": "Validation/V15.1.0/capture-report.json",
+  "note": "Formal and QA players built from the same source snapshot using BuildReleaseCandidate. Fresh QA passed native input/audio/desktop checks, 21 scenes, 16 extra aspect/GIF captures, imported GIF pixels/timing and return to idle. Core, oxygen, difficulty and shore sequence gates passed. The earlier 211-second full-song shore test is preserved in Validation/ShorePreview; gameplay core is unchanged since that run. Formal ZIP CRC and exclusion of QA entry points verified.",
+  "assemblySha256": "8d6300ef488f5a35f80ce5d140861476baba69c284bb96ec1f9f21af6430fc84"
 }
