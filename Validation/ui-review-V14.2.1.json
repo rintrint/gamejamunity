@@ -1,0 +1,24 @@
+{
+  "version": "V14.2.1",
+  "verifiedUtc": "2026-10-04T02:12:46.0266711Z",
+  "method": "Manual computer-use visual review and mouse interaction, not an automated assertion suite",
+  "editorChecks": [
+    "Main title and setup heading/help text retain colors on hover",
+    "Unselected and selected song/difficulty controls have distinct hover fills and outlines",
+    "Practice toggle changes checked state and can be switched off",
+    "Reset, audition and tap controls separated from dialog background",
+    "Calibration Apply remains disabled below six samples",
+    "Short control rounded borders do not pinch; description text does not overlap controls"
+  ],
+  "releaseChecks": [
+    "Visible V14.2.1 version",
+    "Main title retains authored color on hover",
+    "Setup cards and primary action remain legible in native window",
+    "Song hover visibly changes fill and outline",
+    "Difficulty selection updates target and remains inside setup modal",
+    "Setup Back hover and return work",
+    "Credits Back hover uses correct silhouette at larger size",
+    "Native player log: Microsoft JhengHei, no managed exceptions"
+  ],
+  "limits": "No full-song rerun for this UI-only patch; earlier V14.2.0 runtime reports retain their original versions."
+}

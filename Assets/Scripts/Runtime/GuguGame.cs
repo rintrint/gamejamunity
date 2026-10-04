@@ -9,7 +9,7 @@ namespace SealGugu
     /// <summary>The native game shell. The deterministic run never depends on GUI animation.</summary>
     public sealed class GuguGame : MonoBehaviour
     {
-        public const string Version="V14.2.0";
+        public const string Version="V14.2.1";
         [Tooltip("小組成員可在此資產的 entries 直接輸入名字。")]
         public GameCredits credits;
         public GuguRun run { get; private set; }
@@ -31,12 +31,13 @@ namespace SealGugu
         int lastCalibration=-1;
         Vector2 setupScroll,creditsScroll;
         Font sans;
-        Texture2D panel,button,selected,sliderTrack,sliderThumb;
+        Texture2D panel,button,sliderTrack,sliderThumb;
         GUIStyle label,heading,action,primaryAction,tuningAction,choice,toggle,scrollbar,thumb,panelStyle;
+        GUIStyle setupAction,setupPrimary,choiceSelected,setupToggle,setupTrack,setupThumb;
         GUISkin theme;
         readonly Dictionary<string,Texture2D> art=new Dictionary<string,Texture2D>();
         static readonly Color Ink=new Color(.157f,.318f,.427f),Muted=new Color(.306f,.451f,.533f);
-        static readonly Color SelectedTint=Css(0xfff7d7),DiveInk=Css(0xe6f8fc),ScoreInk=Css(0xdbf8ff),SongShadow=Css(0x16485a);
+        static readonly Color DiveInk=Css(0xe6f8fc),ScoreInk=Css(0xdbf8ff),SongShadow=Css(0x16485a);
         static Color Css(uint hex,float alpha=1){return new Color((hex>>16&255)/255f,(hex>>8&255)/255f,(hex&255)/255f,alpha);}
         bool DiveUi => Scene=="play";
         Color WorldInk => DiveUi?DiveInk:Ink;
@@ -155,17 +156,37 @@ namespace SealGugu
         void Styles()
         {
             if(label!=null)return;
-            panel=Round(new Color(.93f,.98f,.965f,.96f),24);button=Round(Css(0xedf9fc,219f/255),22);selected=Round(SelectedTint,18);
+            panel=Round(new Color(.93f,.98f,.965f,.96f),24);button=Round(Css(0xedf9fc,219f/255),22);
             sliderTrack=Round(new Color(.55f,.72f,.80f,.8f),4);sliderThumb=Round(new Color(.24f,.48f,.59f),10);
             label=new GUIStyle(GUI.skin.label){font=sans,fontSize=18,wordWrap=true,normal={textColor=Ink},alignment=TextAnchor.UpperLeft,padding=new RectOffset(0,0,0,0)};
             heading=new GUIStyle(label){font=sans,fontSize=32,fontStyle=FontStyle.Bold};
             action=new GUIStyle(GUI.skin.button){font=sans,fontSize=21,normal={background=button,textColor=Ink},hover={background=Round(Color.white,22),textColor=Ink},active={background=Round(Color.white,22),textColor=Ink},focused={background=button,textColor=Ink},border=new RectOffset(22,22,22,22),padding=new RectOffset(14,14,8,8)};
             primaryAction=new GUIStyle(action);primaryAction.normal.background=Round(Css(0xf3faf1,236f/255),22);primaryAction.hover.background=Round(Css(0xfffdf0),22);primaryAction.active.background=primaryAction.hover.background;
             tuningAction=new GUIStyle(action);tuningAction.normal.background=Round(Css(0xedf9f5,237f/255),22);tuningAction.hover.background=Round(Css(0xfff7df),22);tuningAction.active.background=tuningAction.hover.background;
-            choice=new GUIStyle(action){fontSize=20,wordWrap=true,alignment=TextAnchor.MiddleCenter};
+            // Setup controls have opaque surfaces and distinct idle / hover / pressed states.
+            setupAction=SetupButtonStyle(0xd4edf6,0xbce4f4,0xa5d5e8,0x83b4c9,0x4b8eaa);
+            setupPrimary=SetupButtonStyle(0xffe49a,0xffd66f,0xefc054,0xc5a15b,0xa77c31);
+            setupPrimary.fontStyle=FontStyle.Bold;
+            choice=new GUIStyle(setupAction){fontSize=20,wordWrap=true,alignment=TextAnchor.MiddleCenter};
+            choiceSelected=SetupButtonStyle(0xffefb7,0xffde87,0xf3cb69,0xc6a45c,0xa77c31);
+            choiceSelected.fontSize=20;choiceSelected.wordWrap=true;choiceSelected.fontStyle=FontStyle.Bold;
+            setupToggle=new GUIStyle(setupAction){fontSize=18,wordWrap=true,alignment=TextAnchor.MiddleLeft,padding=new RectOffset(12,12,5,5)};
+            setupToggle.onNormal.background=choiceSelected.normal.background;
+            setupToggle.onHover.background=choiceSelected.hover.background;
+            setupToggle.onActive.background=choiceSelected.active.background;
+            setupToggle.onFocused.background=choiceSelected.focused.background;
             toggle=new GUIStyle(GUI.skin.toggle){font=sans,fontSize=18,normal={textColor=Ink},onNormal={textColor=Ink},hover={textColor=Ink},onHover={textColor=Ink},padding=new RectOffset(28,0,0,0)};
             scrollbar=new GUIStyle(GUI.skin.horizontalSlider){fixedHeight=8,normal={background=sliderTrack},border=new RectOffset(4,4,4,4),margin=new RectOffset(0,0,9,8)};
             thumb=new GUIStyle(GUI.skin.horizontalSliderThumb){fixedWidth=22,fixedHeight=22,normal={background=sliderThumb},hover={background=sliderThumb},active={background=sliderThumb},border=new RectOffset(10,10,10,10),overflow=new RectOffset(0,0,7,7)};
+            setupTrack=new GUIStyle(scrollbar);
+            setupTrack.normal.background=Round(Css(0x94bbc9),4);
+            setupTrack.hover.background=Round(Css(0x76a9be),4);
+            setupTrack.active.background=setupTrack.hover.background;
+            setupThumb=new GUIStyle(thumb);
+            setupThumb.normal.background=Round(Css(0xd4edf6),10,Css(0x508da7),2);
+            setupThumb.hover.background=Round(Css(0xffffff),10,Css(0x397b99),2);
+            setupThumb.active.background=Round(Css(0xa5d5e8),10,Css(0x397b99),2);
+            setupThumb.focused.background=setupThumb.hover.background;
             panelStyle=new GUIStyle{normal={background=panel},border=new RectOffset(24,24,24,24)};
             theme=Instantiate(GUI.skin);
             theme.verticalScrollbar.normal.background=sliderTrack;theme.verticalScrollbar.fixedWidth=12;theme.verticalScrollbar.border=new RectOffset(4,4,4,4);
@@ -173,25 +194,43 @@ namespace SealGugu
             theme.verticalScrollbarThumb.border=new RectOffset(10,10,10,10);theme.verticalScrollbarThumb.fixedWidth=12;
             theme.verticalScrollbarUpButton.fixedHeight=0;theme.verticalScrollbarDownButton.fixedHeight=0;
         }
-        static Texture2D Round(Color color,int radius)
+        GUIStyle SetupButtonStyle(uint normal,uint hover,uint active,uint rim,uint hoverRim)
+        {
+            var style=new GUIStyle(action){border=new RectOffset(16,16,16,16)};
+            style.normal.background=Round(Css(normal),16,Css(rim));
+            style.hover.background=Round(Css(hover),16,Css(hoverRim),2);
+            style.active.background=Round(Css(active),16,Css(hoverRim),2);
+            style.focused.background=style.hover.background;
+            style.onNormal.textColor=style.onHover.textColor=style.onActive.textColor=style.onFocused.textColor=Ink;
+            return style;
+        }
+        static Texture2D Round(Color color,int radius,Color? rim=null,float rimWidth=1.5f)
         {
             int size=radius*2+4;var t=new Texture2D(size,size,TextureFormat.RGBA32,false);var pixels=new Color[size*size];
-            for(int y=0;y<size;y++)for(int x=0;x<size;x++){float dx=Mathf.Max(radius-x,x-(size-radius-1)),dy=Mathf.Max(radius-y,y-(size-radius-1));float d=Mathf.Sqrt(Mathf.Max(0,dx)*Mathf.Max(0,dx)+Mathf.Max(0,dy)*Mathf.Max(0,dy));pixels[y*size+x]=new Color(color.r,color.g,color.b,color.a*Mathf.Clamp01(radius+.5f-d));}
+            for(int y=0;y<size;y++)for(int x=0;x<size;x++){float dx=Mathf.Max(radius-x,x-(size-radius-1)),dy=Mathf.Max(radius-y,y-(size-radius-1));float d=Mathf.Sqrt(Mathf.Max(0,dx)*Mathf.Max(0,dx)+Mathf.Max(0,dy)*Mathf.Max(0,dy));Color c=rim.HasValue?Color.Lerp(rim.Value,color,Mathf.Clamp01(radius-rimWidth+.5f-d)):color;pixels[y*size+x]=new Color(c.r,c.g,c.b,c.a*Mathf.Clamp01(radius+.5f-d));}
             t.SetPixels(pixels);t.Apply();t.wrapMode=TextureWrapMode.Clamp;t.filterMode=FilterMode.Bilinear;return t;
         }
         void Text(Rect r,string text,int size=18,TextAnchor align=TextAnchor.UpperLeft,Color? color=null,bool title=false,Color? shadow=null,float shadowY=1,float blur=0,float outline=0)
         {
             var s=title?heading:label;s.fontSize=size;s.alignment=align;
             if(shadow.HasValue){
-                Color tint=shadow.Value;s.normal.textColor=tint;
+                Color tint=shadow.Value;GuguTypography.SetLabelColor(s,tint);
                 if(outline>0)for(int dx=-1;dx<=1;dx++)for(int dy=-1;dy<=1;dy++)if(dx!=0||dy!=0)GUI.Label(new Rect(r.x+dx*outline,r.y+dy*outline,r.width,r.height),text,s);
-                if(blur>0){tint.a*=.12f;s.normal.textColor=tint;for(int dx=-1;dx<=1;dx++)for(int dy=-1;dy<=1;dy++)GUI.Label(new Rect(r.x+dx*blur*.5f,r.y+shadowY+dy*blur*.5f,r.width,r.height),text,s);}
-                tint=shadow.Value;tint.a*=blur>0?.6f:1;s.normal.textColor=tint;GUI.Label(new Rect(r.x,r.y+shadowY,r.width,r.height),text,s);
+                if(blur>0){tint.a*=.12f;GuguTypography.SetLabelColor(s,tint);for(int dx=-1;dx<=1;dx++)for(int dy=-1;dy<=1;dy++)GUI.Label(new Rect(r.x+dx*blur*.5f,r.y+shadowY+dy*blur*.5f,r.width,r.height),text,s);}
+                tint=shadow.Value;tint.a*=blur>0?.6f:1;GuguTypography.SetLabelColor(s,tint);GUI.Label(new Rect(r.x,r.y+shadowY,r.width,r.height),text,s);
             }
-            s.normal.textColor=color??Ink;GUI.Label(r,text,s);
+            GuguTypography.SetLabelColor(s,color??Ink);GUI.Label(r,text,s);
         }
         void Box(Rect r,Texture2D tex=null){panelStyle.normal.background=tex?tex:panel;GUI.Box(r,GUIContent.none,panelStyle);}
-        bool Button(Rect r,string text,GUIStyle style=null){desktop.Interactive(r);uiArt.DrawButtonShadow(r,desktop.PointerOver(r),GUI.enabled,reduced);if(GUI.Button(r,text,style??action)){sound?.Sample("button",.25f);return true;}return false;}
+        bool Button(Rect r,string text,GUIStyle style=null)
+        {
+            if(modal=="setup"){
+                if(style==null||style==action||style==tuningAction)style=setupAction;
+                else if(style==primaryAction)style=setupPrimary;
+            }
+            desktop.Interactive(r);uiArt.DrawButtonShadow(r,desktop.PointerOver(r),GUI.enabled,reduced);
+            if(GUI.Button(r,text,style??action)){sound?.Sample("button",.25f);return true;}return false;
+        }
         bool Ice(Rect r,string asset)
         {
             desktop.Interactive(r);
@@ -201,9 +240,9 @@ namespace SealGugu
 #endif
             bool active=hover&&Event.current.type==EventType.Repaint&&Mouse.current!=null&&Mouse.current.leftButton.isPressed;
             var im=Art("floe/"+asset+(active?"-Click":""));if(!im)im=Art("floe/"+asset);
-            bool ice=asset=="Start-Botton"||asset=="Credits-Botton"||asset=="Exit-Botton";
-            if(ice)uiArt.Draw(r,im,hover,GUI.enabled,reduced);
-            else if(im)GUI.DrawTexture(new Rect(r.x,r.y+(active&&!reduced?3:0),r.width,r.height),im,ScaleMode.ScaleToFit,true);
+            Rect artworkBounds=r;
+            if(asset=="Back-Botton"&&active&&!reduced)artworkBounds.y+=3;
+            uiArt.Draw(artworkBounds,im,hover,GUI.enabled,reduced);
             if(GUI.Button(r,GUIContent.none,GUIStyle.none)){sound.Sample("button",.25f);return true;}return false;
         }
         bool Tap(Rect r,string text,string lane,bool bite=true)
@@ -353,17 +392,20 @@ namespace SealGugu
             setupScroll=GUI.BeginScrollView(new Rect(271,100,738,570),setupScroll,new Rect(0,0,714,1100));
             Text(new Rect(0,0,690,26),"選擇音樂",18);
             for(int i=0;i<tracks.Length;i++){
-                Rect r=new Rect(i*237,37,225,92);desktop.Interactive(r);choice.normal.background=song==i?selected:button;choice.hover.background=choice.active.background=choice.normal.background;
-                if(GUI.Button(r,tracks[i].title+"\n"+Math.Round(tracks[i].bpm)+" BPM · "+Fmt(tracks[i].duration),choice)){if(song!=i){song=i;StopCalibration();sound.Silence();NewPreview();sound.Menu(tracks[song]);}sound.Sample("button",.25f);}
+                Rect r=new Rect(i*237,37,225,92);
+                if(Button(r,tracks[i].title+"\n"+Math.Round(tracks[i].bpm)+" BPM · "+Fmt(tracks[i].duration),song==i?choiceSelected:choice)){if(song!=i){song=i;StopCalibration();sound.Silence();NewPreview();sound.Menu(tracks[song]);}}
             }
             Text(new Rect(0,146,690,26),"選擇難度",18);
             string[] levels={"beginner","intermediate","expert"},names={"新手\n每 4 拍一次","中階\n每 2 拍一次","高手\n全拍＋八分連打"};
-            for(int i=0;i<3;i++){Rect r=new Rect(i*237,182,225,83);desktop.Interactive(r);choice.normal.background=level==levels[i]?selected:button;choice.hover.background=choice.active.background=choice.normal.background;if(GUI.Button(r,names[i],choice)){if(level!=levels[i]){level=levels[i];window=150;SaveTuning();StopCalibration();NewPreview();sound.Menu(tracks[song]);}sound.Sample("button",.25f);}}
+            for(int i=0;i<3;i++){
+                Rect r=new Rect(i*237,182,225,83);
+                if(Button(r,names[i],level==levels[i]?choiceSelected:choice)){if(level!=levels[i]){level=levels[i];window=150;SaveTuning();StopCalibration();NewPreview();sound.Menu(tracks[song]);}}
+            }
             Text(new Rect(0,276,714,28),"吃飽目標 "+run.targets.full+" / "+run.totalFish+" 隻 · 耗氧 "+Math.Round(run.balance.oxygen*100)+"% · Miss −"+run.balance.missPenalty+" 穩定",16,TextAnchor.MiddleCenter,Muted);
             if(Button(new Rect(222,310,270,47),"開始吸氣 →",primaryAction))StartRun();
-            bool p=Toggle(new Rect(0,361,330,29),practice,"輕鬆練習 · 不會死亡",toggle);bool b=Toggle(new Rect(354,361,355,29),blind,"純聽練習 · 隱藏魚群，不會死亡",toggle);
+            bool p=Toggle(new Rect(0,361,330,51),practice,"輕鬆練習 · 不會死亡",toggle);bool b=Toggle(new Rect(354,361,355,51),blind,"純聽練習 · 隱藏魚群，不會死亡",toggle);
             if(p!=practice||b!=blind){practice=p;blind=b;NewPreview();}
-            Text(new Rect(0,406,712,142),"D／F／↑ 打上排，J／K／↓ 打下排。\n開場看肚子鼓起、氣流收攏時，按一下收氣。途中上岸才需連打補氣，時間到自動下海。\n空拍可自由上下移動。魚靠近判定點時，太早、太晚或按錯軌會 Miss，該魚不能再補按。節奏穩定度歸零則旅程結束。",17);
+            Text(new Rect(0,431,712,124),"D／F／↑ 打上排，J／K／↓ 打下排。\n開場看肚子鼓起、氣流收攏時，按一下收氣。途中上岸才需連打補氣，時間到自動下海。\n空拍可自由上下移動。魚靠近判定點時，太早、太晚或按錯軌會 Miss，該魚不能再補按。節奏穩定度歸零則旅程結束。",17);
             Tuning(0,570,710);
             Text(new Rect(0,904,710,35),"拍點試聽與耳機校正",22,TextAnchor.UpperLeft,Ink,true);
             Text(new Rect(0,946,710,49),"聽到清脆輕響時按 SPACE 或點「跟拍」，收集 6 次以上再套用。校正含個人反應時間，可手動微調。",16);
@@ -373,8 +415,20 @@ namespace SealGugu
             Text(new Rect(0,1062,710,30),calibrationSamples.Count>0?"已收集 "+calibrationSamples.Count+" 次 · 建議 "+Math.Round(calibrationSamples.OrderBy(n=>n).ElementAt(calibrationSamples.Count/2))+" ms":"可依耳機與個人反應時間校正剩餘誤差。",16,TextAnchor.UpperLeft,Muted);
             GUI.EndScrollView();desktop.EndPointerClip();
         }
-        bool Toggle(Rect r,bool value,string text,GUIStyle style){desktop.Interactive(r);return GUI.Toggle(r,value,text,style);}
-        float Slider(Rect r,float value,float min,float max,GUIStyle track,GUIStyle knob){desktop.Interactive(r);return GUI.HorizontalSlider(r,value,min,max,track,knob);}
+        bool Toggle(Rect r,bool value,string text,GUIStyle style)
+        {
+            if(modal=="setup"){
+                r.height=Mathf.Max(r.height,38);style=setupToggle;text=(value?"✓  ":"□  ")+text;
+                uiArt.DrawButtonShadow(r,desktop.PointerOver(r),GUI.enabled,reduced);
+            }
+            desktop.Interactive(r);bool next=GUI.Toggle(r,value,text,style);
+            if(next!=value)sound?.Sample("button",.25f);return next;
+        }
+        float Slider(Rect r,float value,float min,float max,GUIStyle track,GUIStyle knob)
+        {
+            if(modal=="setup"){track=setupTrack;knob=setupThumb;}
+            desktop.Interactive(r);return GUI.HorizontalSlider(r,value,min,max,track,knob);
+        }
         void Tuning(float x,float y,float width)
         {
             float oldSpeed=speed,oldDelay=delay,oldWindow=window;

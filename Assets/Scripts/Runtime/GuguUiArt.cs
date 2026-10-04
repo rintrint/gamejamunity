@@ -17,7 +17,7 @@ namespace SealGugu
             public float blur=5, offset=5;
             public Color32 shadowColor=new Color32(79,157,188,53);
         }
-        readonly Dictionary<Texture2D,Filter> filters = new Dictionary<Texture2D,Filter>();
+        readonly Dictionary<(Texture2D source, Vector2 size),Filter> filters = new Dictionary<(Texture2D source, Vector2 size),Filter>();
         readonly Dictionary<Rect,Filter> buttonFilters=new Dictionary<Rect,Filter>();
         readonly List<Texture2D> generated = new List<Texture2D>();
         public static Rect Fit(Rect rect, Texture2D texture) {
@@ -37,9 +37,11 @@ namespace SealGugu
             float v=1-t;return 3*v*v*t*.1f+3*v*t*t+t*t*t;
         }
         Filter Get(Texture2D source,Rect bounds) {
-            if(filters.TryGetValue(source,out var filter))return filter;
+            // The back artwork appears at different sizes in setup and credits.
+            var key=(source,bounds.size);
+            if(filters.TryGetValue(key,out var filter))return filter;
             filter=new Filter{source=source,pixels=source.GetPixels32(),bounds=bounds};filter.brightness[0]=source;
-            filters.Add(source,filter);return filter;
+            filters.Add(key,filter);return filter;
         }
         Texture2D Bright(Filter filter,int step) {
             if(filter.brightness[step])return filter.brightness[step];

@@ -1,10 +1,11 @@
 {
-  "version": "V14.1.0",
+  "version": "V14.2.1",
   "success": true,
   "unityVersion": "6000.6.4f1",
   "development": false,
-  "buildBytes": 276569408,
+  "buildBytes": 278822669,
+  "verifiedUtc": "2026-10-04T02:12:46.0125374Z",
   "startupMode": "native rendered Windows player",
   "managedExceptions": false,
-  "note": "Final release player launched and menu/start dialog inspected with computer-use. Full-song run preceded a cosmetic FPS panel height fix; final desktop checks and all 19 scene captures repeated after that fix. Release assembly independently verified to exclude QA entry points."
+  "note": "Built through ProjectBuild.BuildWindows in the open Unity Editor. Required core/oxygen/difficulty checks passed. Release EXE launched and menu, setup, selection, label hover and both Back controls inspected via computer-use. Player.log contains no managed exception. Package script verified the release assembly excludes QA entry points."
 }

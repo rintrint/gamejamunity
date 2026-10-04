@@ -233,7 +233,7 @@ namespace SealGugu
         void Text(string value,float x,float baseline,int size,Color color)
         {
             if(textStyle==null)textStyle=new GUIStyle(GUI.skin.label) {alignment=TextAnchor.MiddleCenter,clipping=TextClipping.Overflow,wordWrap=false};
-            textStyle.font=font;textStyle.fontSize=Math.Max(16,size);textStyle.normal.textColor=color;
+            textStyle.font=font;textStyle.fontSize=Math.Max(16,size);GuguTypography.SetLabelColor(textStyle,color);
             GUI.Label(new Rect(x-260,baseline-size*1.05f,520,size*1.4f),value,textStyle);
         }
 
