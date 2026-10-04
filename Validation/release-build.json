@@ -1,14 +1,14 @@
 {
-  "version": "V15.1.0",
+  "version": "V15.2.0",
   "success": true,
   "unityVersion": "6000.6.4f1",
   "development": false,
-  "buildBytes": 291535692,
-  "buildDirectory": "Builds/V15.1.0",
-  "verifiedUtc": "2026-10-04T04:42:10.002430+00:00",
+  "buildBytes": 290772023,
+  "buildDirectory": "Builds/V15.2.0",
+  "verifiedUtc": "2026-10-04T05:04:44.660709+00:00",
   "startupMode": "native URP 2D Windows player",
   "managedExceptions": false,
-  "qaReport": "Validation/V15.1.0/capture-report.json",
-  "note": "Formal and QA players built from the same source snapshot using BuildReleaseCandidate. Fresh QA passed native input/audio/desktop checks, 21 scenes, 16 extra aspect/GIF captures, imported GIF pixels/timing and return to idle. Core, oxygen, difficulty and shore sequence gates passed. The earlier 211-second full-song shore test is preserved in Validation/ShorePreview; gameplay core is unchanged since that run. Formal ZIP CRC and exclusion of QA entry points verified.",
-  "assemblySha256": "8d6300ef488f5a35f80ce5d140861476baba69c284bb96ec1f9f21af6430fc84"
+  "qaReport": "Validation/V15.2.0/capture-report.json",
+  "note": "Formal and QA players built from the same source using BuildReleaseCandidate. F2 is an intentional release feature: 306 assertions cover real keyboard input, modal blocking, interactive fisherman impact/refill, all 135 song/difficulty/scene combinations, restoration of paused/running progress and audio position. Existing native input/audio/desktop, 21 scene captures, 16 aspect/GIF captures, core, oxygen, difficulty and 729 shore-stop checks pass. Formal package includes the F2 controls but excludes automatic diagnostics. ZIP CRC verified.",
+  "assemblySha256": "5f7a2452c22bf55720469eea71d839eba0abe31bf9ac432d847f75e945a42d91"
 }

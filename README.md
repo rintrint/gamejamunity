@@ -1,6 +1,8 @@
-# 海豹呼呼 V15.1.0
+# 海豹呼呼 V15.2.0
 
 Unity **6.6 / 6000.6.4f1** 原生 Windows 版。以 HTML 第 13 版 `1665a124f2a60c380989dd53af80a943386e2d7e` 為移植基準，保留原始歌曲、譜面和手繪風格，並持續改善平衡與介面。這個專案只有海豹呼呼，沒有舊版切換選單。
+
+V15.2.0 新增正式版 F2 場景／結局測試選單，整理主畫面及 Credits，並統一飢餓海豹輪廓。詳見 [V15.2.0 發布說明](Documentation/RELEASE_V15.2.0.md)。
 
 V15.1.0 更新美術提供的主畫面背景與 GIF 飢餓動畫，補齊統一上岸撞飛演出、四種結局與 Credits。Windows 執行檔改名 `SealBreath.exe`。詳見 [V15.1.0 發布說明](Documentation/RELEASE_V15.1.0.md)。
 
@@ -19,6 +21,7 @@ V15.0.0 改名「海豹呼呼」，並遷移至 URP 17.6 的 2D Renderer。開�
 | 暫停／繼續 | Esc |
 | 視窗／全螢幕 | Alt + Enter（左右 Alt、數字鍵盤 Enter 皆可） |
 | 顯示／隱藏 FPS | F1 |
+| 場景／結局測試選單 | F2（再按一次或 Esc 關閉） |
 
 三首歌曲各有新手、中階、高手。預設判定 ±150 ms；可調魚速 0.1–2.0×、延遲 ±200 ms、判定範圍 ±40–200 ms。魚速只影響視覺距離，不會改動音樂或拍點。設定儲存在本機。
 
@@ -36,6 +39,14 @@ V14.2.1 修正一般文字 Hover 變色，補齊 Start／CREDITS 內返回按鈕
 
 V14.2.2 修正途中上岸連打換氣時肺活量完全停止下降的問題。換氣期間持續以岸上耗氧率消耗，依難度套用倍率；每次按鍵仍補回剩餘容量的 12%。詳見 `Documentation/RELEASE_V14.2.2.md`。
 
+## F2 快速檢查場景
+
+按 **F2** 開啟 15 個測試選項：開場吸氣、撞飛垂釣者與上岸換氣、大吸氣跨洞、最後上岸呼喚、三種體型游泳、三種體型缺氧、四種結局，以及主畫面飢餓動畫。使用目前選好的歌曲與難度。
+
+上岸測試會從真正的上衝動畫開始，撞飛垂釣者後可連打補氣，歌曲和氧氣照常運作。測試採不死亡模式，方便反覆觀察。上方「重播」重新播放目前場景；F2 可隨時改選其他場景。
+
+開啟選單會暫停原本的遊玩；「離開測試／返回原本遊戲」會還原原本進度與音樂位置。若本來已暫停，返回時仍保持暫停。「回到主畫面」則結束該次遊玩。測試結局標示「場景測試」，不代表實際通關。
+
 ## 用 Unity 編輯
 
 1. Unity Hub → Add / Add project from disk，選此 repo 資料夾。
@@ -48,7 +59,7 @@ V14.2.2 修正途中上岸連打換氣時肺活量完全停止下降的問題。
 
 執行 **Tools → 海豹呼呼 → 編輯 CREDITS**，或在 Project 點選 **Assets/Resources/GameCredits.asset**。
 
-- **小組（Group）**：小組名稱，預設「第二組」。
+- Credits 只顯示名單，不顯示小組名稱；名單使用大字與直接排列，不使用捲動條。
 - **名單（Entries）**：每一格輸入一位成員的姓名與分工；按 **+** 新增。
 - 已填入五位組員姓名，可直接修改各格。儲存專案後重新打包，就會反映在主畫面的 CREDITS。
 
@@ -56,7 +67,7 @@ V14.2.2 修正途中上岸連打換氣時肺活量完全停止下降的問題。
 
 ## 打包與驗證
 
-Unity 選单 **Tools → 海豹呼呼 → 打包 Windows V15.1.0**。輸出 `Builds/V15.1.0/SealBreath.exe`；預設依版本保存，避免覆蓋前一版。命令列也可使用：
+Unity 選单 **Tools → 海豹呼呼 → 打包 Windows V15.2.0**。輸出 `Builds/V15.2.0/SealBreath.exe`；預設依版本保存，避免覆蓋前一版。命令列也可使用：
 
 ```powershell
 & 'C:\Program Files\Unity\Hub\Editor\6000.6.4f1\Editor\Unity.exe' -batchmode -nographics -quit -projectPath "$PWD" -executeMethod SealGugu.Editor.ProjectBuild.BuildWindows -logFile "$PWD\build.log"
@@ -64,7 +75,7 @@ Unity 選单 **Tools → 海豹呼呼 → 打包 Windows V15.1.0**。輸出 `Bui
 
 打包前會自動執行原版 JavaScript 對照資料測試。歷史 HTML 一致性測試明確使用舊版耗氧倍率 1；目前遊戲高手基礎倍率 1（HTML 第 13 版），新手／中階皆乘以 0.5，另由 `Validation/oxygen-balance.json` 驗證。詳細數量與結果寫入 `Validation/core-parity.json`。對照生成方式見 `Tools/CORE_PARITY.md`。
 
-開發建置加 `-guguDevelopment`；該建置可接受 `-guguCapture <絕對輸出路徑>`，一次輸出各場景的原生畫面與狀態報告。這些預覽／自動截圖入口不會編入正式 release。
+開發建置加 `-guguDevelopment`；該建置可接受 `-guguCapture <絕對輸出路徑>`，一次輸出各場景的原生畫面與狀態報告。這些自動截圖／驗證入口不會編入正式 release；玩家使用的 F2 場景測試是獨立功能，正式版也可用。
 
 只需自動驗證時可改加 `-guguQA`：保留測試入口，但不啟用 Unity Development Player 的偵錯連線。`-guguOutput <輸出資料夾>` 可把測試包和正式包分開保存。
 

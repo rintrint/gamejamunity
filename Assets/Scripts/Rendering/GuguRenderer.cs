@@ -316,7 +316,9 @@ namespace SealGugu
             if(gif&&MenuHungerFrame>=0){
                 // Decode-disposal and timing come from the supplied GIF. One shared
                 // crop preserves alignment and aspect across all three original poses.
-                Seal(gif,menuGif.Crop(MenuHungerFrame),x,y,w);return;
+                Rect crop=menuGif.Crop(MenuHungerFrame);float h=w*crop.height/crop.width;
+                if(stage)stage.Slice(gif,crop,new Rect(x-w/2,y-h/2,w,h),outline:1.65f);
+                else Seal(gif,crop,x,y,w);return;
             }
             var image=Image("v14-2/menu-hunger");if(image==null)return;
             if(Rig)Rig.Sample("Idle",0,false);

@@ -1,0 +1,1 @@
+PASS: 306 assertions; real F2 input, held-key suppression, modal isolation, interactive impact/refill, all 135 track/difficulty/scene selections, original progress and DSP position restored.

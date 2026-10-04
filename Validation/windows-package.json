@@ -1,11 +1,11 @@
 {
   "success": true,
-  "version": "V15.1.0",
+  "version": "V15.2.0",
   "platform": "Windows x64",
-  "archive": "SealBreath-V15.1.0-Windows-x64.zip",
-  "fileCount": 179,
-  "bytes": 209473055,
-  "sha256": "38cff8f88fdf6a6b42c49388ba1c91bd0c89fe06460ae0ee0760d7b393dd1403",
+  "archive": "SealBreath-V15.2.0-Windows-x64.zip",
+  "fileCount": 177,
+  "bytes": 209249152,
+  "sha256": "b41e31010993c9f2719260e8903784d6f9671c6247a20f98c1e7ab31662350a0",
   "developmentEntryPointsAbsent": true,
   "zipCrcVerified": true
 }

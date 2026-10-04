@@ -20,7 +20,9 @@ namespace SealGugu
         Texture2D lastTexture;
         Rect lastCrop;
         SpriteRenderer graphic;
-        public void Paint(Texture2D texture,Rect crop,Vector2 dimensions,float opacity,Material lit,Material unlit,int order)
+        Material inkMaterial;
+        MaterialPropertyBlock inkProperties;
+        public void Paint(Texture2D texture,Rect crop,Vector2 dimensions,float opacity,Material lit,Material unlit,int order,float outline=0)
         {
             source=texture;sourceRect=crop;size=dimensions;alpha=opacity;
             if(!graphic)graphic=GetComponent<SpriteRenderer>();
@@ -34,8 +36,17 @@ namespace SealGugu
             }
             graphic.sprite=sprite;graphic.sharedMaterial=receiveLight?lit:unlit;graphic.sortingOrder=order;
             graphic.color=new Color(tint.r,tint.g,tint.b,tint.a*alpha);
+            if(outline>0){
+                if(!inkMaterial)inkMaterial=new Material(Resources.Load<Shader>("Shaders/HuhuInkOutline")){hideFlags=HideFlags.HideAndDontSave};
+                if(inkProperties==null)inkProperties=new MaterialPropertyBlock();
+                graphic.sharedMaterial=inkMaterial;graphic.GetPropertyBlock(inkProperties);
+                // Width is in 1280x720 design pixels, independent of source crop resolution.
+                inkProperties.SetFloat("_InkWidth",outline*crop.width/Mathf.Max(1,Mathf.Abs(size.x)));
+                inkProperties.SetColor("_InkColor",new Color(.30f,.35f,.63f,1));
+                graphic.SetPropertyBlock(inkProperties);
+            }else graphic.SetPropertyBlock(null);
             transform.localScale=new Vector3(size.x/crop.width,size.y/crop.height,1);
         }
-        void OnDestroy(){if(sprite){if(Application.isPlaying)Destroy(sprite);else DestroyImmediate(sprite);}}
+        void OnDestroy(){if(inkMaterial){if(Application.isPlaying)Destroy(inkMaterial);else DestroyImmediate(inkMaterial);}if(sprite){if(Application.isPlaying)Destroy(sprite);else DestroyImmediate(sprite);}}
     }
 }

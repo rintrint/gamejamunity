@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f112cc733daef4c97820fc007f7c83, type: 3}
   m_Name: GameCredits
   m_EditorClassIdentifier: Assembly-CSharp::SealGugu.GameCredits
-  group: "\u7B2C\u4E8C\u7D44"
+  group: ""
   entries:
   - "呂庭妘"
   - "莊子誼"

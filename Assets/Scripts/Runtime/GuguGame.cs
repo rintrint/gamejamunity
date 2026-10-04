@@ -7,9 +7,9 @@ using UnityEngine.InputSystem;
 namespace SealGugu
 {
     /// <summary>The native game shell. The deterministic run never depends on GUI animation.</summary>
-    public sealed class GuguGame : MonoBehaviour
+    public sealed partial class GuguGame : MonoBehaviour
     {
-        public const string Version="V15.1.0";
+        public const string Version="V15.2.0";
         [Tooltip("小組成員可在此資產的 entries 直接輸入名字。")]
         public GameCredits credits;
         public HuhuStage stage;
@@ -30,7 +30,7 @@ namespace SealGugu
         readonly List<InputAction> inputs=new List<InputAction>();
         readonly List<double> calibrationClicks=new List<double>(),calibrationSamples=new List<double>();
         int lastCalibration=-1;
-        Vector2 setupScroll,creditsScroll;
+        Vector2 setupScroll;
         Font sans;
         Texture2D panel,button,sliderTrack,sliderThumb;
         GUIStyle label,heading,action,primaryAction,tuningAction,choice,toggle,scrollbar,thumb,panelStyle;
@@ -67,8 +67,8 @@ namespace SealGugu
                 window=(float)GuguRun.windowValue(PlayerPrefs.GetFloat("gugu.window",150));
                 reduced=PlayerPrefs.GetInt("gugu.reduced",0)==1;NewPreview();sound.Menu(tracks[song]);
             }catch(Exception e){error="遊戲資源載入失敗："+e.Message;Debug.LogException(e);}
-            foreach(string key in new[]{"d","f","upArrow","j","k","downArrow","space","escape"}){
-                string captured=key;var input=new InputAction("Seal "+key,InputActionType.PassThrough,"<Keyboard>/"+key);
+            foreach(string key in new[]{"d","f","upArrow","j","k","downArrow","space","escape","f2"}){
+                string captured=key;var input=new InputAction("Seal "+key,key=="f2"?InputActionType.Button:InputActionType.PassThrough,"<Keyboard>/"+key);
                 input.performed+=ctx=>{
 #if UNITY_EDITOR || GUGU_QA
                     // A background QA run must not score typing in another application.
@@ -91,7 +91,10 @@ namespace SealGugu
             if(pause)Pause();}
         void Key(string key,double stamp)
         {
+            if(key=="f2"){ToggleSceneTests();return;}
             if(key=="escape"){
+                if(modal=="sceneTests"){CloseSceneTests();return;}
+                if(sceneTestActive&&modal==""){OpenSceneTests();return;}
                 if(IsPreview){Back();return;}
                 if(modal=="pause"){Resume();return;}
                 if(modal!=""){CloseModal();return;}
@@ -114,11 +117,11 @@ namespace SealGugu
             }
         }
         void NewPreview(){run=new GuguRun(tracks[song],level,practice||blind,new RunSettings{delay=delay,window=window});view.Reset(run);view.hideNotes=blind;view.speedMultiplier=speed*.7f;view.reducedMotion=reduced;judgeAge=10;comboScale=judgeScale=1;comboVelocity=judgeVelocity=0;}
-        void StartRun(){IsPreview=false;modal="";StopCalibration();sound.Silence();NewPreview();run.startBreath();lastBreathCycle=-1;lastHungerCycle=-1;sound.Sample("start",.3f);}
-        void Back(){IsPreview=false;sound.Silence();calibration=false;modal="";NewPreview();sound.Menu(tracks[song]);visual=0;lastHungerCycle=-1;}
+        void StartRun(){ClearSceneTests();IsPreview=false;modal="";StopCalibration();sound.Silence();NewPreview();run.startBreath();lastBreathCycle=-1;lastHungerCycle=-1;sound.Sample("start",.3f);}
+        void Back(){ClearSceneTests();IsPreview=false;sound.Silence();calibration=false;modal="";NewPreview();sound.Menu(tracks[song]);visual=0;lastHungerCycle=-1;}
         void Pause(){if(run==null||IsPreview||run.status!="playing"&&run.status!="breathing")return;if(run.status=="playing")sound.Pause();sound.StopEffects();run.pause();modal="pause";}
         void Resume(){modal="";if(run.status!="paused")return;run.resume();if(run.status=="playing")sound.Resume(run.track);else lastBreathCycle=-1;}
-        void CloseModal(){if(modal=="pause"){Resume();return;}StopCalibration();modal="";if(run?.status=="ready")sound.Menu(tracks[song]);}
+        void CloseModal(){if(modal=="sceneTests"){CloseSceneTests();return;}if(modal=="pause"){Resume();return;}StopCalibration();modal="";if(run?.status=="ready")sound.Menu(tracks[song]);}
         void OpenTuning(){if(run.status=="playing"||run.status=="breathing")Pause();else modal="tuning";}
         void SaveTuning(){speed=(float)GuguRun.speedValue(speed);delay=(float)GuguRun.delayValue(delay);window=(float)GuguRun.windowValue(window);run?.setTiming(delay,window);view.speedMultiplier=speed*.7f;view.reducedMotion=reduced;PlayerPrefs.SetFloat("gugu.speed",speed);PlayerPrefs.SetFloat("gugu.delay",delay);PlayerPrefs.SetFloat("gugu.window",window);PlayerPrefs.SetInt("gugu.reduced",reduced?1:0);PlayerPrefs.Save();}
         void Events()
@@ -280,6 +283,7 @@ namespace SealGugu
                     Header();
                     if(Scene=="menu")Menu();else if(Scene=="breath"){if(run.arriving)ArrivalHud();else Breathing();}else if(Scene=="play"){if(run.arriving)ArrivalHud();else Hud();}else Ending();
                     if(Scene!="menu")Footer();
+                    if(sceneTestActive)SceneTestToolbar();
                 } finally { GUI.enabled=backgroundEnabled; }
                 if(modal!=""){
                     Modal();
@@ -306,7 +310,6 @@ namespace SealGugu
         {
 
             if(!stage){var logo=Art("huhu/title");if(logo)GUI.DrawTexture(GuguUiArt.Fit(new Rect(145,185,530,175),logo),logo);}
-            Text(new Rect(195,320,500,42),"一口氣，游向你。",27,TextAnchor.UpperLeft,Ink,true);
             if(Ice(HuhuStage.AnchorRect(stage?stage.startAnchor:null,new Rect(717,158,461,192)),"Start-Botton")){modal="setup";setupScroll=Vector2.zero;}
             if(Ice(HuhuStage.AnchorRect(stage?stage.creditsAnchor:null,new Rect(806,331,448,186)),"Credits-Botton"))modal="credits";
             if(Ice(HuhuStage.AnchorRect(stage?stage.exitAnchor:null,new Rect(781,518,422,176)),"Exit-Botton")){sound.Silence();Application.Quit();}
@@ -381,22 +384,27 @@ namespace SealGugu
         {
             Box(new Rect(230,387,820,288));string title,copy;
             switch(run.outcome){case "friends":title="吃飽了，也交到朋友了。";copy="你跨過冰洞、呼喚了同伴。下一次，一起游吧。";break;case "rest":title="沒吃飽，先攤一下。";copy="平安回到岸上。休息一下，再去找小魚吧。";break;case "angel":title="有翅膀的小海豹。";copy="已吃到第二次成長門檻（"+run.targets.fat+" 隻魚），這次化成天使。";break;default:title="還餓著的小幽靈。";copy="還沒達到第二次成長門檻（"+run.targets.fat+" 隻魚），變成了餓死鬼。";break;}
-            Text(new Rect(252,408,776,26),(run.practice?"PRACTICE / ":"")+(run.status=="won"?"旅程完成":"旅程結束"),16,TextAnchor.MiddleCenter,Muted);
+            Text(new Rect(252,408,776,26),(sceneTestActive?"場景測試 / ":run.practice?"PRACTICE / ":"")+(run.status=="won"?"旅程完成":"旅程結束"),16,TextAnchor.MiddleCenter,Muted);
             Text(new Rect(252,446,776,48),title,33,TextAnchor.MiddleCenter,Ink,true);
             string reason=run.reason=="oxygen"?"氧氣耗盡。":run.reason=="rhythm"?"節奏穩定度歸零。":run.reason=="leap"?"錯過了大吸氣前的上岸機會。":run.reason=="route"?"沒有完成跨洞、上岸與呼喚。":"";
             Text(new Rect(258,502,764,107),reason+copy+" 吃到 "+run.food+" / "+run.totalFish+" 隻魚；吃飽目標 "+run.targets.full+" 隻。\n準確率 "+run.accuracy.ToString("F1")+"% · 最高 "+run.maxCombo+" COMBO · PERFECT "+run.counts.perfect+" / GOOD "+run.counts.good+" / MISS "+run.counts.miss+"\n時機／錯軌 "+run.overpresses+" 次 · 魚速 "+speed.ToString("F1")+"× · 延遲 "+delay+" ms · 判定 ±"+window+" ms",17,TextAnchor.UpperCenter);
-            if(Button(new Rect(439,617,200,44),"再一次 ↗",primaryAction))StartRun();if(Button(new Rect(661,617,180,44),"回到開始"))Back();
+            if(sceneTestActive){
+                if(Button(new Rect(439,617,200,44),"重播此結局",primaryAction))SelectSceneTest(sceneTestName);
+                if(Button(new Rect(661,617,180,44),"其他場景 F2"))OpenSceneTests();
+            }else{if(Button(new Rect(439,617,200,44),"再一次 ↗",primaryAction))StartRun();if(Button(new Rect(661,617,180,44),"回到開始"))Back();}
         }
         void Modal()
         {
             GUI.DrawTexture(canvasBounds,Texture2D.whiteTexture,ScaleMode.StretchToFill,true,0,new Color(.12f,.27f,.34f,.42f),0,0);
+            if(modal=="sceneTests"){SceneTestDialog();return;}
             if(modal=="setup"){Setup();return;}
             if(modal=="credits"){
-                Box(new Rect(300,125,680,490));Text(new Rect(330,159,620,50),"CREDITS",34,TextAnchor.MiddleCenter,Ink,true);
-                Text(new Rect(330,222,620,52),credits?credits.group:"第二組",34,TextAnchor.MiddleCenter);
-                string lines=credits&&credits.entries!=null?string.Join("\n",credits.entries):"內容待補";float contentHeight=Mathf.Max(200,label.CalcHeight(new GUIContent(lines),570)+32);
-                creditsScroll=GUI.BeginScrollView(new Rect(342,291,596,207),creditsScroll,new Rect(0,0,570,contentHeight));Text(new Rect(0,0,570,contentHeight),lines,22,TextAnchor.UpperCenter);GUI.EndScrollView();
-                if(Ice(new Rect(580,513,120,85),"Back-Botton"))CloseModal();return;
+                Box(new Rect(300,112,680,520));Text(new Rect(330,152,620,50),"CREDITS",34,TextAnchor.MiddleCenter,Ink,true);
+                var names=credits&&credits.entries!=null?credits.entries.ToArray():new[]{"內容待補"};
+                // Five names fit at 34 px. Extra Inspector entries use columns, never a scrollbar.
+                int rows=Math.Min(5,Math.Max(1,names.Length)),columns=Math.Max(1,(names.Length+4)/5);
+                for(int i=0;i<names.Length;i++)Text(new Rect(332+(i/rows)*616f/columns,222+(i%rows)*52,616f/columns,49),names[i],34,TextAnchor.MiddleCenter);
+                if(Ice(new Rect(563,512,154,105),"Back-Botton"))CloseModal();return;
             }
             Box(new Rect(332,85,616,565));Text(new Rect(365,111,550,48),modal=="pause"?"海會等你。":"找到舒服的手感。",32,TextAnchor.MiddleCenter,Ink,true);
             Text(new Rect(365,166,550,39),modal=="pause"?"氧氣、音樂與旅程都停在這一刻。":"設定會自動保存，下次遊玩仍然適用。",18,TextAnchor.MiddleCenter);

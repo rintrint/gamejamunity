@@ -7862,7 +7862,7 @@ GameObject:
   - component: {fileID: 1232057726}
   - component: {fileID: 1232057725}
   m_Layer: 0
-  m_Name: "\u6D77\u8C79\u547C\u547C \xB7 V15.1.0"
+  m_Name: "\u6D77\u8C79\u547C\u547C \xB7 V15.2.0"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

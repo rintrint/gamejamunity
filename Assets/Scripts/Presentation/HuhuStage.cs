@@ -66,7 +66,7 @@ namespace SealGugu
             }
             var result=list[i];result.gameObject.SetActive(true);return result;
         }
-        public void Slice(Texture2D image,Rect crop,Rect destination,float alpha=1,float rotation=0,bool flip=false,Vector2? pivot=null)
+        public void Slice(Texture2D image,Rect crop,Rect destination,float alpha=1,float rotation=0,bool flip=false,Vector2? pivot=null,float outline=0)
         {
             if(!image||alpha<=0)return;
             var graphic=Next();var anchor=pivot??destination.center;
@@ -76,7 +76,7 @@ namespace SealGugu
             Vector2 center=anchor+delta;
             graphic.transform.localPosition=new Vector3((center.x-640)/100,(360-center.y)/100,0);
             graphic.transform.localRotation=Quaternion.Euler(0,0,-rotation*Mathf.Rad2Deg);
-            graphic.Paint(image,crop,new Vector2(destination.width*(flip?-1:1),destination.height),alpha,spriteLit,spriteUnlit,order++);
+            graphic.Paint(image,crop,new Vector2(destination.width*(flip?-1:1),destination.height),alpha,spriteLit,spriteUnlit,order++,outline);
         }
         public void Belly(Texture2D image,Rect destination,float expansion)
         {
